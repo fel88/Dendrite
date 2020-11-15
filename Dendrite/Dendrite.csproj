@@ -79,6 +79,13 @@
   <ItemGroup>
     <Compile Include="AttributeInfo.cs" />
     <Compile Include="AttributeInfoDataType.cs" />
+    <Compile Include="Dagre\acyclic.cs" />
+    <Compile Include="Dagre\DagreGraph.cs" />
+    <Compile Include="Dagre\DagreLayout.cs" />
+    <Compile Include="Dagre\nestingGraph.cs" />
+    <Compile Include="Dagre\normalize.cs" />
+    <Compile Include="Dagre\parentDummyChains.cs" />
+    <Compile Include="Dagre\util.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="ExpandControl.cs">
       <SubType>UserControl</SubType>
@@ -100,6 +107,15 @@
     </Compile>
     <Compile Include="GraphNode.cs" />
     <Compile Include="GraphNodeDrawInfo.cs" />
+    <Compile Include="Inference\InferenceEngine.cs" />
+    <Compile Include="Inference\AvgPool2d.cs" />
+    <Compile Include="Inference\BatchNorm2d.cs" />
+    <Compile Include="Inference\CalcLogItem.cs" />
+    <Compile Include="Inference\Conv2d.cs" />
+    <Compile Include="Inference\Helpers.cs" />
+    <Compile Include="Inference\InternalArray.cs" />
+    <Compile Include="Inference\NeuralItem.cs" />
+    <Compile Include="Inference\PReLU.cs" />
     <Compile Include="InputData.cs" />
     <Compile Include="ListViewExtensions.cs" />
     <Compile Include="Onnx.cs" />

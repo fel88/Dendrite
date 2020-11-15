@@ -43,8 +43,8 @@ namespace Dendrite
         private void Box_MouseWheel(object sender, MouseEventArgs e)
         {
             float zold = zoom;
-            if (e.Delta > 0) { zoom *= 1.5f; ; }
-            else { zoom *= 0.5f; }
+            if (e.Delta > 0) { zoom *= 1.2f; }
+            else { zoom *= 0.8f; }
             if (zoom < 0.01) { zoom = 0.01f; }
             if (zoom > 1000) { zoom = 1000f; }
 
