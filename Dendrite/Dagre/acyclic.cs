@@ -65,9 +65,9 @@ namespace Dendrite.Dagre
                 stack.Remove(v);
 
             };
-            foreach (var item in g.nodes)
+            foreach (var item in g.nodes())
             {
-                dfs(item.key);
+                dfs(item);
             }
             return fas.ToArray();
         }

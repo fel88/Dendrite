@@ -595,6 +595,11 @@ namespace Dendrite
             if (ar == null) return;
             LoadModel(ar[0]);
         }
+
+        private void fromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public static class StaticColors

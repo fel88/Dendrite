@@ -15,17 +15,23 @@ namespace Dendrite.Dagre
          */
         public static void normalizeRanks(DagreGraph g)
         {
-            var min = g.nodes.Min(z => z.rank);
-            foreach (var item in g.nodes)
+            var min = g.nodes().Min(z => g.node(z).rank);
+            foreach (var v in g.nodes())
             {
-                if (item.rank.HasValue)
+                var node = g.node(v);
+                if (node.rank.HasValue)
                 {
-                    item.rank -= min;
+                    node.rank -= min;
                 }
             }
         }
 
-        public static int uniqueId()
+
+        public static int[] range(int start, int end)
+        {
+            return Enumerable.Range(start, end - start).ToArray();
+        }
+        public static int uniqueId(string str)
         {
             uniqueCounter++;
             return uniqueCounter;
@@ -35,51 +41,87 @@ namespace Dendrite.Dagre
         /*
  * Adds a dummy node to the graph and return v.
  */
-        public static DagreNode addDummyNode(DagreGraph g, object type,  object attrs, string name)
+        public static DagreNode addDummyNode(DagreGraph g, object type, object attrs, string name)
         {
-            DagreNode v=new DagreNode ();
+            DagreNode v = new DagreNode();
             throw new NotImplementedException();
             do
             {
-             //   v = _.uniqueId(name);
+                //   v = _.uniqueId(name);
             } while (g.hasNode(v));
-            
+
             //attrs.dummy = type;
-          //  g.setNode(v, attrs);
+            //  g.setNode(v, attrs);
             return v;
         }
 
         public static int maxRank(DagreGraph g)
         {
-            return g.nodes.Where(z => g.node(z.key).rank != null).Select(z => g.node(z.key).rank.Value).Max();
+            return g.nodes().Where(z => g.node(z).rank != null).Select(z => g.node(z).rank.Value).Max();
 
         }
+
+        internal static string[][] cloneDeep(string[][] layering)
+        {
+            List<List<string>> ss = new List<List<string>>();
+            foreach (var item in layering)
+
+            {
+                ss.Add(new List<string>());
+                foreach (var ii in item)
+                {
+                    ss.Last().Add(ii);
+                }
+            }
+            return ss.Select(z => z.ToArray()).ToArray();
+        }
+
         /*
- * Given a DAG with each node assigned "rank" and "order" properties, this
- * function will produce a matrix with the ids of each node.
- */
-        public static Dictionary<string, DagreNode>[] buildLayerMatrix(DagreGraph g)
+* Given a DAG with each node assigned "rank" and "order" properties, this
+* function will produce a matrix with the ids of each node.
+*/
+        public static string[][] buildLayerMatrix(DagreGraph g)
         {
             var range = Enumerable.Range(0, maxRank(g) + 1);
-            List<Dictionary<string, DagreNode>> layering = range.Select(z => new Dictionary<string, DagreNode>()).ToList();
+            List<List<string>> layering = new List<List<string>>();
+            foreach (var item in Enumerable.Range(0, maxRank(g) + 1))
+            {
+                layering.Add(new List<string>());
+            }
             //var layering = _.map(_.range(maxRank(g) + 1), function() { return []; });
 
-            foreach (var v in g.nodes)
+            foreach (var v in g.nodes())
             {
-                var node = g.node(v.key);
+                var node = g.node(v);
                 var rank = node.rank;
                 if (rank != null)
                 {
-                    layering[rank.Value].Add(node.order, v);
+                    while (layering[rank.Value].Count < node.order)
+                    {
+                        layering[rank.Value].Add(null);
+                    }
+                    layering[rank.Value][node.order] = v;
                 }
             }
 
-            return layering.ToArray();
+
+
+            return layering.Select(z => z.ToArray()).ToArray();
         }
 
         internal static object addBorderNode(DagreGraph g, string v)
         {
             throw new NotImplementedException();
+        }
+
+        internal static int[] range(int v1, int v2, int step)
+        {
+            List<int> ret = new List<int>();
+            for (int i = v1; i != v2; i += step)
+            {
+                ret.Add(i);
+            }
+            return ret.ToArray();
         }
     }
 }

@@ -80,11 +80,15 @@
     <Compile Include="AttributeInfo.cs" />
     <Compile Include="AttributeInfoDataType.cs" />
     <Compile Include="Dagre\acyclic.cs" />
+    <Compile Include="Dagre\addBorderSegments.cs" />
     <Compile Include="Dagre\DagreGraph.cs" />
     <Compile Include="Dagre\DagreLayout.cs" />
     <Compile Include="Dagre\nestingGraph.cs" />
     <Compile Include="Dagre\normalize.cs" />
+    <Compile Include="Dagre\order.cs" />
     <Compile Include="Dagre\parentDummyChains.cs" />
+    <Compile Include="Dagre\resolveConflictsModule.cs" />
+    <Compile Include="Dagre\sortSubGraphModule.cs" />
     <Compile Include="Dagre\util.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="ExpandControl.cs">

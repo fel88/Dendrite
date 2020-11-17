@@ -55,8 +55,7 @@ namespace Dendrite.Dagre
             // Create border nodes and link them up
             foreach (var child in g.children())
             {
-                dfs(g, root, nodeSep, weight, height, depths, child);
-
+                dfs(g, root.key, nodeSep, weight, height, depths, child);
             }
 
 
@@ -65,7 +64,7 @@ namespace Dendrite.Dagre
             g.graph().nodeRankFactor = nodeSep;
         }
 
-        public static void dfs(DagreGraph g, DagreNode root, int nodeSep, int weight, int height, Dictionary<string, int> depths, DagreNode v)
+        public static void dfs(DagreGraph g, string root, int nodeSep, int weight, int height, Dictionary<string, int> depths, string v)
         {
             var children = g.children(v);
             if (children == null || children.Length == 0)
@@ -80,7 +79,7 @@ namespace Dendrite.Dagre
 
             var top = util.addBorderNode(g, "_bt");
             var bottom = util.addBorderNode(g, "_bb");
-            var label = g.node(v.key);
+            var label = g.node(v);
         }
 
         public static int sumWeights(DagreGraph g)
@@ -92,7 +91,7 @@ namespace Dendrite.Dagre
         public static Dictionary<string, int> treeDepths(DagreGraph g)
         {
             Dictionary<string, int> depths = new Dictionary<string, int>();
-            Action<DagreNode, int> dfs = null;
+            Action<string, int> dfs = null;
             dfs = (v, depth) =>
             {
                 var children = g.children(v);
@@ -103,7 +102,7 @@ namespace Dendrite.Dagre
                         dfs(child, depth + 1);
                     }
                 }
-                depths.Add(v.key, depth);
+                depths.Add(v, depth);
             };
 
             foreach (var v in g.children())

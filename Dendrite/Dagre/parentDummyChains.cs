@@ -23,7 +23,7 @@ namespace Dendrite.Dagre
             Dictionary<string, Dto1> result = new Dictionary<string, Dto1>();
 
             var lim = 0;
-            Action<DagreNode> dfs = null;
+            Action<string> dfs = null;
             dfs = (v) =>
             {
                 var low = lim;
@@ -31,7 +31,7 @@ namespace Dendrite.Dagre
                 {
                     dfs(item);
                 }
-                result.Add(v.key, new Dto1 { low = low, lim = lim++ });
+                result.Add(v, new Dto1 { low = low, lim = lim++ });
             };
             foreach (var item in g.children())
             {

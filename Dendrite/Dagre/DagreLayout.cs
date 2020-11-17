@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dendrite.Dagre
 {
@@ -20,10 +21,10 @@ namespace Dendrite.Dagre
          */
         private void updateInputGraph(DagreGraph inputGraph, DagreGraph layoutGraph)
         {
-            foreach (var v in inputGraph.nodes)
+            foreach (var v in inputGraph.nodes())
             {
-                var inputLabel = inputGraph.node(v.key);
-                var layoutLabel = layoutGraph.node(v.key);
+                var inputLabel = inputGraph.node(v);
+                var layoutLabel = layoutGraph.node(v);
 
                 if (inputLabel != null)
                 {
@@ -169,12 +170,13 @@ namespace Dendrite.Dagre
             assignRankMinMax(g);
 
             removeEdgeLabelProxies(g);
-            
+
             normalize.run(g);
-            
+
             parentDummyChains._parentDummyChains(g);
+
+            addBorderSegments._addBorderSegments(g);
             /*
-            addBorderSegments(g);
             order(g);*/
             insertSelfEdges(g);
             /*
@@ -182,7 +184,7 @@ namespace Dendrite.Dagre
             position(g);
             positionSelfEdges(g);*/
             removeBorderNodes(g);
-            
+
             normalize.undo(g);
             /*
             fixupEdgeLabelCoords(g);
@@ -194,13 +196,13 @@ namespace Dendrite.Dagre
         }
         public static void removeBorderNodes(DagreGraph g)
         {
-            foreach (var v in g.nodes)
+            foreach (var v in g.nodes())
             {
                 if (g.children(v).Length > 0)
                 {
                     var node = g.node(v);
                     var t = g.node(node.borderTop);
-                    var b = g.node(node.borderBottom);
+                    //var b = g.node(node.borderLeft);
                     throw new NotImplementedException();
                     //var l = g.node(_.last(node.borderLeft));
                     //var r = g.node(_.last(node.borderRight));
@@ -212,7 +214,7 @@ namespace Dendrite.Dagre
                 }
             }
 
-            foreach (var v in g.nodes)
+            foreach (var v in g.nodes())
             {
                 if (g.node(v).dummy == "border")
                 {
@@ -220,7 +222,7 @@ namespace Dendrite.Dagre
                 }
             }
 
-            
+
         }
 
         private void insertSelfEdges(DagreGraph g)
@@ -229,10 +231,9 @@ namespace Dendrite.Dagre
             foreach (var layer in layers)
             {
                 var orderShift = 0;
-                foreach (var vv in layer)
+                for (int i = 0; i < layer.Length; i++)
                 {
-                    var v = vv.Key;
-                    var i = vv.Value;
+                    var v = layer[i];                     
                     var node = g.node(v);
                     throw new NotImplementedException();
                     //node.order = i + orderShift;
@@ -246,9 +247,9 @@ namespace Dendrite.Dagre
 
         private void removeEdgeLabelProxies(DagreGraph g)
         {
-            foreach (var v in g.nodes)
+            foreach (var v in g.nodes())
             {
-                var node = g.node(v.key);
+                var node = g.node(v);
                 if (node.dummy == "edge-proxy")
                 {
                     g.edge(node.e).labelRank = node.rank;
@@ -261,13 +262,13 @@ namespace Dendrite.Dagre
         private void assignRankMinMax(DagreGraph g)
         {
             int maxRank = 0;
-            foreach (var v in g.nodes)
+            foreach (var v in g.nodes())
             {
-                var node = g.node(v.key);
+                var node = g.node(v);
                 if (node.borderTop != null)
                 {
                     node.minRank = g.node(node.borderTop).rank;
-                    node.maxRank = g.node(node.borderBottom).rank;
+                    //node.maxRank = g.node(node.borderLeft).rank;
                     maxRank = Math.Max(maxRank, node.maxRank.Value);
                 }
             }
@@ -276,4 +277,5 @@ namespace Dendrite.Dagre
         }
     }
 
+   
 }

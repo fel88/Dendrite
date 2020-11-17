@@ -7,13 +7,20 @@ namespace Dendrite.Dagre
     public class DagreGraph
     {
         public bool multigraph;
+
         public bool compound;
-        public List<DagreNode> nodes = new List<DagreNode>();
+
+        public string[] nodes()
+        {
+            return _nodes2.Keys.ToArray();
+        }
+        Dictionary<string, DagreNode> _nodes2 = new Dictionary<string, DagreNode>();
+        public List<DagreNode> _nodes = new List<DagreNode>();
         public List<DagreEdge> _edges = new List<DagreEdge>();
         DagreLabel _label = new DagreLabel();
         public DagreLabel graph() { return _label; }
 
-        public DagreNode node(string v) { return nodes.First(z => z.key == v);/*replace with dictionary*/ }
+        public DagreNode node(string v) { return _nodes2[v]; }
         public DagreNode node(DagreNode v) { return node(v.key); }
         List<DagreEdgeIndex> _edgesIndexes = new List<DagreEdgeIndex>();
 
@@ -46,7 +53,7 @@ namespace Dendrite.Dagre
 
         internal bool hasNode(DagreNode v)
         {
-            return nodes.Any(z => z.key == v.key);
+            return nodes().Contains(v.key);            
 
         }
 
@@ -54,8 +61,7 @@ namespace Dendrite.Dagre
         {
             throw new NotImplementedException();
         }
-
-        internal DagreNode[] children(DagreNode v = null)
+        internal string[] children(string  v = null)
         {
             if (v == null)
             {
@@ -63,6 +69,7 @@ namespace Dendrite.Dagre
             }
             throw new NotImplementedException();
         }
+        
 
         internal DagreEdgeIndex[] outEdges(string v)
         {
@@ -90,8 +97,16 @@ namespace Dendrite.Dagre
         {
             throw new NotImplementedException();
         }
-
+        internal void removeNode(string v)
+        {
+            throw new NotImplementedException();
+        }
         internal void removeNode(DagreNode v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal object inEdges(string v)
         {
             throw new NotImplementedException();
         }
@@ -108,10 +123,11 @@ namespace Dendrite.Dagre
         internal string borderTop;
         internal int? minRank;
         internal int? maxRank;
-        internal string borderBottom;
+        internal List<object> borderLeft;
+        internal List<object> borderRight;
         internal string dummy;
         internal string e;
-        internal string order;
+        internal int order;
         internal DagreEdge edgeLabel;
         internal string edgeObj;
     }
@@ -162,6 +178,7 @@ namespace Dendrite.Dagre
         internal DagreNode nestingRoot;
         internal int nodeRankFactor;
         internal List<DagreNode> dummyChains;
+        internal string root;
     }
 
 }
