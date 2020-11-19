@@ -39,7 +39,7 @@ namespace Dendrite
                 button1.Visible = value;
             }
         }
-        public void AddSubItem(string text, string value)
+        public void AddSubItem(string text, string value, Func<string> fullValue = null)
         {
             var bb = new ExpandSubItem() { Name = text, Value = value };
             SubItems.Add(bb);
@@ -47,7 +47,7 @@ namespace Dendrite
             bb.Label = lab1;
             lab1.Text = text;
             Button btn = new Button() { Text = "S" };
-            btn.Tag = value;
+            btn.Tag = fullValue == null ? value : (object)fullValue;
             btn.Click += Btn_Click;
             btn.Width = 30;
 
@@ -91,8 +91,17 @@ namespace Dendrite
 
         private void Btn_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText((sender as Button).Tag as string);
+            if((sender as Button).Tag is string s)
+            {
+                Clipboard.SetText(s);
+            }
+            else
+            {
+                Clipboard.SetText(((sender as Button).Tag as Func<string>)());              
+
+            }
             MessageBox.Show("Data saved to clipboard!");
+
 
         }
 

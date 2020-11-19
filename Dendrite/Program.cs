@@ -16,7 +16,10 @@ namespace Dendrite
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            MainForm = new Mdi();
+            Application.Run(MainForm);
         }
+
+        public static Mdi MainForm;
     }
 }
