@@ -464,7 +464,6 @@ namespace Dendrite
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
             LoadModel(ofd.FileName);
-
         }
 
         public const string WindowCaption = "Dendrite";
@@ -773,6 +772,19 @@ namespace Dendrite
         {
             CurrentLayout = LayoutGraph;
             CurrentLayout();
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            if (selected == null)
+            {
+                MessageBox.Show($"Select any node to append it to outputs.", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (MessageBox.Show($"Append {selected.Name} to outputs?", WindowCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+
+            Model.Provider.AppendToOutput(Model, selected);
+            MessageBox.Show($"Selected node was appended to outputs. Save model and reload to take effect.", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

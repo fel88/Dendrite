@@ -420,5 +420,10 @@ namespace Dendrite
         {
             throw new NotImplementedException();
         }
+
+        public override void AppendToOutput(GraphModel model, GraphNode node)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -9,6 +9,14 @@ namespace Dendrite
 {
     public class OnnxModelProvider : ModelProvider
     {
+        public override void AppendToOutput(GraphModel model, GraphNode node)
+        {
+            var proto = (model as OnnxGraphModel).ProtoModel;
+            var fr2 = (model as OnnxGraphModel).ProtoModel.Graph.Node.First(z => z.Name.ToLower().Contains(node.Name.ToLower()));
+
+            proto.Graph.Output.Add(new ValueInfoProto() { Name = fr2.Output[0] });
+        }
+
         public override bool IsSuitableFile(string path)
         {
             return path.EndsWith(".onnx");

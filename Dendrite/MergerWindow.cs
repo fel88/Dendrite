@@ -336,12 +336,10 @@ namespace Dendrite
                         if (sb1.ToString() == sb.ToString())
                         {
                             if (used.Contains(citem))
-                            {
-                                notMatched++;
-                                AddNotMatchItem(ditem);
                                 continue;
-                            }
+
                             AddMatchItem(ditem, citem);
+                            used.Add(citem);
                             was = true;
                             break;
                         }
