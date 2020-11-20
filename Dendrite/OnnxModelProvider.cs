@@ -30,15 +30,10 @@ namespace Dendrite
             }).ToArray());
 
             Dictionary<string, GraphNode> outs = new Dictionary<string, GraphNode>();
-            foreach (var item in res2.Graph.Output)
-            {
-                var gn = new GraphNode() { Name = item.Name };
-                //   nodes.Add(gn);
-                //  outs.Add(gn.Name, gn);
-            }
+
             foreach (var item in res2.Graph.Input)
             {
-                var gn = new GraphNode() { Name = item.Name };
+                var gn = new GraphNode() { Name = item.Name, LayerType = LayerType.Input };
                 outs.Add(item.Name, gn);
                 gn.Shape = item.Type.TensorType.Shape.Dim.Select(z => z.DimValue).ToArray();
 
@@ -99,7 +94,7 @@ namespace Dendrite
                 {
                     if (!outs.ContainsKey(iitem))
                     {
-                        var id = new InputData() { Name = iitem };
+                        var id = new InputData() { Name = iitem, Parent = nodes[i] };
                         nodes[i].Data.Add(id);
                         var initer = inits[iitem];
 
@@ -118,8 +113,13 @@ namespace Dendrite
                         id.Dims = initer.Dims.ToArray();
                         continue;
                     }
-                    nodes[i].Input = iitem;
-                    nodes[i].Parent = outs[iitem];
+                    //nodes[i].Input = iitem;
+                    nodes[i].Parents.Add(outs[iitem]);
+                    if (nodes[i].Parents.Count > 1)
+                    {
+
+                    }
+                    //nodes[i].Parent = outs[iitem];
                     outs[iitem].Childs.Add(nodes[i]);
                 }
                 if (item.Input.Any())
@@ -136,6 +136,18 @@ namespace Dendrite
                 {
 
                 }
+            }
+
+
+            foreach (var item in res2.Graph.Output)
+            {
+
+                var gn = new GraphNode() { Name = item.Name };
+                nodes.Add(gn);
+                var pp = outs[gn.Name];
+                gn.Parents.Add(pp);
+                pp.Childs.Add(gn);
+                //  outs.Add(gn.Name, gn);
             }
 
             var cnt2 = res2.Graph.Output[0].Name;
@@ -162,40 +174,44 @@ namespace Dendrite
             return;
         }
 
-        public override void UpdateFloatTensor(GraphModel model, GraphNode node, float[] data, int[] dims)
+        public override void UpdateFloatTensor(GraphModel model, GraphNode parentNode, string name, float[] data, long[] dims)
         {
-            //Dictionary<string, TensorProto> inits = new Dictionary<string, TensorProto>();
-            //foreach (var iitem in model.Graph.Initializer)
-            //{
-            //    inits.Add(iitem.Name, iitem);
-            //}
-            //List<float> ret = new List<float>();
-            //var aa = inits[inits.Keys.First(z => z.Contains("encoder.level1.conv.weight"))];
-            //var bts = aa.RawData.ToByteArray();
-            //for (int j = 0; j < bts.Length; j += 4)
-            //{
-            //    ret.Add(BitConverter.ToSingle(bts, j));
-            //}
-            //MemoryStream ms = new MemoryStream();
+
+            Dictionary<string, TensorProto> inits = new Dictionary<string, TensorProto>();
+            var gm = model as OnnxGraphModel;
+            foreach (var iitem in gm.ProtoModel.Graph.Initializer)
+            {
+                inits.Add(iitem.Name, iitem);
+            }
+
+
+            List<float> ret = new List<float>();
+
+            var aa = inits[inits.Keys.First(z => z.Contains(name))];
+            var bts = aa.RawData.ToByteArray();
+            for (int j = 0; j < bts.Length; j += 4)
+            {
+                ret.Add(BitConverter.ToSingle(bts, j));
+            }
+            MemoryStream ms = new MemoryStream();
 
             //var res = ParseTensorFromString(Clipboard.GetText());
 
-            //foreach (var item in res.Item2)
-            //{
+            foreach (var item in data)
+            {
+                var ar = BitConverter.GetBytes(item);
+                ms.Write(ar, 0, ar.Length);
+            }
+            ms.Seek(0, SeekOrigin.Begin);
+            aa.RawData = Google.Protobuf.ByteString.FromStream(ms);
 
-            //    var ar = BitConverter.GetBytes(item);
-            //    ms.Write(ar, 0, ar.Length);
-            //}
-            //ms.Seek(0, SeekOrigin.Begin);
-            //aa.RawData = Google.Protobuf.ByteString.FromStream(ms);
+            var bts2 = aa.RawData.ToByteArray();
+            List<float> ret2 = new List<float>();
 
-            //var bts2 = aa.RawData.ToByteArray();
-            //List<float> ret2 = new List<float>();
-
-            //for (int j = 0; j < bts2.Length; j += 4)
-            //{
-            //    ret2.Add(BitConverter.ToSingle(bts2, j));
-            //}
+            for (int j = 0; j < bts2.Length; j += 4)
+            {
+                ret2.Add(BitConverter.ToSingle(bts2, j));
+            }
         }
 
         public class OnnxGraphModel : GraphModel

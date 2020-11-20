@@ -1,18 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Dendrite
 {
     public class DrawingContext
     {
-        public Bitmap Bmp;
-        public Graphics Graphics;
+        public DrawingContext()
+        {
+
+        }
+        public Bitmap Bmp
+        {
+            get
+            {
+                return blist[CurrentIndex];
+            }
+        }
+        public Graphics Graphics
+        {
+            get
+            {
+                return glist[CurrentIndex];
+            }
+        }
         public PictureBox Box;
+        List<Graphics> glist = new List<Graphics>();
+        List<Bitmap> blist = new List<Bitmap>();
+
+        int CurrentIndex;
         float startx, starty;
         float origsx, origsy;
         bool isDrag = false;
 
+        public void Swap()
+        {
+            Box.Image = blist[CurrentIndex];
+            CurrentIndex++;
+            CurrentIndex %= blist.Count;
+        }
 
         public float sx, sy;
         public float zoom = 1;
@@ -30,9 +58,13 @@ namespace Dendrite
 
         public void Init(PictureBox pictureBox1)
         {
-            Box = pictureBox1;            
-            Bmp = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-            Graphics = Graphics.FromImage(Bmp);
+            Box = pictureBox1;
+            for (int i = 0; i < 2; i++)
+            {
+                blist.Add(new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
+                glist.Add(Graphics.FromImage(blist.Last()));
+            }
+
             Box.Image = Bmp;
             Box.SizeChanged += Box_SizeChanged;
             Box.MouseDown += Box_MouseDown;
@@ -42,6 +74,7 @@ namespace Dendrite
 
         private void Box_MouseWheel(object sender, MouseEventArgs e)
         {
+
             float zold = zoom;
             if (e.Delta > 0) { zoom *= 1.2f; }
             else { zoom *= 0.8f; }
@@ -52,6 +85,7 @@ namespace Dendrite
 
             sx = -(pos.X / zold - sx - pos.X / zoom);
             sy = -(pos.Y / zold - sy - pos.Y / zoom);
+
         }
 
         private void Box_MouseUp(object sender, MouseEventArgs e)
@@ -73,16 +107,16 @@ namespace Dendrite
                 origsy = sy;
             }
         }
-
+        public static object lock1 = new object();
         public Action Redraw;
         public bool RecreateOnResize = false;
         private void Box_SizeChanged(object sender, EventArgs e)
         {
             if (!RecreateOnResize) return;
-            Bmp = new Bitmap(Box.Width, Box.Height);
+            /*Bmp = new Bitmap(Box.Width, Box.Height);
             Graphics = Graphics.FromImage(Bmp);
             Redraw?.Invoke();
-            Box.Image = Bmp;
+            Box.Image = Bmp;*/
         }
 
         public void Update()

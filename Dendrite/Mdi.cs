@@ -81,11 +81,14 @@ namespace Dendrite
 
         void LoadModel(string ar)
         {
-            if (IsMdiContainer)
+            //if (IsMdiContainer)
             {
                 var f1 = new Form1();
                 var frm = GenerateChildForm(f1);
-                f1.LoadModel(ar);
+                if (!f1.LoadModel(ar))
+                {
+                    return;
+                }
                 if (MdiChildren.Length == 1)
                 {
                     frm.WindowState = FormWindowState.Maximized;

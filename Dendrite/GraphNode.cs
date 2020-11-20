@@ -6,17 +6,27 @@ namespace Dendrite
 {
     public class GraphNode
     {
-        public GraphNode() { }
+        public GraphNode()
+        {
+            lock (lock1)
+            {
+                Id = NewId++;
+            }
+        }
 
-        public GraphNode(string opType)
+        public static object lock1 = new object();
+        public static long NewId = 0;
+        public long Id;
+        public GraphNode(string opType) : this()
         {
             OpType = opType;
             if (OpType.ToLower().Contains("conv"))
             {
                 LayerType = LayerType.Conv;
+                return;
             }
             string[] batch = new[] { "batch", "gather", "unsqueeze", "transpose" };
-            if (batch.Any(z => OpType.ToLower().Contains(z)))                
+            if (batch.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.Batch;
             }
@@ -36,11 +46,14 @@ namespace Dendrite
             {
                 LayerType = LayerType.Concat;
             }
+            
         }
 
         public string Name;
         public List<GraphNode> Childs = new List<GraphNode>();
         public GraphNode Parent;
+        public List<GraphNode> Parents = new List<GraphNode>();
+
         public string OpType;
         public LayerType LayerType;
         public List<InputData> Data = new List<InputData>();

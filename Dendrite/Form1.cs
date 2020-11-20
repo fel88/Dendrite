@@ -50,7 +50,9 @@ namespace Dendrite
             panel1.Controls.Add(group4);
             group4.SetCaption("Outputs");
 
-            
+            CurrentLayout = TableLayoutGraph;
+
+
             pictureBox1.Focus();
             pictureBox1.MouseMove += PictureBox1_MouseMove;
             pictureBox1.MouseDown += PictureBox1_MouseDown;
@@ -156,7 +158,7 @@ namespace Dendrite
         public void UpdateInfo()
         {
             group1.Clear();
-            group1.AddItem("type", selected.OpType);
+            group1.AddItem("type", $"{selected.OpType}:{selected.LayerType}");
             group1.AddItem("name", selected.Name);
             group2.Clear();
             group2.Top = group1.Bottom;
@@ -274,14 +276,20 @@ namespace Dendrite
         GraphNode hovered = null;
         Font f = new Font("Arial", 18);
         Font f2 = new Font("Arial", 14);
-        public static object lock1 = new object();
+
         void Redraw()
         {
-            if(ParentForm != null)
+            if (ParentForm != null)
             {
-                if (Program.MainForm.ActiveMdiChild != ParentForm) return;                
+                bool exit = false;
+                ParentForm.Invoke((Action)(() =>
+                {
+                    if (Program.MainForm.ActiveMdiChild != ParentForm) exit = true;
+                }));
+                if (exit) return;
+
             }
-            lock (lock1)
+            lock (DrawingContext.lock1)
             {
                 ctx.Update();
 
@@ -346,6 +354,14 @@ namespace Dendrite
                         {
                             FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightYellow);
                         }
+                        else if (item.Parents.Contains(hovered))
+                        {
+                            FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightPink);
+                        }
+                        else if (item.Childs.Contains(hovered))
+                        {
+                            FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightBlue);
+                        }
                         else
                         if (item == selected)
                         {
@@ -392,7 +408,14 @@ namespace Dendrite
                         ctx.Graphics.DrawString(item.Name, f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
                         var ms2 = ctx.Graphics.MeasureString(item.OpType, f);
                         ctx.Graphics.DrawString(item.OpType, f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 30);
-
+                        if (item.Parents.Contains(hovered))
+                        {
+                            ctx.Graphics.DrawString("child", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                        }
+                        if (item.Childs.Contains(hovered))
+                        {
+                            ctx.Graphics.DrawString("parent", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                        }
 
 
                         ctx.Graphics.ResetTransform();
@@ -400,7 +423,11 @@ namespace Dendrite
 
                 }
 
-                ctx.Box.Invoke((Action)(() => { ctx.Box.Refresh(); }));
+                ctx.Box.Invoke((Action)(() =>
+                {
+                    ctx.Swap();
+                    //ctx.Box.Refresh();
+                }));
             }
         }
 
@@ -420,7 +447,7 @@ namespace Dendrite
             drawThread.Start();
         }
 
-        
+
 
 
         DrawingContext ctx = new DrawingContext();
@@ -443,13 +470,13 @@ namespace Dendrite
         public const string WindowCaption = "Dendrite";
 
         public GraphModel Model;
-        public void LoadModel(string path)
+        public bool LoadModel(string path)
         {
             var fr = Providers.FirstOrDefault(z => z.IsSuitableFile(path));
             if (fr == null)
             {
                 MessageBox.Show("Unsupported file format.", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
             var model = fr.LoadFromFile(path);
@@ -465,36 +492,73 @@ namespace Dendrite
             //nodes.InsertRange(0, res2.Graph.Input.Select(z => outs[z.Name]));
 
 
-            LayoutGraph();
+            CurrentLayout();
             //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
             if (ParentForm != null)
             {
                 ParentForm.Text = Path.GetFileName(path);
             }
+            return true;
         }
-        
-        
+
+        public Action CurrentLayout;
 
         public void TableLayoutGraph()
         {
+            var www = Model.Nodes.OrderBy(z => z.Parents.Count).Reverse().ToArray();
+            www = Model.Nodes.ToArray();
+            List<GraphNode> topo = new List<GraphNode>();
+            List<GraphNode> visited = new List<GraphNode>();
+
+            foreach (var item in www)
+            {
+                if (visited.Contains(item)) continue;
+                dfs(item, topo, visited);
+            }
+            topo.Reverse();
+
             int cntr = 0;
-            var s1 = (int)Math.Ceiling(Math.Sqrt(Model.Nodes.Length));
+            var s1 = (int)Math.Ceiling(Math.Sqrt(topo.Count));
             for (int i = 0; i < s1; i++)
             {
                 for (int j = 0; j < s1; j++)
                 {
-                    if (cntr >= Model.Nodes.Length) break;
-                    Model.Nodes[cntr].DrawTag = new GraphNodeDrawInfo() { Text = Model.Nodes[cntr].Name, Rect = new Rectangle(i * 350, j * 150, 300, 100) };
+                    if (cntr >= topo.Count) break;
+                    topo[cntr].DrawTag = new GraphNodeDrawInfo() { Text = topo[cntr].Name, Rect = new Rectangle(i * 350, j * 150, 300, 100) };
                     cntr++;
                 }
-                if (cntr >= Model.Nodes.Length) break;
+                if (cntr >= topo.Count) break;
             }
+        }
+
+
+        public void dfs(GraphNode node, List<GraphNode> outp, List<GraphNode> visited)
+        {
+            visited.Add(node);
+            foreach (var item in node.Childs)
+            {
+                if (visited.Contains(item)) continue;
+                dfs(item, outp, visited);
+            }
+            outp.Add(node);
         }
 
         public void LayoutGraph()
         {
-            TableLayoutGraph();
-            return;
+
+            List<GraphNode> topo = new List<GraphNode>();
+            List<GraphNode> visited = new List<GraphNode>();
+
+            foreach (var item in Model.Nodes)
+            {
+                if (!visited.Contains(item))
+                {
+                    dfs(item, topo, visited);
+                }
+            }
+
+            topo.Reverse();
+
             int yy = 100;
             int line = 0;
             /*   var inps = Graph.Where(z => z.Parent == null).ToArray();
@@ -535,7 +599,7 @@ namespace Dendrite
             }*/
             /*return;
              * */
-            foreach (var item in Model.Nodes)
+            foreach (var item in topo)
             {
                 int shift = 0;
                 int xx = 100;
@@ -577,8 +641,10 @@ namespace Dendrite
         {
             var pos = pictureBox1.PointToClient(Cursor.Position);
 
-            hovered = null;
+            GraphNode hovered2 = null;
+
             if (Model == null) return;
+
             foreach (var item in Model.Nodes)
             {
                 var dtag = item.DrawTag as GraphNodeDrawInfo;
@@ -587,10 +653,11 @@ namespace Dendrite
                 var rr1 = GetRoundedRectangle(rr, (int)(40 * ctx.zoom));
                 if (rr1.IsVisible(pos))
                 {
-                    hovered = item;
+                    hovered2 = item;
                     break;
                 }
             }
+            hovered = hovered2;
         }
 
         public void UpdateSearch()
@@ -645,17 +712,17 @@ namespace Dendrite
                 LoadModel(ar[0]);
                 //return;
             }
-           /* switch (MessageBox.Show("Load another process?", WindowCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-            {
-                case DialogResult.Yes:
-                    Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location, $"\"{ar[0]}\"");
-                    break;
-                case DialogResult.No:
-                    LoadModel(ar[0]);
-                    break;
-                case DialogResult.Cancel:
-                    break;
-            }*/
+            /* switch (MessageBox.Show("Load another process?", WindowCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+             {
+                 case DialogResult.Yes:
+                     Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location, $"\"{ar[0]}\"");
+                     break;
+                 case DialogResult.No:
+                     LoadModel(ar[0]);
+                     break;
+                 case DialogResult.Cancel:
+                     break;
+             }*/
 
         }
 
@@ -666,7 +733,7 @@ namespace Dendrite
 
         private void toolStripButton5_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void singleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -676,7 +743,7 @@ namespace Dendrite
 
         private void multidocumentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void toolStripButton5_Click_1(object sender, EventArgs e)
@@ -694,6 +761,18 @@ namespace Dendrite
         private void button1_Click(object sender, EventArgs e)
         {
             tableLayoutPanel1.RowStyles[0].Height = groupBox1.Height;
+        }
+
+        private void tableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentLayout = TableLayoutGraph;
+            TableLayoutGraph();
+        }
+
+        private void simpleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentLayout = LayoutGraph;
+            CurrentLayout();
         }
     }
 }

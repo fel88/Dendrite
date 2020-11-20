@@ -118,7 +118,7 @@ namespace Dendrite
             TorchParseTopology(gn, topology, tensors);
 
 
-            TorchScriptGraphModel rett = new TorchScriptGraphModel() { Name = Path.GetFileName(path), Path = path }; 
+            TorchScriptGraphModel rett = new TorchScriptGraphModel() { Name = Path.GetFileName(path), Path = path };
             rett.Provider = this;
             rett.ProtoModel = res2;
             rett.Nodes = gn.ToArray();
@@ -161,7 +161,13 @@ namespace Dendrite
                 var nm = item.Name;
                 var tid = (int)item.TensorId;
 
-                ngr.Data.Add(new InputData() { Name = nm, Dims = tensors[tid].Dims, Weights = tensors[tid].Data });
+                ngr.Data.Add(new InputData()
+                {
+                    Name = nm,
+                    Dims = tensors[tid].Dims,
+                    Weights = tensors[tid].Data,
+                    Parent = ngr
+                });
 
             }
             foreach (var item in module.Submodules)
@@ -229,6 +235,9 @@ namespace Dendrite
         }
         private void TorchParseTopology(List<GraphNode> gn, string topology, List<TensorInfo> tensors)
         {
+
+            Dictionary<string, GraphNode> outputs = new Dictionary<string, GraphNode>();
+            Dictionary<string, List<GraphNode>> inputsd = new Dictionary<string, List<GraphNode>>();
             //tokenize
             var lines = topology.Split(new char[] { '\r', '\n' }).ToArray();
             List<string> inputs = new List<string>();
@@ -247,8 +256,32 @@ namespace Dendrite
             }
 
             foreach (var item in lines)
-            {
+            {                
                 var res = Tokenize(item);
+                if (res.Any(z => z == "return"))
+                {
+                    var output = new GraphNode() { Name = res.Last() };
+                    gn.Add(output);
+                    output.LayerType = LayerType.Output;
+                    var inpts = outputs.Keys.Where(z => z == output.Name).ToArray();
+                    foreach (var pitem in inpts)
+                    {
+                        var par = outputs[pitem];
+                        output.Parents.Add(par);
+                        par.Childs.Add(output);
+                    }
+                    continue;
+                }
+                for (int i = 1; i < res.Length - 1; i++)
+                {
+                    if (res[i] == ":" && res[i + 1] == "Tensor")
+                    {
+                        var input = new GraphNode() { Name = "input__" };
+                        gn.Add(input);
+                        input.LayerType = LayerType.Input;
+                        outputs.Add(res[i - 1], input);
+                    }
+                }
                 if (!item.Contains("=")) continue;
                 var arr = item.Split(new char[] { '=' }).ToArray();
                 var nm = arr[0].Trim();
@@ -257,6 +290,8 @@ namespace Dendrite
                 var spl1 = aa1.Split(new char[] { ',', ' ', '(', ')', '\"' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
                 //todo: build AST here
                 List<string> tokens = new List<string>();
+                res = Tokenize(arr[1]);
+
                 for (int i = 0; i < res.Length; i++)
                 {
                     if (res[i] == "getattr")
@@ -302,13 +337,22 @@ namespace Dendrite
                 tokens = tokens2;
                 var inp1 = inputs.Where(z => spl1.Contains(z)).ToArray();
 
+
                 var ww2 = tensors.Where(z => spl1.Any(u => u == z.Name));
                 var ww1 = gn.Where(z => tokens.Any(u => u.StartsWith(z.Name))).ToArray();
-                if (arr[1].Contains("convolution") && !ww1.Any())
-                {
-                }
+                
                 if (ww1.Any())
                 {
+                    outputs.Add(nm, ww1[0]);
+                    
+                    var inpts = outputs.Keys.Where(z => tokens.Contains(z)).ToArray();
+                    foreach (var pitem in inpts)
+                    {
+                        var gn2 = ww1[0];
+                        var par = outputs[pitem];
+                        gn2.Parents.Add(par);
+                        par.Childs.Add(gn2);
+                    }
                     if (arr[1].Contains("convolution"))
                     {
                         ww1[0].LayerType = LayerType.Conv;
@@ -321,17 +365,50 @@ namespace Dendrite
                     {
                         ww1[0].LayerType = LayerType.Relu;
                     }
-                    if (arr[1].Contains("cat"))
+
+                }
+                else
+                {
+                    string[] ops = new string[] { "cat", "add", "avg_pool2d" };
+                    if (ops.Any(u => arr[1].Contains(u)))
                     {
-                        ww1[0].LayerType = LayerType.Concat;
+                        var gn2 = new GraphNode();
+
+                   
+
+                        gn.Add(gn2);
+                        outputs.Add(nm, gn2);
+                        var inpts = outputs.Keys.Where(z => tokens.Contains(z)).ToArray();
+                        foreach (var pitem in inpts)
+                        {
+                            var par = outputs[pitem];
+                            gn2.Parents.Add(par);
+                            par.Childs.Add(gn2);
+                        }
+                        if (arr[1].Contains("cat"))
+                        {
+                            gn2.Name = "_torch.cat";
+                            gn2.LayerType = LayerType.Concat;
+                        }
+                        if (arr[1].Contains("add"))
+                        {
+
+                            gn2.Name = "_torch.add";
+                            gn2.LayerType = LayerType.MathOperation;
+                            gn2.OpType = "add";
+                        }
+                        if (arr[1].Contains("avg_pool2d"))
+                        {
+                            gn2.Name = "_torch.avg_pool2d";
+                            gn2.LayerType = LayerType.MathOperation;
+                            gn2.OpType = "avg_pool2d";
+                        }
                     }
-                    if (arr[1].Contains("add"))
-                    {
-                        ww1[0].LayerType = LayerType.MathOperation;
-                        ww1[0].OpType = "add";
-                    }
+
                 }
             }
+
+
         }
 
         public override void SaveModel(GraphModel model, string path)
@@ -339,7 +416,7 @@ namespace Dendrite
             throw new NotImplementedException();
         }
 
-        public override void UpdateFloatTensor(GraphModel model, GraphNode node, float[] data, int[] dims)
+        public override void UpdateFloatTensor(GraphModel model, GraphNode parentNode, string name, float[] data, long[] dims)
         {
             throw new NotImplementedException();
         }
