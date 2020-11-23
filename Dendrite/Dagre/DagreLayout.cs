@@ -70,7 +70,7 @@ namespace Dendrite.Dagre
             graph.ranksep /= 2;
             foreach (var e in g.edges())
             {
-                var edge = g.edge(e.v);
+                var edge = g.edge(e);
                 edge.minlen *= 2;
                 if (edge.labelpos.ToLower() != "c")
                 {
@@ -88,12 +88,102 @@ namespace Dendrite.Dagre
 
         public object canonicalize(object attrs)
         {
+            if (attrs is DagreLabel dl)
+            {
+                DagreLabel ret = new DagreLabel();
+                ret.nodesep = dl.nodesep;
+                ret.ranksep = dl.ranksep;
+                return ret;
+            }
+            if (attrs is DagreEdge de)
+            {
+                DagreEdge ret = new DagreEdge();
+                ret.forwardName = de.forwardName;
+                return de;
+            }
+            if (attrs is DagreNode dn)
+            {
+                DagreNode ret = new DagreNode();
+                ret.width = dn.width;
+                ret.height = dn.height;
+                return ret;
+            }
             /*var newAttrs = { };
             _.forEach(attrs, function(v, k) {
                 newAttrs[k.toLowerCase()] = v;
             });
             return newAttrs;*/
             return new object();
+        }
+
+        public class GraphDefaults
+        {
+            public int edgesep = 20;
+            public int nodesep = 50;
+            public string rankdir = "tb";
+            public int ranksep = 50;
+        }
+
+
+        public object merge(object[] list)
+        {
+            DagreLabel lab = new DagreLabel();
+            lab.edgesep = 20;
+            lab.nodesep = 25;
+            lab.rankdir = "tb";
+            lab.ranksep = 20;
+            return lab;
+            return new object();
+        }
+
+        public object pick(object o1, object o2)
+        {
+            return new object();
+        }
+        public object selectNumberAttrs(object label, string[] attrs)
+        {
+            //clone with selected args??
+            return label;
+        }
+
+        public object defaults(object o1, object o2)
+        {
+            if(o1 is DagreNode dn)
+            {
+                if (o2  is NodeDefaults nd)
+                {
+                    if (dn.width == null)
+                    {
+                        dn.width = nd.width;
+                    }
+                    if (dn.height == null)
+                    {
+                        dn.height = nd.height;
+                    }
+                    return dn;
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+            }
+            throw new NotImplementedException();
+        }
+
+        public class EdgeDefaults
+        {
+            public int height = 0;
+            public int labeloffset = 10;
+            public string labelpos = "r";
+            public int minlen = 1;
+            public int weight = 1;
+            public int width = 0;
+        }
+        public class NodeDefaults
+        {
+            public int height = 0;
+            public int width = 0;
         }
         /*
          * Constructs a new graph from the input graph, which can be used for layout.
@@ -103,33 +193,35 @@ namespace Dendrite.Dagre
          */
         public DagreGraph buildLayoutGraph(DagreGraph inputGraph)
         {
+            string[] graphNumAttrs = new string[] { "nodesep", "edgesep", "ranksep", "marginx", "narginy" };
+            string[] edgeNumAttrs = new string[] { "minlen", "weight", "width", "height", "labeloffset" };
+            string[] nodeNumAttrs = new string[] { "width", "height" };
+            string[] graphAttrs = new string[] { "acyclicer", "ranker", "rankdir", "align" };
+            string[] edgeAttrs = new string[] { "labelpos" };
             var g = new DagreGraph() { multigraph = true, compound = true };
-            //var graph = canonicalize(inputGraph.graph());
-
-            /*          var g = new Graph({ multigraph: true, compound: true });
             var graph = canonicalize(inputGraph.graph());
 
-                  g.setGraph(_.merge({},
-              graphDefaults,
-              selectNumberAttrs(graph, graphNumAttrs),
-              _.pick(graph, graphAttrs)));
+            g.setGraph(merge(new object[] { null, new GraphDefaults(), selectNumberAttrs(graph, graphNumAttrs), pick(graph, graphAttrs) }));
 
-            _.forEach(inputGraph.nodes(), function(v)
-              {
-                  var node = canonicalize(inputGraph.node(v));
-                  g.setNode(v, _.defaults(selectNumberAttrs(node, nodeNumAttrs), nodeDefaults));
-                  g.setParent(v, inputGraph.parent(v));
-              });
 
-            _.forEach(inputGraph.edges(), function(e)
-              {
-                  var edge = canonicalize(inputGraph.edge(e));
-                  g.setEdge(e, _.merge({ },
-                edgeDefaults,
-                selectNumberAttrs(edge, edgeNumAttrs),
-                _.pick(edge, edgeAttrs)));
-              });
-            */
+            foreach (var v in inputGraph.nodes())
+            {
+                var node = canonicalize(inputGraph.node(v));
+                g.setNode(v, defaults(selectNumberAttrs(node, nodeNumAttrs), new NodeDefaults()));
+                g.setParent(v, inputGraph.parent(v));
+
+
+            }
+
+
+            foreach (var e in inputGraph.edges())
+            {
+                var edge = canonicalize(inputGraph.edge(e));
+                g.setEdge(e, merge(new object[] { null, new EdgeDefaults(), selectNumberAttrs(edge, edgeNumAttrs), pick(edge, edgeAttrs) }));
+            
+            }
+
+
             return g;
         }
 
@@ -152,6 +244,29 @@ namespace Dendrite.Dagre
 
         }
 
+        public void rank(DagreGraph g)
+        {
+            switch (g.graph().ranker)
+            {
+                case "network-simplex":
+                    throw new NotImplementedException();
+                    break;
+                case "tight-tree":
+                    throw new NotImplementedException();
+                    break;
+                case "longest-path":
+                    throw new NotImplementedException();
+                    break;
+                default:
+                    networkSimplexRanker(g);
+                    break;
+            }
+        }
+        public void networkSimplexRanker(DagreGraph g)
+        {
+            networkSimplexModule.networkSimplex(g);
+        }
+
         public void runLayout(DagreGraph g)
         {
             makeSpaceForEdgeLabels(g);
@@ -159,8 +274,9 @@ namespace Dendrite.Dagre
             acyclic.run(g);
 
             nestingGraph.run(g);
-            /*
+            
             rank(util.asNonCompoundGraph(g));
+            /*
             injectEdgeLabelProxies(g);
             removeEmptyRanks(g);
             nestingGraph.cleanup(g);*/
@@ -233,7 +349,7 @@ namespace Dendrite.Dagre
                 var orderShift = 0;
                 for (int i = 0; i < layer.Length; i++)
                 {
-                    var v = layer[i];                     
+                    var v = layer[i];
                     var node = g.node(v);
                     throw new NotImplementedException();
                     //node.order = i + orderShift;
@@ -276,6 +392,4 @@ namespace Dendrite.Dagre
             g.graph().maxRank = maxRank;
         }
     }
-
-   
 }

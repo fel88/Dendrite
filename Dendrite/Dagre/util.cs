@@ -26,32 +26,52 @@ namespace Dendrite.Dagre
             }
         }
 
+        public static DagreGraph asNonCompoundGraph(DagreGraph g)
+        {
+            var simplified = new DagreGraph() { multigraph = g.isMultigraph() }.setGraph(g.graph());
+            foreach (var v in g.nodes())
+            {
+                if (g.children(v).Length > 0)
+                {
+                    simplified.setNode(v, g.node(v));
+                }
+            }
+
+            foreach (var e in g.edges())
+            {
+                simplified.setEdge(e, g.edge(e));
+
+            }
+
+
+            return simplified;
+        }
 
         public static int[] range(int start, int end)
         {
             return Enumerable.Range(start, end - start).ToArray();
         }
-        public static int uniqueId(string str)
+        public static string uniqueId(string str)
         {
             uniqueCounter++;
-            return uniqueCounter;
+            return str + uniqueCounter;
         }
         public static int uniqueCounter = 0;
 
         /*
  * Adds a dummy node to the graph and return v.
  */
-        public static DagreNode addDummyNode(DagreGraph g, object type, object attrs, string name)
+        public static string addDummyNode(DagreGraph g, string type, object attrs, string name)
         {
-            DagreNode v = new DagreNode();
-            throw new NotImplementedException();
+            string v = null;
+
             do
             {
-                //   v = _.uniqueId(name);
+                v = uniqueId(name);
             } while (g.hasNode(v));
 
             //attrs.dummy = type;
-            //  g.setNode(v, attrs);
+            g.setNode(v, new DagreNode() { dummy = type });
             return v;
         }
 
@@ -60,7 +80,32 @@ namespace Dendrite.Dagre
             return g.nodes().Where(z => g.node(z).rank != null).Select(z => g.node(z).rank.Value).Max();
 
         }
+        /*
+ * Returns a new graph with only simple edges. Handles aggregation of data
+ * associated with multi-edges.
+ */
+        public static DagreGraph simplify(DagreGraph g)
+        {
+            var simplified = new DagreGraph().setGraph(g.graph());
+            foreach (var v in g.nodes())
+            {
+                simplified.setNode(v, g.node(v));
+            }
+            foreach (var e in g.edges())
+            {
+                var r = simplified.edge(e.v, e.w);
+                var simpleLabel = r == null ? (new DagreLabel() { minlen = 1, weight = 0 }) : r; ;
+                var label = g.edge(e);
+                simplified.setEdge(e.v, e.w, new DagreLabel
+                {
+                    weight = simpleLabel.weight + label.weight,
+                    minlen = Math.Max(simpleLabel.minlen, label.minlen)
+                });
+            }
 
+
+            return simplified;
+        }
         internal static string[][] cloneDeep(string[][] layering)
         {
             List<List<string>> ss = new List<List<string>>();
@@ -100,7 +145,7 @@ namespace Dendrite.Dagre
                     {
                         layering[rank.Value].Add(null);
                     }
-                    layering[rank.Value][node.order] = v;
+                    layering[rank.Value][node.order.Value] = v;
                 }
             }
 

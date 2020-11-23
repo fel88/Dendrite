@@ -55,7 +55,7 @@ namespace Dendrite.Dagre
             // Create border nodes and link them up
             foreach (var child in g.children())
             {
-                dfs(g, root.key, nodeSep, weight, height, depths, child);
+                dfs(g, root, nodeSep, weight, height, depths, child);
             }
 
 

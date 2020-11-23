@@ -42,13 +42,13 @@
                 {
                     w = g.successors(v)[0];
                     g.removeNode(v);
-                    origLabel.points.Add(new dPoint() { x = node.x, y = node.y });
+                    origLabel.points.Add(new dPoint() { x = node.x.Value, y = node.y.Value });
                     if (node.dummy == "edge-label")
                     {
                         origLabel.x = node.x;
                         origLabel.y = node.y;
-                        origLabel.width = node.width;
-                        origLabel.height = node.height;
+                        origLabel.width = node.width.Value;
+                        origLabel.height = node.height.Value;
                     }
                     v = w;
                     node = g.node(v);

@@ -39,9 +39,9 @@ namespace Dendrite.Dagre
         }
         public static DagreEdgeIndex[] dfsFAS(DagreGraph g)
         {
-            List<string> visited = new List<string>();
+            HashSet<string> visited = new HashSet<string>();
             List<DagreEdgeIndex> fas = new List<DagreEdgeIndex>();
-            List<string> stack = new List<string>();
+            HashSet<string> stack = new HashSet<string>();
             Action<string> dfs = null;
             dfs = (v) =>
             {

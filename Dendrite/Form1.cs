@@ -1,4 +1,5 @@
-﻿using Onnx;
+﻿using Dendrite.Dagre;
+using Onnx;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,6 +20,7 @@ namespace Dendrite
         public Form1()
         {
             InitializeComponent();
+            
             ctx.Init(pictureBox1);
             pictureBox1.SetDoubleBuffered(true);
             //SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -501,6 +503,22 @@ namespace Dendrite
         }
 
         public Action CurrentLayout;
+        public void DagreLayoutGraph()
+        {
+            DagreGraph dg = new DagreGraph();
+            int ii = 0;
+            
+            foreach (var item in Model.Nodes)
+            {
+                dg._nodes2.Add(ii.ToString(), new DagreNode() { });
+                ii++;
+            }
+            
+            DagreLayout dl = new DagreLayout();
+            dl.layout(dg);
+
+
+        }
 
         public void TableLayoutGraph()
         {
@@ -785,6 +803,12 @@ namespace Dendrite
 
             Model.Provider.AppendToOutput(Model, selected);
             MessageBox.Show($"Selected node was appended to outputs. Save model and reload to take effect.", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void dagreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentLayout = DagreLayoutGraph;
+            CurrentLayout();
         }
     }
 }

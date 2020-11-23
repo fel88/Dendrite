@@ -82,6 +82,7 @@
     <Compile Include="AttributeInfo.cs" />
     <Compile Include="AttributeInfoDataType.cs" />
     <Compile Include="Caffe2Proto.cs" />
+    <Compile Include="Dagre\networkSimplexModule.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GraphModel.cs" />
     <Compile Include="Mdi.cs">
