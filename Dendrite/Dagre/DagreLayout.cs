@@ -148,9 +148,9 @@ namespace Dendrite.Dagre
 
         public object defaults(object o1, object o2)
         {
-            if(o1 is DagreNode dn)
+            if (o1 is DagreNode dn)
             {
-                if (o2  is NodeDefaults nd)
+                if (o2 is NodeDefaults nd)
                 {
                     if (dn.width == null)
                     {
@@ -218,7 +218,7 @@ namespace Dendrite.Dagre
             {
                 var edge = canonicalize(inputGraph.edge(e));
                 g.setEdge(e, merge(new object[] { null, new EdgeDefaults(), selectNumberAttrs(edge, edgeNumAttrs), pick(edge, edgeAttrs) }));
-            
+
             }
 
 
@@ -266,6 +266,66 @@ namespace Dendrite.Dagre
         {
             networkSimplexModule.networkSimplex(g);
         }
+        /*
+ * Creates temporary dummy nodes that capture the rank in which each edge's
+ * label is going to, if it has one of non-zero width and height. We do this
+ * so that we can safely remove empty ranks while preserving balance for the
+ * label's position.
+ */
+        public static void injectEdgeLabelProxies(DagreGraph g)
+        {
+            foreach (var e in g.edges())
+            {
+                var edge = g.edge(e);
+                if (edge.width != null && edge.height != null)
+                {
+                    var v = g.node(e.v);
+                    var w = g.node(e.w);
+                    var label = new DagreNode() { rank = (w.rank - v.rank) / 2 + v.rank, e = e };
+                    util.addDummyNode(g, "edge-proxy", label, "_ep");
+                }
+            }
+
+        }
+
+        public static void removeEmptyRanks(DagreGraph g)
+        {
+            // Ranks may not start at 0, so we need to offset them
+            var offset = g.nodes().Select(v => g.node(v).rank).Min();
+            //var offset = _.min(_.map(g.nodes(), function(v) { return g.node(v).rank; }));
+
+            Dictionary<int, List<string>> layers = new Dictionary<int, List<string>>();
+            foreach (var v in g.nodes())
+            {
+                var rank = (g.node(v).rank - offset).Value;
+                if (!layers.ContainsKey(rank))
+                {
+                    layers.Add(rank, new List<string>());
+                }
+                layers[rank].Add(v);
+            }
+
+
+            var delta = 0;
+            var nodeRankFactor = g.graph().nodeRankFactor;
+            foreach (var pair in layers)
+            {
+
+                var vs = pair.Value;
+                var i = pair.Key;
+                if (vs == null && i % nodeRankFactor != 0)
+                {
+                    --delta;
+                }
+                else if (delta != 0)
+                {
+                    foreach (var v in vs)
+                    {
+                        g.node(v).rank += delta;
+                    }
+                }
+            }
+        }
 
         public void runLayout(DagreGraph g)
         {
@@ -274,12 +334,13 @@ namespace Dendrite.Dagre
             acyclic.run(g);
 
             nestingGraph.run(g);
-            
+
             rank(util.asNonCompoundGraph(g));
-            /*
+
             injectEdgeLabelProxies(g);
+
             removeEmptyRanks(g);
-            nestingGraph.cleanup(g);*/
+            nestingGraph.cleanup(g);
 
             util.normalizeRanks(g);
 
@@ -292,24 +353,208 @@ namespace Dendrite.Dagre
             parentDummyChains._parentDummyChains(g);
 
             addBorderSegments._addBorderSegments(g);
-            /*
-            order(g);*/
+            order._order(g);
+
             insertSelfEdges(g);
-            /*
+
             coordinateSystem.adjust(g);
             position(g);
-            positionSelfEdges(g);*/
+            positionSelfEdges(g);
             removeBorderNodes(g);
 
             normalize.undo(g);
-            /*
+
             fixupEdgeLabelCoords(g);
             coordinateSystem.undo(g);
             translateGraph(g);
             assignNodeIntersects(g);
             reversePointsForReversedEdges(g);
-            acyclic.undo(g);*/
+            acyclic.undo(g);
         }
+
+        public static void reversePointsForReversedEdges(DagreGraph g)
+        {
+            foreach (var e in g.edges())
+            {
+                var edge = g.edge(e);
+                if (edge.reversed != null)
+                {
+                    edge.points.Reverse();
+                }
+            }
+        }
+
+        public static void assignNodeIntersects(DagreGraph g)
+        {
+            foreach (var e in g.edges())
+            {
+                var edge = g.edge(e);
+                var nodeV = g.node(e.v);
+                var nodeW = g.node(e.w);
+                dPoint p1, p2;
+                if (edge.points == null)
+                {
+                    edge.points = new List<dPoint>();
+                    p1 = new dPoint { x = nodeW.x, y = nodeW.y };
+                    p2 = new dPoint { x = nodeV.x, y = nodeV.y };
+                }
+                else
+                {
+                    p1 = edge.points[0];
+                    p2 = edge.points[edge.points.Count - 1];
+                }
+                edge.points.Insert(0, util.intersectRect(nodeV, p1));
+                edge.points.Add(util.intersectRect(nodeW, p2));
+            }
+
+        }
+        public static void translateGraph(DagreGraph g)
+        {
+            double minX = double.MaxValue;
+            double maxX = 0;
+            double minY = double.MaxValue;
+            double maxY = 0;
+            var graphLabel = g.graph();
+            var marginX = graphLabel.marginx ?? 0;
+            var marginY = graphLabel.marginy ?? 0;
+
+            Action<DagreBase> getExtremes = (attrs) =>
+              {
+                  var x = attrs.x.Value;
+                  var y = attrs.y.Value;
+                  var w = attrs.width.Value;
+                  var h = attrs.height.Value;
+                  minX = Math.Min(minX, x - w / 2);
+                  maxX = Math.Max(maxX, x + w / 2);
+                  minY = Math.Min(minY, y - h / 2);
+                  maxY = Math.Max(maxY, y + h / 2);
+              };
+
+            foreach (var v in g.nodes())
+            {
+                getExtremes(g.node(v));
+            }
+
+            foreach (var e in g.edges())
+            {
+                var edge = g.edge(e);
+                if (edge.x != null)
+                {
+                    getExtremes(edge);
+                }
+            }
+
+
+
+            minX -= marginX;
+            minY -= marginY;
+
+            foreach (var v in g.nodes())
+            {
+                var node = g.node(v);
+                node.x -= minX;
+                node.y -= minY;
+            }
+
+            foreach (var e in g.edges())
+            {
+                var edge = g.edge(e);
+                foreach (var p in edge.points)
+                {
+                    p.x -= minX;
+                    p.y -= minY;
+                }
+
+                if (edge.x != null) { edge.x -= minX; }
+                if (edge.y != null) { edge.y -= minY; }
+            }
+
+
+
+
+            graphLabel.width = maxX - minX + marginX;
+            graphLabel.height = maxY - minY + marginY;
+        }
+        public static void fixupEdgeLabelCoords(DagreGraph g)
+        {
+            foreach (var e in g.edges())
+            {
+                var edge = g.edge(e);
+                if (edge.x != null)
+                {
+                    if (edge.labelpos == "l" || edge.labelpos == "r")
+                    {
+                        edge.width -= edge.labeloffset;
+                    }
+                    switch (edge.labelpos)
+                    {
+                        case "l": edge.x -= edge.width / 2 + edge.labeloffset; break;
+                        case "r": edge.x += edge.width / 2 + edge.labeloffset; break;
+                    }
+                }
+            }
+
+        }
+        public static void positionSelfEdges(DagreGraph g)
+        {
+            foreach (var v in g.nodes())
+            {
+                var node = g.node(v);
+                if (node.dummy == "selfedge")
+                {
+                    var selfNode = g.node(node.e.v);
+                    var x = (selfNode.x + selfNode.width / 2).Value;
+                    var y = selfNode.y.Value;
+                    var dx = (node.x - x).Value;
+                    var dy = (selfNode.height / 2).Value;
+                    g.setEdge(node.e, node.label);
+                    g.removeNode(v);
+                    node.label.points = new dPoint[]{
+                    new dPoint(){ x= x + 2 * dx / 3, y= y - dy },
+        new dPoint(){ x= x + 5 * dx / 6, y= y - dy },
+        new dPoint(){ x= x + dx    , y= y },
+        new dPoint(){ x= x + 5 * dx / 6, y= y + dy },
+        new dPoint(){ x= x + 2 * dx / 3, y= y + dy }
+                    }.ToList();
+                    node.label.x = node.x;
+                    node.label.y = node.y;
+                }
+            }
+
+        }
+
+        public static void position(DagreGraph g)
+        {
+            g = util.asNonCompoundGraph(g);
+
+            positionY(g);
+            foreach (var item in bk.positionX(g))
+            {
+                g.node(item.Item2).x = item.Item1;
+            }
+        }
+
+
+
+        public static void positionY(DagreGraph g)
+        {
+            var layering = util.buildLayerMatrix(g);
+            var rankSep = g.graph().ranksep;
+            double prevY = 0;
+            foreach (var layer in layering)
+            {
+                var maxHeight = layer.Select(v => g.node(v).height).Max().Value;
+                foreach (var v in layer)
+                {
+                    g.node(v).y = prevY + maxHeight / 2;
+                }
+
+                prevY += maxHeight + rankSep;
+            }
+
+        }
+
+
         public static void removeBorderNodes(DagreGraph g)
         {
             foreach (var v in g.nodes())

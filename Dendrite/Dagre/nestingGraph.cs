@@ -64,6 +64,25 @@ namespace Dendrite.Dagre
             g.graph().nodeRankFactor = nodeSep;
         }
 
+
+
+        public static void cleanup(DagreGraph g)
+        {
+            var graphLabel = g.graph();
+            g.removeNode(graphLabel.nestingRoot);
+            graphLabel.nestingRoot = null;
+
+            foreach (var e in g.edges())
+            {
+                var edge = g.edge(e);
+                if (edge.nesingEdge != null)
+                {
+                    g.removeEdge(e);
+                }
+            }
+            
+        }
+
         public static void dfs(DagreGraph g, string root, int nodeSep, int weight, int height, Dictionary<string, int> depths, string v)
         {
             var children = g.children(v);

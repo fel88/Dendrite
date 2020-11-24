@@ -10,6 +10,26 @@ namespace Dendrite.Dagre
     public class acyclic
     {
 
+        public static void undo(DagreGraph g)
+        {
+            foreach (var e in g.edges())
+            {
+                var label = g.edge(e);
+                if (label.reversed != null)
+                {
+                    g.removeEdge(e);
+
+                    var forwardName = label.forwardName;
+                    label.reversed = null;
+                    label.forwardName = null;
+
+
+                    g.setEdge(e.w, e.v, label, forwardName);
+                }
+            }
+
+        }
+
         public static Func<string, int> weightFn(DagreGraph g)
         {
             return (Func<string, int>)((e) => { return g.edge(e).weight; });
@@ -26,8 +46,7 @@ namespace Dendrite.Dagre
                 label.forwardName = e.name;
                 label.reversed = true;
 
-                //g.setEdge(e.w, e.v, label, _.uniqueId("rev"));
-                g.setEdge(e.w, e.v, label, Guid.NewGuid());
+                g.setEdge(e.w, e.v, label, util.uniqueId("rev"));
 
             }
 
@@ -51,7 +70,7 @@ namespace Dendrite.Dagre
                 }
                 visited.Add(v);
                 stack.Add(v);
-                foreach (var e in g.outEdges(v))
+                foreach (var e in g.outEdges(v).OfType<DagreEdgeIndex>())
                 {
                     if (stack.Contains(e.w))
                     {
