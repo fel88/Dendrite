@@ -12,6 +12,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using OpenCvSharp;
 
 namespace Dendrite
 {
@@ -20,7 +23,7 @@ namespace Dendrite
         public Form1()
         {
             InitializeComponent();
-            
+
             ctx.Init(pictureBox1);
             pictureBox1.SetDoubleBuffered(true);
             //SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -124,8 +127,9 @@ namespace Dendrite
             drawThread.Abort();
         }
 
-        void Rec(StringBuilder sb, long[] dims, int level, float[] array, long offset)
+        public static void Rec(StringBuilder sb, long[] dims, int level, float[] array, long offset, int? lenLimit = null)
         {
+            if (lenLimit != null && sb.Length > lenLimit) return;
             if (level == dims.Length - 1)
             {
                 sb.Append("[");
@@ -141,7 +145,7 @@ namespace Dendrite
             for (int i = 0; i < dims[level]; i++)
             {
                 if (i > 0) sb.Append(",");
-                Rec(sb, dims, level + 1, array, offset);
+                Rec(sb, dims, level + 1, array, offset, lenLimit);
                 offset += dims[level + 1];
             }
             sb.Append("]");
@@ -149,11 +153,11 @@ namespace Dendrite
 
 
 
-        public string GetFormattedArray(InputData data)
+        public static string GetFormattedArray(InputData data, int? lenLimit = null)
         {
             StringBuilder sb = new StringBuilder();
 
-            Rec(sb, data.Dims, 0, data.Weights, 0);
+            Rec(sb, data.Dims, 0, data.Weights, 0, lenLimit);
             return sb.ToString();
         }
 
@@ -469,10 +473,11 @@ namespace Dendrite
         }
 
         public const string WindowCaption = "Dendrite";
-
+        private string _lastPath;
         public GraphModel Model;
         public bool LoadModel(string path)
         {
+            _lastPath = path;
             var fr = Providers.FirstOrDefault(z => z.IsSuitableFile(path));
             if (fr == null)
             {
@@ -507,13 +512,13 @@ namespace Dendrite
         {
             DagreGraph dg = new DagreGraph();
             int ii = 0;
-            
+
             foreach (var item in Model.Nodes)
             {
                 dg._nodes2.Add(ii.ToString(), new DagreNode() { });
                 ii++;
             }
-            
+
             DagreLayout dl = new DagreLayout();
             dl.layout(dg);
 
@@ -709,6 +714,11 @@ namespace Dendrite
 
         private void fromFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!_lastPath.EndsWith("onnx")) { MessageBox.Show("only onnx model supported", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+
+            Processing p = new Processing();
+            p.Init(_lastPath);
+            p.ShowDialog();
 
         }
 
