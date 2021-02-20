@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -55,6 +57,7 @@ namespace Dendrite
         float[] inputData;
         private void button1_Click(object sender, EventArgs e)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             var session1 = new InferenceSession(_netPath);
 
             var inputMeta = session1.InputMetadata;
@@ -86,6 +89,7 @@ namespace Dendrite
                     container.Add(NamedOnnxValue.CreateFromTensor<float>(name, tensor));
                 }
             }
+            OutputDatas.Clear();
             using (var results = session1.Run(container))
             {
 
@@ -98,6 +102,9 @@ namespace Dendrite
                     OutputDatas.Add(result.Name, rets);
                 }
             }
+            sw.Stop();
+            toolStripStatusLabel1.Text = $"{sw.ElapsedMilliseconds}ms";
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -108,8 +115,14 @@ namespace Dendrite
 
             var mat = OpenCvSharp.Cv2.ImRead(ofd.FileName);
             //mat.ConvertTo(mat, MatType.CV_32F);
-
-            InputDatas[currentInput.Name] = new InputInfo() { Data = mat };
+            if (InputDatas.ContainsKey(currentInput.Name) && InputDatas[currentInput.Name] is InputInfo ii)
+            {
+                ii.Data = mat;
+            }
+            else
+            {
+                InputDatas[currentInput.Name] = new InputInfo() { Data = mat };
+            }
             pictureBox1.Image = BitmapConverter.ToBitmap(mat);
         }
         NodeInfo currentInput;
@@ -152,7 +165,7 @@ namespace Dendrite
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-            try { mstd.Mean[0] = double.Parse(textBox1.Text); }
+            try { mstd.Mean[0] = double.Parse(textBox1.Text.Replace(",","."), CultureInfo.InvariantCulture); }
             catch (Exception ex)
             {
                 textBox1.BackColor = Color.Red;
@@ -216,7 +229,7 @@ namespace Dendrite
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-            try { mstd.Mean[1] = double.Parse(textBox2.Text); }
+            try { mstd.Mean[1] = double.Parse(textBox2.Text, CultureInfo.InvariantCulture); }
             catch (Exception ex)
             {
                 textBox2.BackColor = Color.Red;
@@ -226,7 +239,7 @@ namespace Dendrite
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-            try { mstd.Mean[2] = double.Parse(textBox3.Text); }
+            try { mstd.Mean[2] = double.Parse(textBox3.Text, CultureInfo.InvariantCulture); }
             catch (Exception ex)
             {
                 textBox3.BackColor = Color.Red;
@@ -236,7 +249,7 @@ namespace Dendrite
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
             if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-            try { mstd.Std[0] = double.Parse(textBox6.Text); }
+            try { mstd.Std[0] = double.Parse(textBox6.Text, CultureInfo.InvariantCulture); }
             catch (Exception ex)
             {
                 textBox6.BackColor = Color.Red;
@@ -246,7 +259,7 @@ namespace Dendrite
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
             if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-            try { mstd.Std[1] = double.Parse(textBox5.Text); }
+            try { mstd.Std[1] = double.Parse(textBox5.Text, CultureInfo.InvariantCulture); }
             catch (Exception ex)
             {
                 textBox5.BackColor = Color.Red;
@@ -256,7 +269,7 @@ namespace Dendrite
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-            try { mstd.Std[2] = double.Parse(textBox4.Text); }
+            try { mstd.Std[2] = double.Parse(textBox4.Text, CultureInfo.InvariantCulture); }
             catch (Exception ex)
             {
                 textBox4.BackColor = Color.Red;
@@ -325,7 +338,9 @@ namespace Dendrite
                 byte[] outp = new byte[cc.Dims[3] * cc.Dims[2]];
                 byte b1 = 0;
                 byte b2 = 255;
+
                 int shift = cc.Dims[3] * cc.Dims[2];
+
                 for (int i = 0; i < dd.Length / 2; i++)
                 {
                     if (dd[i] > dd[i + shift])
@@ -361,11 +376,53 @@ namespace Dendrite
                 byte[] arrr = new byte[dd.Length * 4];
                 for (int i = 0; i < dd.Length; i++)
                 {
-                    Array.Copy(BitConverter.GetBytes(dd[i]), 0, arrr, i * 4, 4);                    
+                    Array.Copy(BitConverter.GetBytes(dd[i]), 0, arrr, i * 4, 4);
                 }
                 File.WriteAllBytes(sfd.FileName, arrr);
-                
+
             }
+        }
+
+        private void rgbMaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (OutputDatas[cc.Name] is float[] dd)
+            {
+                byte[] outp = new byte[cc.Dims[3] * cc.Dims[2]];
+               
+                int shift = cc.Dims[3] * cc.Dims[2];
+
+                for (int i = 0; i < (cc.Dims[3] * cc.Dims[2]); i++)
+                {
+                    float max = dd[i];
+                    int maxk = 0;
+                    for (int j = 0; j < cc.Dims[1]; j++)
+                    {
+                        if (dd[i + shift * j] > max) { max = dd[i + shift * j]; maxk = j; };
+                    }
+
+                    outp[i] = (byte)(maxk*10);
+
+                }
+                Mat mat = new Mat(new int[] { cc.Dims[2], cc.Dims[3] }, MatType.CV_8UC1, outp.ToArray());
+                OutputDatas[cc.Name] = mat;
+            }
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView3.SelectedItems.Count == 0) return;
+            var prep = listView3.SelectedItems[0].Tag as IInputPreprocessor;
+            if (currentInput == null) return;
+          
+            InputDatas[currentInput.Name].Preprocessors.Remove(prep);
+            listView3.Items.Remove(listView3.SelectedItems[0]);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
