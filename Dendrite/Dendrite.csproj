@@ -236,6 +236,7 @@
     <Compile Include="Dagre\networkSimplexModule.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GraphModel.cs" />
+    <Compile Include="Decoders.cs" />
     <Compile Include="Mdi.cs">
       <SubType>Form</SubType>
     </Compile>

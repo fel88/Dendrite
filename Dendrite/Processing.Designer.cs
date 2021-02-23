@@ -37,19 +37,31 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.convertToIamgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.binaryMaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rgbMaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveArrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.binaryAsisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.boxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.confToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.locationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decodeAllAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.boxesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.listView2 = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.setToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.all1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.all0ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -75,23 +87,46 @@
             this.button3 = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.rgbMaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel4 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.listView4 = new System.Windows.Forms.ListView();
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button6 = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox12 = new System.Windows.Forms.TextBox();
+            this.textBox11 = new System.Windows.Forms.TextBox();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.button7 = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip3.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -119,7 +154,7 @@
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(704, 469);
+            this.pictureBox1.Size = new System.Drawing.Size(704, 561);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
@@ -137,7 +172,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 185);
+            this.label2.Location = new System.Drawing.Point(7, 153);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 13);
             this.label2.TabIndex = 6;
@@ -147,14 +182,15 @@
             // 
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
-            this.columnHeader2});
+            this.columnHeader2,
+            this.columnHeader9});
             this.listView1.ContextMenuStrip = this.contextMenuStrip1;
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(52, 185);
+            this.listView1.Location = new System.Drawing.Point(52, 153);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(187, 136);
+            this.listView1.Size = new System.Drawing.Size(187, 107);
             this.listView1.TabIndex = 7;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -168,14 +204,20 @@
             // 
             this.columnHeader2.Text = "Dims";
             // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Tags";
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.convertToIamgeToolStripMenuItem,
             this.saveImageToFileToolStripMenuItem,
-            this.saveArrayToolStripMenuItem});
+            this.saveArrayToolStripMenuItem,
+            this.setAsToolStripMenuItem,
+            this.decodeAllAsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 114);
             // 
             // convertToIamgeToolStripMenuItem
             // 
@@ -191,15 +233,22 @@
             // binaryMaskToolStripMenuItem
             // 
             this.binaryMaskToolStripMenuItem.Name = "binaryMaskToolStripMenuItem";
-            this.binaryMaskToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.binaryMaskToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.binaryMaskToolStripMenuItem.Text = "binary mask";
             this.binaryMaskToolStripMenuItem.Click += new System.EventHandler(this.binaryMaskToolStripMenuItem_Click);
             // 
             // rGBToolStripMenuItem
             // 
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
+            // 
+            // rgbMaskToolStripMenuItem
+            // 
+            this.rgbMaskToolStripMenuItem.Name = "rgbMaskToolStripMenuItem";
+            this.rgbMaskToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.rgbMaskToolStripMenuItem.Text = "rgb mask";
+            this.rgbMaskToolStripMenuItem.Click += new System.EventHandler(this.rgbMaskToolStripMenuItem_Click);
             // 
             // saveImageToFileToolStripMenuItem
             // 
@@ -240,12 +289,59 @@
             this.binaryAsisToolStripMenuItem.Text = "binary as-is";
             this.binaryAsisToolStripMenuItem.Click += new System.EventHandler(this.binaryAsisToolStripMenuItem_Click);
             // 
+            // setAsToolStripMenuItem
+            // 
+            this.setAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.boxesToolStripMenuItem});
+            this.setAsToolStripMenuItem.Name = "setAsToolStripMenuItem";
+            this.setAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.setAsToolStripMenuItem.Text = "set as";
+            // 
+            // boxesToolStripMenuItem
+            // 
+            this.boxesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.confToolStripMenuItem,
+            this.locationToolStripMenuItem});
+            this.boxesToolStripMenuItem.Name = "boxesToolStripMenuItem";
+            this.boxesToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.boxesToolStripMenuItem.Text = "boxes";
+            // 
+            // confToolStripMenuItem
+            // 
+            this.confToolStripMenuItem.Name = "confToolStripMenuItem";
+            this.confToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.confToolStripMenuItem.Text = "conf";
+            this.confToolStripMenuItem.Click += new System.EventHandler(this.confToolStripMenuItem_Click);
+            // 
+            // locationToolStripMenuItem
+            // 
+            this.locationToolStripMenuItem.Name = "locationToolStripMenuItem";
+            this.locationToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.locationToolStripMenuItem.Text = "location";
+            this.locationToolStripMenuItem.Click += new System.EventHandler(this.locationToolStripMenuItem_Click);
+            // 
+            // decodeAllAsToolStripMenuItem
+            // 
+            this.decodeAllAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.boxesToolStripMenuItem1});
+            this.decodeAllAsToolStripMenuItem.Name = "decodeAllAsToolStripMenuItem";
+            this.decodeAllAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.decodeAllAsToolStripMenuItem.Text = "decode all as";
+            // 
+            // boxesToolStripMenuItem1
+            // 
+            this.boxesToolStripMenuItem1.Name = "boxesToolStripMenuItem1";
+            this.boxesToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.boxesToolStripMenuItem1.Text = "boxes";
+            this.boxesToolStripMenuItem1.Click += new System.EventHandler(this.boxesToolStripMenuItem1_Click);
+            // 
             // listView2
             // 
             this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader4,
             this.columnHeader5});
+            this.listView2.ContextMenuStrip = this.contextMenuStrip3;
             this.listView2.FullRowSelect = true;
             this.listView2.GridLines = true;
             this.listView2.HideSelection = false;
@@ -265,12 +361,42 @@
             // 
             this.columnHeader4.Text = "Dims";
             // 
+            // contextMenuStrip3
+            // 
+            this.contextMenuStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setToolStripMenuItem});
+            this.contextMenuStrip3.Name = "contextMenuStrip3";
+            this.contextMenuStrip3.Size = new System.Drawing.Size(90, 26);
+            // 
+            // setToolStripMenuItem
+            // 
+            this.setToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.all1ToolStripMenuItem,
+            this.all0ToolStripMenuItem});
+            this.setToolStripMenuItem.Name = "setToolStripMenuItem";
+            this.setToolStripMenuItem.Size = new System.Drawing.Size(89, 22);
+            this.setToolStripMenuItem.Text = "set";
+            // 
+            // all1ToolStripMenuItem
+            // 
+            this.all1ToolStripMenuItem.Name = "all1ToolStripMenuItem";
+            this.all1ToolStripMenuItem.Size = new System.Drawing.Size(95, 22);
+            this.all1ToolStripMenuItem.Text = "all 1";
+            this.all1ToolStripMenuItem.Click += new System.EventHandler(this.all1ToolStripMenuItem_Click);
+            // 
+            // all0ToolStripMenuItem
+            // 
+            this.all0ToolStripMenuItem.Name = "all0ToolStripMenuItem";
+            this.all0ToolStripMenuItem.Size = new System.Drawing.Size(95, 22);
+            this.all0ToolStripMenuItem.Text = "all 0";
+            this.all0ToolStripMenuItem.Click += new System.EventHandler(this.all0ToolStripMenuItem_Click);
+            // 
             // richTextBox1
             // 
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBox1.Location = new System.Drawing.Point(10, 327);
+            this.richTextBox1.Location = new System.Drawing.Point(15, 428);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(229, 114);
+            this.richTextBox1.Size = new System.Drawing.Size(224, 114);
             this.richTextBox1.TabIndex = 9;
             this.richTextBox1.Text = "";
             // 
@@ -439,7 +565,7 @@
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.deleteToolStripMenuItem.Text = "delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -466,7 +592,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 505);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 597);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1160, 22);
             this.statusStrip1.TabIndex = 25;
@@ -477,13 +603,6 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
-            // 
-            // rgbMaskToolStripMenuItem
-            // 
-            this.rgbMaskToolStripMenuItem.Name = "rgbMaskToolStripMenuItem";
-            this.rgbMaskToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.rgbMaskToolStripMenuItem.Text = "rgb mask";
-            this.rgbMaskToolStripMenuItem.Click += new System.EventHandler(this.rgbMaskToolStripMenuItem_Click);
             // 
             // groupBox1
             // 
@@ -516,48 +635,15 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1160, 505);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1160, 597);
             this.tableLayoutPanel1.TabIndex = 27;
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.listView1);
-            this.panel1.Controls.Add(this.listView2);
-            this.panel1.Controls.Add(this.richTextBox1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 33);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(244, 469);
-            this.panel1.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.pictureBox1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(253, 33);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(704, 469);
-            this.panel2.TabIndex = 1;
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.label3);
-            this.panel3.Controls.Add(this.groupBox1);
-            this.panel3.Controls.Add(this.checkBox2);
-            this.panel3.Controls.Add(this.textBox7);
-            this.panel3.Controls.Add(this.textBox8);
-            this.panel3.Controls.Add(this.listView3);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(963, 33);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(194, 469);
-            this.panel3.TabIndex = 2;
             // 
             // panel4
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.panel4, 3);
+            this.panel4.Controls.Add(this.checkBox3);
+            this.panel4.Controls.Add(this.pictureBox2);
+            this.panel4.Controls.Add(this.button7);
             this.panel4.Controls.Add(this.button1);
             this.panel4.Controls.Add(this.button3);
             this.panel4.Controls.Add(this.button2);
@@ -567,11 +653,239 @@
             this.panel4.Size = new System.Drawing.Size(1154, 24);
             this.panel4.TabIndex = 28;
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.button5);
+            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.textBox9);
+            this.panel1.Controls.Add(this.listView4);
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.listView1);
+            this.panel1.Controls.Add(this.listView2);
+            this.panel1.Controls.Add(this.richTextBox1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 33);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(244, 561);
+            this.panel1.TabIndex = 0;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(176, 266);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(54, 26);
+            this.button5.TabIndex = 28;
+            this.button5.Text = "set val";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(116, 266);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(54, 26);
+            this.button4.TabIndex = 25;
+            this.button4.Text = "set addr";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(10, 270);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(100, 20);
+            this.textBox9.TabIndex = 27;
+            // 
+            // listView4
+            // 
+            this.listView4.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader7,
+            this.columnHeader8});
+            this.listView4.FullRowSelect = true;
+            this.listView4.GridLines = true;
+            this.listView4.HideSelection = false;
+            this.listView4.Location = new System.Drawing.Point(9, 298);
+            this.listView4.Name = "listView4";
+            this.listView4.Size = new System.Drawing.Size(230, 124);
+            this.listView4.TabIndex = 27;
+            this.listView4.UseCompatibleStateImageBehavior = false;
+            this.listView4.View = System.Windows.Forms.View.Details;
+            this.listView4.SelectedIndexChanged += new System.EventHandler(this.listView4_SelectedIndexChanged);
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Addr";
+            this.columnHeader7.Width = 100;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Value";
+            this.columnHeader8.Width = 120;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.pictureBox1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(253, 33);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(704, 561);
+            this.panel2.TabIndex = 1;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.groupBox3);
+            this.panel3.Controls.Add(this.groupBox2);
+            this.panel3.Controls.Add(this.label3);
+            this.panel3.Controls.Add(this.groupBox1);
+            this.panel3.Controls.Add(this.checkBox2);
+            this.panel3.Controls.Add(this.textBox7);
+            this.panel3.Controls.Add(this.textBox8);
+            this.panel3.Controls.Add(this.listView3);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(963, 33);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(194, 561);
+            this.panel3.TabIndex = 2;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.button6);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.label4);
+            this.groupBox2.Controls.Add(this.textBox12);
+            this.groupBox2.Controls.Add(this.textBox11);
+            this.groupBox2.Controls.Add(this.textBox10);
+            this.groupBox2.Location = new System.Drawing.Point(6, 347);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(179, 143);
+            this.groupBox2.TabIndex = 27;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "PriorBoxes settings";
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(53, 97);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 6;
+            this.button6.Text = "Set";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 74);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(49, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Variance";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 48);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(34, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Steps";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 22);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(49, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "MinSizes";
+            // 
+            // textBox12
+            // 
+            this.textBox12.Location = new System.Drawing.Point(67, 71);
+            this.textBox12.Name = "textBox12";
+            this.textBox12.Size = new System.Drawing.Size(100, 20);
+            this.textBox12.TabIndex = 2;
+            this.textBox12.Text = "[0.1, 0.2]";
+            // 
+            // textBox11
+            // 
+            this.textBox11.Location = new System.Drawing.Point(67, 45);
+            this.textBox11.Name = "textBox11";
+            this.textBox11.Size = new System.Drawing.Size(100, 20);
+            this.textBox11.TabIndex = 1;
+            this.textBox11.Text = "[32. 64, 128]";
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(67, 19);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(100, 20);
+            this.textBox10.TabIndex = 0;
+            this.textBox10.Text = "[[32, 64, 128], [256], [512]]";
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(384, 1);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 25;
+            this.button7.Text = "record video";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.checkBox1);
+            this.groupBox3.Location = new System.Drawing.Point(6, 496);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(185, 62);
+            this.groupBox3.TabIndex = 28;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Video Output";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(15, 19);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(117, 17);
+            this.checkBox1.TabIndex = 0;
+            this.checkBox1.Text = "auto decode boxes";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox2.Location = new System.Drawing.Point(584, 5);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(382, 16);
+            this.pictureBox2.TabIndex = 27;
+            this.pictureBox2.TabStop = false;
+            this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(486, 6);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(70, 17);
+            this.checkBox3.TabIndex = 28;
+            this.checkBox3.Text = "run video";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 10;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Processing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1160, 527);
+            this.ClientSize = new System.Drawing.Size(1160, 619);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
             this.Name = "Processing";
@@ -579,18 +893,25 @@
             this.Text = "Processing";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip3.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            this.panel4.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -650,5 +971,36 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip3;
+        private System.Windows.Forms.ToolStripMenuItem setToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem all1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem all0ToolStripMenuItem;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.ListView listView4;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.ToolStripMenuItem setAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem boxesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem confToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem locationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem decodeAllAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem boxesToolStripMenuItem1;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBox12;
+        private System.Windows.Forms.TextBox textBox11;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.Timer timer1;
     }
 }
