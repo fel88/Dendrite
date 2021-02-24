@@ -48,13 +48,7 @@ namespace Dendrite
             }
         }
 
-        public class NodeInfo
-        {
-            public bool IsInput;
-            public string Name;
-            public int[] Dims;
-            public List<string> Tags = new List<string>();
-        }
+        
 
         public Dictionary<string, InputInfo> InputDatas = new Dictionary<string, InputInfo>();
         Dictionary<string, object> OutputDatas = new Dictionary<string, object>();
@@ -155,7 +149,7 @@ namespace Dendrite
                 toolStripStatusLabel1.Text = $"decode time: {sw2.ElapsedMilliseconds}ms";
                 if (ret != null)
                 {
-                    var mm = drawBoxes(mat2, ret.Item1, ret.Item2);
+                    var mm = drawBoxes(mat2, ret.Item1, ret.Item2, visTresh, ret.Item3);
                     pictureBox1.Image = BitmapConverter.ToBitmap(mm);
                     mat2 = mm;
                 }
@@ -661,12 +655,12 @@ namespace Dendrite
                 MessageBox.Show("Set conf and loc outputs first.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             }
-            var mm = drawBoxes(InputDatas.First().Value.Data as Mat, ret.Item1, ret.Item2);
+            var mm = drawBoxes(InputDatas.First().Value.Data as Mat, ret.Item1, ret.Item2, visTresh, ret.Item3);
             pictureBox1.Image = BitmapConverter.ToBitmap(mm);
         }
         float visTresh = 0.5f;
 
-        Mat drawBoxes(Mat mat1, Rect[] detections, float[] oscores)
+        public static Mat drawBoxes(Mat mat1, Rect[] detections, float[] oscores, float visTresh, int[] classes = null)
         {
 
             Mat mat = mat1.Clone();
@@ -676,7 +670,13 @@ namespace Dendrite
             {
                 if (oscores[i] < visTresh) continue;
                 mat.Rectangle(detections[i], new OpenCvSharp.Scalar(255, 0, 0), 2);
+
                 var text = Math.Round(oscores[i], 4).ToString();
+                if (classes != null)
+                {
+                    int cls = classes[i];
+                    text += $"(cls: {cls})";
+                }
                 var cx = detections[i].X;
                 var cy = detections[i].Y + 12;
                 mat.PutText(text, new OpenCvSharp.Point(cx, cy),
@@ -685,7 +685,7 @@ namespace Dendrite
             return mat;
 
         }
-        public Tuple<Rect[], float[]> boxesDecode(Mat mat1)
+        public Tuple<Rect[], float[], int[]> boxesDecode(Mat mat1)
         {
             var f1 = _nodes.FirstOrDefault(z => z.Tags.Contains("conf"));
             var f2 = _nodes.FirstOrDefault(z => z.Tags.Contains("loc"));
@@ -709,11 +709,11 @@ namespace Dendrite
                 allPriorBoxes.Add(key, pd);
             }
             var prior_data = allPriorBoxes[key];
-            return boxesDecode(mat1, rets1, rets3, sz, prior_data);
+            return boxesDecode(mat1.Size(), rets3, rets1,  sz, prior_data, visTresh);
 
         }
 
-        public static Tuple<Rect[], float[]> boxesDecode(Mat mat1, float[] confd, float[] locd, System.Drawing.Size sz, float[][] prior_data)
+        public static Tuple<Rect[], float[], int[]> boxesDecode(OpenCvSharp.Size matSize, float[] confd, float[] locd, System.Drawing.Size sz, float[][] prior_data, float vis_thresh = 0.5f)
         {
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -721,12 +721,13 @@ namespace Dendrite
             {
                 return null;
             }
-            var matSize = (mat1).Size();
+            
 
 
 
             List<float[]> loc = new List<float[]>();
             List<float> scores = new List<float>();
+            List<int> winners = new List<int>();
 
             float[] variances = new float[] { 0.1f, 0.2f };
             var nnInputWidth = sz.Width;
@@ -740,18 +741,30 @@ namespace Dendrite
 
             float[] resize = new float[] { koef, koef2 };
 
-            var rets3 = locd;
-            var rets1 = confd;
+            var rets3 = confd;
+            var rets1 = locd;
 
 
             for (var i = 0; i < rets1.Length; i += 4)
             {
                 loc.Add(new float[] { rets1[i + 0], rets1[i + 1], rets1[i + 2], rets1[i + 3] });
             }
+            int numClasses = rets3.Length / (rets1.Length / 4);
 
-            for (var i = 0; i < rets3.Length; i += 2)
+            for (var i = 0; i < rets3.Length; i += numClasses)
             {
-                scores.Add(rets3[i + 1]);
+                if (numClasses > 2)
+                {
+                    //first class - background usually
+                    var sub = rets3.Skip(i + 1).Take(numClasses - 1).Select((v, ii) => new Tuple<int, float>(ii, v)).OrderByDescending(z => z.Item2).First();
+                    winners.Add(sub.Item1);
+                    //scores.Add(rets3[i + 1]);
+                    scores.Add(sub.Item2);
+                }
+                else
+                {
+                    scores.Add(rets3[i + 1]);
+                }
             }
 
             var boxes = Decoders.decode(loc, prior_data, variances);
@@ -789,6 +802,17 @@ namespace Dendrite
                 scores2.Add(scores[inds[i]]);
             }
             scores = scores2;
+
+            List<int> winners2 = new List<int>();
+            if (numClasses > 2)
+            {
+                for (var i = 0; i < inds.Count(); i++)
+                {
+                    winners2.Add(winners[inds[i]]);
+                }
+                winners = winners2;
+            }
+
             var order = Decoders.sort_indexes(scores);
             List<float[]> boxes3 = new List<float[]>();
             for (var i = 0; i < order.Count(); i++)
@@ -805,13 +829,30 @@ namespace Dendrite
                 scores3.Add(scores[order[i]]);
 
             }
-
             scores = scores3;
+
+            if (numClasses > 2)
+            {
+                List<int> winners3 = new List<int>();
+
+                for (var i = 0; i < inds.Count(); i++)
+                {
+                    winners3.Add(winners[order[i]]);
+                }
+                winners = winners3;
+            }
             //2. nms
             List<float[]> dets = new List<float[]>();
             for (var i = 0; i < boxes.Count(); i++)
             {
-                dets.Add(new float[] { boxes[i][0], boxes[i][1], boxes[i][2], boxes[i][3], scores[i] });
+                if (numClasses > 2)
+                {
+                    dets.Add(new float[] { boxes[i][0], boxes[i][1], boxes[i][2], boxes[i][3], scores[i], winners[i] });
+                }
+                else
+                {
+                    dets.Add(new float[] { boxes[i][0], boxes[i][1], boxes[i][2], boxes[i][3], scores[i] });
+                }
             }
             var keep = Decoders.nms(dets, 0.4f);
 
@@ -825,12 +866,13 @@ namespace Dendrite
 
             List<Rect> detections = new List<Rect>();
 
-            float vis_thresh = 0.5f;
+            //float vis_thresh = 0.2f;
 
             List<int> indexMap = new List<int>();
 
-            List<float[]> odets = new List<float[]>();
+            //List<float[]> odets = new List<float[]>();
             List<float> oscores = new List<float>();
+            List<int> owin = new List<int>();
 
             for (var i = 0; i < dets.Count(); i++)
             {
@@ -839,16 +881,21 @@ namespace Dendrite
                 detections.Add(new Rect((int)(aa[0]), (int)(aa[1]), (int)(aa[2] - aa[0]), (int)(aa[3] - aa[1])));
                 indexMap.Add(i);
 
-                oscores.Add(scores3[i]);
+                //oscores.Add(scores3[i]);
+                oscores.Add(aa[4]);
+                if (numClasses > 2)
+                {
+                    owin.Add((int)aa[5]);
+                }
             }
 
-            for (var i = 0; i < dets.Count(); i++)
-            {
-                odets.Add(dets[i]);
-            }
+            /* for (var i = 0; i < dets.Count(); i++)
+             {
+                 odets.Add(dets[i]);
+             }*/
             sw.Stop();
 
-            var ret = new Tuple<Rect[], float[]>(detections.ToArray(), oscores.ToArray());
+            var ret = new Tuple<Rect[], float[], int[]>(detections.ToArray(), oscores.ToArray(), numClasses > 2 ? owin.ToArray() : null);
             return ret;
         }
 
@@ -963,6 +1010,7 @@ namespace Dendrite
             StatisticForm s = new StatisticForm();
             var nd = _nodes.First(z => z.IsInput);
             s.Init(lastPath, _netPath, nd.Name, nd.Dims, InputDatas[nd.Name].Preprocessors.ToArray());
+            s.ShowDialog();
         }
 
         private void button11_Click(object sender, EventArgs e)
@@ -970,6 +1018,16 @@ namespace Dendrite
             listView5.Items.Clear();
             savedFrames.Clear();
 
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "104";
+            textBox2.Text = "117";
+            textBox3.Text = "123";
+            textBox4.Text = "1";
+            textBox5.Text = "1";
+            textBox6.Text = "1";
         }
     }
 
@@ -1038,5 +1096,12 @@ namespace Dendrite
             Array.Copy(ret3, 0, inputData, ret1.Length + ret2.Length, ret3.Length);
             return inputData;
         }
+    }
+    public class NodeInfo
+    {
+        public bool IsInput;
+        public string Name;
+        public int[] Dims;
+        public List<string> Tags = new List<string>();
     }
 }

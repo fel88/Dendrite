@@ -41,6 +41,8 @@
             this.verticaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gatherStatisticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,7 +62,9 @@
             // modelToolStripMenuItem
             // 
             this.modelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadToolStripMenuItem});
+            this.loadToolStripMenuItem,
+            this.inferenceToolStripMenuItem,
+            this.gatherStatisticToolStripMenuItem});
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
             this.modelToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.modelToolStripMenuItem.Text = "Model";
@@ -148,6 +152,20 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
             // 
+            // inferenceToolStripMenuItem
+            // 
+            this.inferenceToolStripMenuItem.Name = "inferenceToolStripMenuItem";
+            this.inferenceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.inferenceToolStripMenuItem.Text = "Inference";
+            this.inferenceToolStripMenuItem.Click += new System.EventHandler(this.inferenceToolStripMenuItem_Click);
+            // 
+            // gatherStatisticToolStripMenuItem
+            // 
+            this.gatherStatisticToolStripMenuItem.Name = "gatherStatisticToolStripMenuItem";
+            this.gatherStatisticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gatherStatisticToolStripMenuItem.Text = "Gather statistic";
+            this.gatherStatisticToolStripMenuItem.Click += new System.EventHandler(this.gatherStatisticToolStripMenuItem_Click);
+            // 
             // Mdi
             // 
             this.AllowDrop = true;
@@ -183,5 +201,7 @@
         private System.Windows.Forms.ToolStripMenuItem tileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inferenceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gatherStatisticToolStripMenuItem;
     }
 }

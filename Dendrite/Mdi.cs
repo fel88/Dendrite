@@ -180,5 +180,31 @@ namespace Dendrite
         {
 
         }
+
+        private void inferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "onnx|*.onnx";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            Processing p = new Processing();
+            p.MdiParent = this;
+            p.Init(ofd.FileName);
+            p.Show();
+        }
+
+        private void gatherStatisticToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "onnx|*.onnx";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            StatisticForm s = new StatisticForm();
+
+            s.Init(ofd.FileName);
+            s.Init(null, ofd.FileName, null, null, null);
+            s.MdiParent = this;
+            s.Show();
+        }
     }
 }

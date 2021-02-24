@@ -101,6 +101,7 @@
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.listView5 = new System.Windows.Forms.ListView();
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -123,7 +124,7 @@
             this.textBox11 = new System.Windows.Forms.TextBox();
             this.textBox10 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button11 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip3.SuspendLayout();
@@ -471,7 +472,7 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(21, 282);
+            this.checkBox2.Location = new System.Drawing.Point(21, 297);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(73, 17);
             this.checkBox2.TabIndex = 18;
@@ -480,7 +481,7 @@
             // 
             // textBox7
             // 
-            this.textBox7.Location = new System.Drawing.Point(18, 305);
+            this.textBox7.Location = new System.Drawing.Point(18, 320);
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(30, 20);
             this.textBox7.TabIndex = 19;
@@ -488,7 +489,7 @@
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(59, 305);
+            this.textBox8.Location = new System.Drawing.Point(59, 320);
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(30, 20);
             this.textBox8.TabIndex = 20;
@@ -620,6 +621,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button12);
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.textBox2);
             this.groupBox1.Controls.Add(this.textBox3);
@@ -628,7 +630,7 @@
             this.groupBox1.Controls.Add(this.textBox4);
             this.groupBox1.Location = new System.Drawing.Point(6, 169);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(179, 100);
+            this.groupBox1.Size = new System.Drawing.Size(179, 121);
             this.groupBox1.TabIndex = 26;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "mean/std";
@@ -691,6 +693,8 @@
             // 
             // pictureBox2
             // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox2.Location = new System.Drawing.Point(584, 5);
             this.pictureBox2.Name = "pictureBox2";
@@ -786,6 +790,16 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(88, 189);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(75, 23);
+            this.button11.TabIndex = 4;
+            this.button11.Text = "clear frames";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // button10
             // 
@@ -995,15 +1009,15 @@
             this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // button11
+            // button12
             // 
-            this.button11.Location = new System.Drawing.Point(88, 189);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(75, 23);
-            this.button11.TabIndex = 4;
-            this.button11.Text = "clear frames";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
+            this.button12.Location = new System.Drawing.Point(6, 92);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(75, 23);
+            this.button12.TabIndex = 18;
+            this.button12.Text = "defalt1";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click);
             // 
             // Processing
             // 
@@ -1140,5 +1154,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader10;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button12;
     }
 }
