@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using OpenCvSharp;
+using System.Xml.Linq;
 
 namespace Dendrite
 {
@@ -23,6 +24,22 @@ namespace Dendrite
         public Form1()
         {
             InitializeComponent();
+            
+
+            if (File.Exists("settings.xml"))
+            {
+                var doc = XDocument.Load("settings.xml");
+                foreach (var item in doc.Descendants("recents"))
+                {
+                    var fi = new FileInfo(item.Element("path").Value);
+                    var tt = new ToolStripMenuItem(fi.FullName) { Tag = fi };
+                    tt.Click += (s, e) =>
+                    {
+                        LoadModel(((s as ToolStripMenuItem).Tag as FileInfo).FullName);
+                    };
+                    recentToolStripMenuItem.DropDownItems.Add(tt);
+                }
+            }
 
             ctx.Init(pictureBox1);
             pictureBox1.SetDoubleBuffered(true);
@@ -68,6 +85,21 @@ namespace Dendrite
             {
                 LoadModel(args[1]);
             }
+        }
+
+        private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            sb.AppendLine("<recents>");
+            foreach (var item in loadedModels)
+            {
+
+            }
+            sb.AppendLine("<recents>");
+            sb.AppendLine("</root>");
+
         }
 
         ExpandGroupControl group1 = new ExpandGroupControl();
@@ -466,17 +498,20 @@ namespace Dendrite
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() != DialogResult.OK) return;
 
-            LoadModel(ofd.FileName);
         }
 
         public const string WindowCaption = "Dendrite";
         private string _lastPath;
         public GraphModel Model;
+
+        public List<string> loadedModels = new List<string>();
         public bool LoadModel(string path)
         {
+            if (ParentForm != null)
+            {
+                ParentForm.FormClosing += ParentForm_FormClosing;
+            }
             _lastPath = path;
             var fr = Providers.FirstOrDefault(z => z.IsSuitableFile(path));
             if (fr == null)
@@ -487,6 +522,11 @@ namespace Dendrite
 
             var model = fr.LoadFromFile(path);
             Model = model;
+            if (!loadedModels.Any(z => z.ToLower() == path.ToLower()))
+            {
+                loadedModels.Add(path);
+            }
+
             listView1.Items.Clear();
 
             foreach (var item in model.Nodes)
@@ -644,11 +684,7 @@ namespace Dendrite
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            if (Model == null) { MessageBox.Show("load model first", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
-            SaveFileDialog sfd = new SaveFileDialog();
-            if (sfd.ShowDialog() != DialogResult.OK) return;
-            Model.Provider.SaveModel(Model, sfd.FileName);
 
         }
 
@@ -819,6 +855,23 @@ namespace Dendrite
         {
             CurrentLayout = DagreLayoutGraph;
             CurrentLayout();
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            LoadModel(ofd.FileName);
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Model == null) { MessageBox.Show("load model first", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+            Model.Provider.SaveModel(Model, sfd.FileName);
         }
     }
 }

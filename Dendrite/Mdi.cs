@@ -176,6 +176,9 @@ namespace Dendrite
             ((sender as ToolStripItem).Tag as Form).Activate();
         }
 
-        
+        private void modelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

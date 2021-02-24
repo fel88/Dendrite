@@ -64,6 +64,8 @@ namespace Dendrite
         {
             run();
         }
+
+        Mat lastReadedMat;
         private void run()
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -78,7 +80,14 @@ namespace Dendrite
                 var data = InputDatas[name];
                 if (data.Data is Mat matOrig)
                 {
+
                     var mat = matOrig.Clone();
+                    if (inputMeta[name].Dimensions[2] == -1)
+                    {
+                        inputMeta[name].Dimensions[2] = mat.Height;
+                        inputMeta[name].Dimensions[3] = mat.Width;
+                    }
+
                     mat2 = mat.Clone();
                     mat.ConvertTo(mat, MatType.CV_32F);
                     object param = mat;
@@ -96,6 +105,12 @@ namespace Dendrite
                 {
                     Mat mat = new Mat();
                     cap.Read(mat);
+                    lastReadedMat = mat.Clone();
+                    if (inputMeta[name].Dimensions[2] == -1)
+                    {
+                        inputMeta[name].Dimensions[2] = mat.Height;
+                        inputMeta[name].Dimensions[3] = mat.Width;
+                    }
                     pictureBox1.Image = BitmapConverter.ToBitmap(mat);
                     mat2 = mat.Clone();
                     mat.ConvertTo(mat, MatType.CV_32F);
@@ -131,10 +146,13 @@ namespace Dendrite
                     OutputDatas.Add(result.Name, rets);
                 }
             }
-            
+
             if (checkBox1.Checked)
             {
-                var ret=boxesDecode(mat2);
+                Stopwatch sw2 = Stopwatch.StartNew();
+                var ret = boxesDecode(mat2);
+                sw2.Stop();
+                toolStripStatusLabel1.Text = $"decode time: {sw2.ElapsedMilliseconds}ms";
                 if (ret != null)
                 {
                     var mm = drawBoxes(mat2, ret.Item1, ret.Item2);
@@ -150,13 +168,15 @@ namespace Dendrite
             toolStripStatusLabel1.Text = $"{sw.ElapsedMilliseconds}ms";
 
         }
-
+        string lastPath;
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            if (ofd.FileName.EndsWith("mp4") || ofd.FileName.EndsWith("avi"))
+            lastPath = ofd.FileName;
+
+            if (ofd.FileName.EndsWith("mp4") || ofd.FileName.EndsWith("avi") || ofd.FileName.EndsWith("mkv"))
             {
                 VideoCapture cap = new VideoCapture(ofd.FileName);
                 Mat mat = new Mat();
@@ -628,10 +648,14 @@ namespace Dendrite
 
         }
 
-        Dictionary<string, float[][]> allPriorBoxes = new Dictionary<string, float[][]>();
+        public static Dictionary<string, float[][]> allPriorBoxes = new Dictionary<string, float[][]>();
         private void boxesToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            Stopwatch sw2 = Stopwatch.StartNew();
             var ret = boxesDecode(InputDatas.First().Value.Data as Mat);
+            sw2.Stop();
+            toolStripStatusLabel1.Text = $"decode time: {sw2.ElapsedMilliseconds}ms";
+
             if (ret == null)
             {
                 MessageBox.Show("Set conf and loc outputs first.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -640,6 +664,7 @@ namespace Dendrite
             var mm = drawBoxes(InputDatas.First().Value.Data as Mat, ret.Item1, ret.Item2);
             pictureBox1.Image = BitmapConverter.ToBitmap(mm);
         }
+        float visTresh = 0.5f;
 
         Mat drawBoxes(Mat mat1, Rect[] detections, float[] oscores)
         {
@@ -647,7 +672,6 @@ namespace Dendrite
             Mat mat = mat1.Clone();
 
 
-            float visTresh = 0.5f;
             for (int i = 0; i < detections.Length; i++)
             {
                 if (oscores[i] < visTresh) continue;
@@ -659,19 +683,25 @@ namespace Dendrite
                             HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
             }
             return mat;
+
         }
-        private Tuple<Rect[], float[]> boxesDecode(Mat mat1)
+        public Tuple<Rect[], float[]> boxesDecode(Mat mat1)
         {
-            Stopwatch sw = Stopwatch.StartNew();
             var f1 = _nodes.FirstOrDefault(z => z.Tags.Contains("conf"));
             var f2 = _nodes.FirstOrDefault(z => z.Tags.Contains("loc"));
             if (f1 == null || f2 == null)
             {
                 return null;
             }
-            var matSize = (mat1).Size();
+            var rets1 = OutputDatas[f2.Name] as float[];
+            var rets3 = OutputDatas[f1.Name] as float[];
             var dims = _nodes.First(z => z.IsInput).Dims;
             var sz = new System.Drawing.Size(dims[3], dims[2]);
+            if (dims[2] == -1)
+            {
+                sz.Height = mat1.Height;
+                sz.Width = mat1.Width;
+            }
             string key = $"{sz.Width}x{sz.Height}";
             if (!allPriorBoxes.ContainsKey(key))
             {
@@ -679,6 +709,21 @@ namespace Dendrite
                 allPriorBoxes.Add(key, pd);
             }
             var prior_data = allPriorBoxes[key];
+            return boxesDecode(mat1, rets1, rets3, sz, prior_data);
+
+        }
+
+        public static Tuple<Rect[], float[]> boxesDecode(Mat mat1, float[] confd, float[] locd, System.Drawing.Size sz, float[][] prior_data)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+
+            if (confd == null || locd == null)
+            {
+                return null;
+            }
+            var matSize = (mat1).Size();
+
+
 
             List<float[]> loc = new List<float[]>();
             List<float> scores = new List<float>();
@@ -695,8 +740,8 @@ namespace Dendrite
 
             float[] resize = new float[] { koef, koef2 };
 
-            var rets1 = OutputDatas[f2.Name] as float[];
-            var rets3 = OutputDatas[f1.Name] as float[];
+            var rets3 = locd;
+            var rets1 = confd;
 
 
             for (var i = 0; i < rets1.Length; i += 4)
@@ -802,7 +847,7 @@ namespace Dendrite
                 odets.Add(dets[i]);
             }
             sw.Stop();
-            toolStripStatusLabel1.Text = $"decode time: {sw.ElapsedMilliseconds}ms";
+
             var ret = new Tuple<Rect[], float[]>(detections.ToArray(), oscores.ToArray());
             return ret;
         }
@@ -873,7 +918,57 @@ namespace Dendrite
                 vid = null;
                 return;
             }
-            vid = new VideoWriter("output.mp4", FourCC.XVID, 25, new OpenCvSharp.Size(pictureBox1.Image.Width, pictureBox1.Image.Height));            
+            vid = new VideoWriter("output.mp4", FourCC.XVID, 25, new OpenCvSharp.Size(pictureBox1.Image.Width, pictureBox1.Image.Height));
+
+        }
+
+        private void textBox13_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                visTresh = float.Parse(textBox13.Text.Replace(",", "."), CultureInfo.InvariantCulture);
+                textBox13.BackColor = Color.White;
+            }
+            catch (Exception ex)
+            {
+                textBox13.BackColor = Color.Red;
+            }
+        }
+
+        List<Mat> savedFrames = new List<Mat>();
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (lastReadedMat == null) return;
+            savedFrames.Add(lastReadedMat);
+            Clipboard.SetImage(BitmapConverter.ToBitmap(lastReadedMat));
+            listView5.Items.Add(new ListViewItem(new string[] { "frame" }) { });
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+            int index = 0;
+            foreach (var item in savedFrames)
+            {
+                var fi = new FileInfo(sfd.FileName);
+                string path = Path.Combine(fi.DirectoryName, $"{index}_screenshot_" + fi.Name);
+                index++;
+                item.SaveImage(path);
+            }
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            StatisticForm s = new StatisticForm();
+            var nd = _nodes.First(z => z.IsInput);
+            s.Init(lastPath, _netPath, nd.Name, nd.Dims, InputDatas[nd.Name].Preprocessors.ToArray());
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            listView5.Items.Clear();
+            savedFrames.Clear();
 
         }
     }
