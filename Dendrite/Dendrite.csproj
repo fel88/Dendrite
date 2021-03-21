@@ -228,6 +228,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayComparer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ArrayComparer.Designer.cs">
+      <DependentUpon>ArrayComparer.cs</DependentUpon>
+    </Compile>
     <Compile Include="AttributeInfo.cs" />
     <Compile Include="AttributeInfoDataType.cs" />
     <Compile Include="Caffe2Proto.cs" />
@@ -249,6 +255,38 @@
     <Compile Include="MdiChildForm.Designer.cs">
       <DependentUpon>MdiChildForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Nnet.cs" />
+    <Compile Include="NpyLoader.cs" />
+    <Compile Include="Preprocessors\AbstractPreprocessor.cs" />
+    <Compile Include="Preprocessors\AspectResizePreprocessor.cs" />
+    <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.Designer.cs">
+      <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\ResizeConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\ResizeConfigControl.Designer.cs">
+      <DependentUpon>ResizeConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\YoloDecoderConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\YoloDecoderConfigControl.Designer.cs">
+      <DependentUpon>YoloDecoderConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\ZeroImageConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\ZeroImageConfigControl.Designer.cs">
+      <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\DrawBoxesPostProcessor.cs" />
+    <Compile Include="Preprocessors\GrayscalePreprocessor.cs" />
+    <Compile Include="Preprocessors\IInputPreprocessor.cs" />
+    <Compile Include="Preprocessors\MeanStdPreprocessor.cs" />
     <Compile Include="MergerWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -257,6 +295,16 @@
     </Compile>
     <Compile Include="ModelProvider.cs" />
     <Compile Include="OnnxModelProvider.cs" />
+    <Compile Include="Preprocessors\Controls\MeanStdConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\MeanStdConfigControl.Designer.cs">
+      <DependentUpon>MeanStdConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\NCHWPreprocessor.cs" />
+    <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
+    <Compile Include="Preprocessors\ResizePreprocessor.cs" />
+    <Compile Include="Preprocessors\YoloDecodePreprocessor.cs" />
     <Compile Include="Processing.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -318,6 +366,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TorchScriptModelProvider.cs" />
+    <Compile Include="Preprocessors\ZeroImagePreprocessor.cs" />
+    <EmbeddedResource Include="ArrayComparer.resx">
+      <DependentUpon>ArrayComparer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ExpandControl.resx">
       <DependentUpon>ExpandControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -332,6 +384,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MergerWindow.resx">
       <DependentUpon>MergerWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\AspectResizeConfigControl.resx">
+      <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\MeanStdConfigControl.resx">
+      <DependentUpon>MeanStdConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\ResizeConfigControl.resx">
+      <DependentUpon>ResizeConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\YoloDecoderConfigControl.resx">
+      <DependentUpon>YoloDecoderConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\ZeroImageConfigControl.resx">
+      <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Processing.resx">
       <DependentUpon>Processing.cs</DependentUpon>
@@ -349,6 +416,7 @@
     <EmbeddedResource Include="StatisticForm.resx">
       <DependentUpon>StatisticForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="coco.names" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -1,15 +1,68 @@
-﻿using System;
+﻿using OpenCvSharp;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Dendrite
 {
     public static class Helpers
     {
+        public static Mat drawBoxes(Mat mat1, ObjectDetectionInfo[] detections, float visTresh)
+        {
+            Mat mat = mat1.Clone();
+
+            for (int i = 0; i < detections.Length; i++)
+            {
+                if (detections[i].Conf < visTresh) continue;
+                mat.Rectangle(detections[i].Rect, new OpenCvSharp.Scalar(255, 0, 0), 2);
+
+                var text = Math.Round(detections[i].Conf, 4).ToString();
+                if (detections[i].Class != null)
+                {
+                    int cls = detections[i].Class.Value;
+                    text += $"(cls: {cls} {detections[i].Label})";
+                }
+                var cx = detections[i].Rect.X;
+                var cy = detections[i].Rect.Y + 12;
+                mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 250, cy - 15), new Scalar(0, 0, 0), -1);
+                mat.PutText(text, new OpenCvSharp.Point(cx, cy),
+                            HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
+            }
+            return mat;
+        }
+
+        public static string ReadResource(string name)
+        {
+            // Determine path
+            var assembly = Assembly.GetExecutingAssembly();
+
+            // Format: "{Namespace}.{Folder}.{filename}.{Extension}"
+
+            var resourcePath = assembly.GetManifestResourceNames()
+                 .Single(str => str.Contains(name));
+
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourcePath))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+        public static void ShowError(string msg, string caption)
+        {
+            MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        public static void ShowInfo(string msg, string caption)
+        {
+            MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         public static InternalArray Pad2d(InternalArray ar)
         {
@@ -298,6 +351,20 @@ namespace Dendrite
             Array.Copy(array.Data, pos, ret.Data, 0, ret.Data.Length);
             return ret;
         }
+        public static InternalArray Get2DImageFrom3DArray(this InternalArray array, int ind1)
+        {
+            var pos = ind1 * array.offsets[0];
+            InternalArray ret = new InternalArray(new int[] { array.Shape[1], array.Shape[2] });
+            Array.Copy(array.Data, pos, ret.Data, 0, ret.Data.Length);
+            return ret;
+        }
+        public static InternalArray Get1DImageFrom3DArray(this InternalArray array, int ind1,int ind2)
+        {
+            var pos = ind1 * array.offsets[0] + ind2 * array.offsets[1]; 
+            InternalArray ret = new InternalArray(new int[] {  array.Shape[2] });
+            Array.Copy(array.Data, pos, ret.Data, 0, ret.Data.Length);
+            return ret;
+        }
 
 
         public static InternalArray Randn(int[] dims)
@@ -312,7 +379,7 @@ namespace Dendrite
         }
 
         public static InternalArray Randn(this Random r, int[] dims)
-        {            
+        {
             var ar = new InternalArray(dims);
             for (int i = 0; i < ar.Data.Length; i++)
             {

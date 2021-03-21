@@ -100,8 +100,9 @@ namespace Dendrite
 
                 foreach (var iitem in item.Input)
                 {
-                    if (!outs.ContainsKey(iitem))
+                    if (inits.ContainsKey(iitem))
                     {
+                        var d = inits[iitem];
                         var id = new InputData() { Name = iitem, Parent = nodes[i] };
                         nodes[i].Data.Add(id);
                         var initer = inits[iitem];
@@ -121,14 +122,42 @@ namespace Dendrite
                         id.Dims = initer.Dims.ToArray();
                         continue;
                     }
-                    //nodes[i].Input = iitem;
-                    nodes[i].Parents.Add(outs[iitem]);
-                    if (nodes[i].Parents.Count > 1)
+                    else
+                    if (!outs.ContainsKey(iitem))
                     {
+                        var id = new InputData() { Name = iitem, Parent = nodes[i] };
+                        nodes[i].Data.Add(id);
+                        if (inits.ContainsKey(iitem))
+                        {
+                            var initer = inits[iitem];
 
+                            var bts = initer.RawData.ToByteArray();
+                            var b64 = initer.RawData.ToBase64();
+
+                            TensorProto p = new TensorProto();
+                            p.RawData = Google.Protobuf.ByteString.FromBase64(b64);
+
+                            List<float> ret = new List<float>();
+                            for (int j = 0; j < bts.Length; j += 4)
+                            {
+                                ret.Add(BitConverter.ToSingle(bts, j));
+                            }
+                            id.Weights = ret.ToArray();
+                            id.Dims = initer.Dims.ToArray();
+                            continue;
+                        }
                     }
-                    //nodes[i].Parent = outs[iitem];
-                    outs[iitem].Childs.Add(nodes[i]);
+                    //nodes[i].Input = iitem;
+                    if (outs.ContainsKey(iitem))
+                    {
+                        nodes[i].Parents.Add(outs[iitem]);
+                        if (nodes[i].Parents.Count > 1)
+                        {
+
+                        }
+                        //nodes[i].Parent = outs[iitem];
+                        outs[iitem].Childs.Add(nodes[i]);
+                    }
                 }
                 if (item.Input.Any())
                 {

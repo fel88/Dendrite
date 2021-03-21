@@ -16,6 +16,7 @@ using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using OpenCvSharp;
 using System.Xml.Linq;
+using System.IO.Compression;
 
 namespace Dendrite
 {
@@ -24,7 +25,6 @@ namespace Dendrite
         public Form1()
         {
             InitializeComponent();
-            
 
             if (File.Exists("settings.xml"))
             {
@@ -872,6 +872,72 @@ namespace Dendrite
             SaveFileDialog sfd = new SaveFileDialog();
             if (sfd.ShowDialog() != DialogResult.OK) return;
             Model.Provider.SaveModel(Model, sfd.FileName);
+        }
+
+        public void ExportAsZip(string zipPath, GraphModel model)
+        {
+            int cntr = 0;
+            if (File.Exists(zipPath)) File.Delete(zipPath);
+            using (FileStream zipToOpen = new FileStream(zipPath, FileMode.CreateNew))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                {
+
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("<?xml version=\"1.0\"?>");
+                    sb.AppendLine("<net>");
+                    ZipArchiveEntry wg = archive.CreateEntry("weights/");
+                    foreach (var item in model.Nodes)
+                    {
+                        foreach (var w in item.Data)
+                        {                            
+                            if (w.Weights == null || w.Weights.Length == 0) continue;
+                            sb.AppendLine($"<weights file=\"{cntr}.dat\" name=\"{w.Name}\" dims=\"{w.Dims.Aggregate("", (x, y) => x + y + ",").TrimEnd(',')}\"/>");
+                            
+
+                            List<byte> bb = new List<byte>();
+                            MemoryStream ms = new MemoryStream();
+
+                            foreach (var bitem in w.Weights)
+                            {
+                                foreach (var b in BitConverter.GetBytes(bitem))
+                                {
+                                    ms.WriteByte(b);
+                                }                               
+                                
+                            }
+                            ms.Seek(0, SeekOrigin.Begin);
+                            ZipArchiveEntry w1 = archive.CreateEntry($"weights/{cntr++}.dat");
+
+                            using (StreamWriter writer = new StreamWriter(w1.Open()))
+                            {
+                                ms.CopyTo(writer.BaseStream);
+                            }
+                        }
+                    }
+                  
+
+
+                    sb.AppendLine("</net>");
+                    var xpath = "info.xml";
+
+                    ZipArchiveEntry ann = archive.CreateEntry(xpath);
+
+                    using (StreamWriter writer = new StreamWriter(ann.Open()))
+                    {
+                        writer.Write(sb.ToString());
+                    }
+              
+
+                }
+            }
+
+        }
+        private void extractWeightsToZipToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();            
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+            ExportAsZip(sfd.FileName, Model);
         }
     }
 }
