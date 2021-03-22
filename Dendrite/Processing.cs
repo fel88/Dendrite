@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Dendrite.MergerWindow;
@@ -875,14 +876,51 @@ namespace Dendrite
 
             gr.FillRectangle(Brushes.LightBlue, 0, 0, (int)(forwPosPercetange * bmp.Width), bmp.Height);
             pictureBox2.Image = bmp;
+
         }
+
+        bool exit = false;
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
+
+            if (th != null) { exit = true; return; }
+            th = new Thread((() =>
+            {
+                int cntr = 0;
+                InferenceSession session = new InferenceSession(net.NetPath);
+
+                while (true)
+                {
+                    if (exit) { th = null; exit = false; break; }
+                    rewindVideo();
+                    net.run(session);
+                    if (vid != null)
+                    {
+                        var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
+                        if (fr != null)
+                        {
+                            vid.Write((fr as IPostDrawer).LastMat);
+                        }
+                        else
+                        {
+                            vid.Write(net.lastReadedMat);
+                        }
+                    }
+                    cntr++;
+                    toolStripStatusLabel1.Text = "processed frames: " + cntr;
+                }
+
+            }));
+            th.IsBackground = true;
+            th.Start();
+            return;
+
             timer1.Enabled = checkBox3.Checked;
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+
+        void rewindVideo()
         {
             if (forwTo)
             {
@@ -895,18 +933,31 @@ namespace Dendrite
 
                 cap.Set(VideoCaptureProperties.PosMsec, forwPosPercetange * secs);
             }
-            net.run();
-            if (vid != null)
+        }
+        Thread th;
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+            try
             {
-                var fr = (net.Postprocessors.FirstOrDefault(z => z is DrawBoxesPostProcessor));
-                if (fr != null)
+                rewindVideo();
+                net.run();
+                if (vid != null)
                 {
-                    vid.Write((fr as DrawBoxesPostProcessor).LastMat);
+                    var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
+                    if (fr != null)
+                    {
+                        vid.Write((fr as IPostDrawer).LastMat);
+                    }
+                    else
+                    {
+                        vid.Write(net.lastReadedMat);
+                    }
                 }
-                else
-                {
-                    vid.Write(net.lastReadedMat);
-                }
+            }
+            catch (Exception ex)
+            {
+                Debugger.Launch();
             }
         }
         VideoWriter vid;
@@ -986,6 +1037,7 @@ namespace Dendrite
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            rewindVideo();
             net.run();
         }
 
@@ -994,16 +1046,20 @@ namespace Dendrite
 
         }
 
+        public int OutputVideoFps = 25;
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             if (vid != null)
             {
                 vid.Release();
+                toolStripButton2.Text = "record video";
+
                 vid = null;
                 return;
             }
 
-            vid = new VideoWriter("output.mp4", FourCC.XVID, 25, new OpenCvSharp.Size(pictureBox1.Image.Width, pictureBox1.Image.Height));
+            vid = new VideoWriter("output.mp4", FourCC.XVID, OutputVideoFps, new OpenCvSharp.Size(pictureBox1.Image.Width, pictureBox1.Image.Height));
+            toolStripButton2.Text = "stop video";
 
         }
 
@@ -1125,7 +1181,7 @@ namespace Dendrite
                 arr1.Data = dd.Select(z => (double)z).ToArray();
                 if (dd.Length != npy.Data.Length)
                 {
-                    Helpers.ShowError("size mismatch", Text);
+                    Helpers.ShowError($"size mismatch: ({string.Join(",", arr1.Shape.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
                     return;
                 }
                 float eps = 10e-5f;
@@ -1523,6 +1579,32 @@ namespace Dendrite
             InputDatas[currentNode.Name].Preprocessors.Add(r);
             listView3.Items.Add(new ListViewItem(new string[] { "rgb" }) { Tag = r });
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                OutputVideoFps = int.Parse(textBox1.Text);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void keypointDecodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new KeypointsDecodePreprocessor();
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "keypoint decode" }) { Tag = r });
+        }
+
+        private void drawKeypointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new DrawKeypointsPostProcessor() { Pbox = pictureBox1 };
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "draw keypoints" }) { Tag = r });
+        }
     }
 
     public class InputInfo
@@ -1550,5 +1632,10 @@ namespace Dendrite
         public float Conf;
         public int? Class;
         public string Label;
+    }
+    public class KeypointsDetectionInfo
+    {
+        public Point2f[] Points;
+        public float Conf;
     }
 }

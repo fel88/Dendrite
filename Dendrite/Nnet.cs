@@ -157,11 +157,14 @@ namespace Dendrite
             }
             return mat2;
         }
-        public void run()
+        public void run(InferenceSession session1 = null)
         {
             Stopwatch sw = Stopwatch.StartNew();
 
-            var session1 = new InferenceSession(_netPath);
+            if (session1 == null)
+            {
+                session1 = new InferenceSession(_netPath);
+            }
             var container = new List<NamedOnnxValue>();
 
             var mat2 = prepareData(container, session1);
@@ -172,10 +175,21 @@ namespace Dendrite
                 // Get the results
                 foreach (var result in results)
                 {
-                    var data = result.AsTensor<float>();
-                    //var dims = data.Dimensions;
-                    var rets = data.ToArray();
-                    OutputDatas.Add(result.Name, rets);
+                    var tnm = result.ElementType.ToString().ToLower();
+                    if (tnm.Contains("float"))
+                    {
+                        var data = result.AsTensor<float>();
+                        //var dims = data.Dimensions;
+                        var rets = data.ToArray();
+                        OutputDatas.Add(result.Name, rets);
+                    }
+                    else if (tnm.Contains("int64"))
+                    {
+                        var data = result.AsTensor<long>();
+                        //var dims = data.Dimensions;
+                        var rets = data.ToArray();
+                        OutputDatas.Add(result.Name, rets);
+                    }
                 }
             }
             /*

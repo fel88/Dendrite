@@ -25,6 +25,7 @@ namespace Dendrite.Preprocessors.Controls
             Proc = proc as YoloDecodePreprocessor;
             textBox1.Text = Proc.NmsThreshold.ToString();
             textBox2.Text = Proc.Threshold.ToString();
+            textBox3.Text = string.Join(Environment.NewLine, Proc.AllowedClasses);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -51,6 +52,18 @@ namespace Dendrite.Preprocessors.Controls
             catch (Exception ex)
             {
                 textBox2.BackColor = Color.Red;
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                Proc.AllowedClasses = textBox3.Text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+            catch (Exception ex)
+            {
+
             }
         }
     }

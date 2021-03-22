@@ -10,8 +10,9 @@ namespace Dendrite.Preprocessors
     {
         public float NmsThreshold = 0.8f;
         public double Threshold = 0.4;
+        public List<string> AllowedClasses = new List<string>();
 
-        public static ObjectDetectionInfo[] yoloBoxesDecode(Nnet net, int w, int h, float nms_tresh, double threshold)
+        public static ObjectDetectionInfo[] yoloBoxesDecode(Nnet net, int w, int h, float nms_tresh, double threshold, string[] allowedClasses = null)
         {
             List<ObjectDetectionInfo> ret = new List<ObjectDetectionInfo>();
             var f1 = net.Nodes.FirstOrDefault(z => z.Dims.Last() == 4);
@@ -35,17 +36,22 @@ namespace Dendrite.Preprocessors
 
             for (int i = 0; i < rets1.Length; i += cnt, pos++)
             {
-                int maxind = 0;
-                double maxv = rets1[i];
+                int maxind = -1;
+                double maxv = double.NaN;
                 for (int j = 0; j < cnt; j++)
                 {
-                    if (rets1[i + j] > maxv)
+                    if (allowedClasses != null && !allowedClasses.Contains(nms[j]))
+                    {
+                        continue;
+                    }
+
+                    if (maxind == -1 || rets1[i + j] > maxv)
                     {
                         maxv = rets1[i + j];
                         maxind = j;
                     }
                 }
-                if (maxv > threshold)
+                if (maxind != -1 && maxv > threshold)
                 {
                     confs.Add(maxv);
                     classes.Add(maxind);
@@ -105,7 +111,7 @@ namespace Dendrite.Preprocessors
             var list = inp as object[];
             var net = list.First(z => z is Nnet) as Nnet;
 
-            var ret = yoloBoxesDecode(net, net.lastReadedMat.Width, net.lastReadedMat.Height, NmsThreshold, Threshold);
+            var ret = yoloBoxesDecode(net, net.lastReadedMat.Width, net.lastReadedMat.Height, NmsThreshold, Threshold, AllowedClasses.Count() == 0 ? null : AllowedClasses.ToArray());
 
             return ret;
         }

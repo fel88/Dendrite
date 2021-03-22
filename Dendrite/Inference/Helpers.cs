@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Dendrite.Preprocessors;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -34,6 +35,64 @@ namespace Dendrite
                 mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 250, cy - 15), new Scalar(0, 0, 0), -1);
                 mat.PutText(text, new OpenCvSharp.Point(cx, cy),
                             HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
+            }
+            return mat;
+        }
+
+        public static Mat drawKeypoints(Mat mat1, KeypointsDetectionInfo[] detections, float visTresh)
+        {
+            Mat mat = mat1.Clone();
+
+            for (int i = 0; i < detections.Length; i++)
+            {
+                for (int j = 0; j < detections[i].Points.Length; j++)
+                {
+                    mat.Circle((int)detections[i].Points[j].X, (int)detections[i].Points[j].Y, 5, Scalar.AliceBlue, 1);
+                }
+
+                List<Scalar> clrs = new List<Scalar>();
+                clrs.Add(Scalar.Red);
+                clrs.Add(Scalar.Yellow);
+                clrs.Add(Scalar.Green);
+                clrs.Add(Scalar.Blue);
+                clrs.Add(Scalar.Black);
+                clrs.Add(Scalar.White);
+                clrs.Add(Scalar.LightGray);
+                clrs.Add(Scalar.LightBlue);
+                clrs.Add(Scalar.MediumVioletRed);
+                clrs.Add(Scalar.Violet);
+                clrs.Add(Scalar.BlueViolet);
+                clrs.Add(Scalar.OrangeRed);
+                clrs.Add(Scalar.Orange);
+                clrs.Add(Scalar.Orange);
+                clrs.Add(Scalar.Orange);
+                clrs.Add(Scalar.Orange);
+                clrs.Add(Scalar.Orange);
+                clrs.Add(Scalar.Orange);
+                clrs.Add(Scalar.Orange);
+
+                for (int j = 0; j < DrawKeypointsPostProcessor.Edges.Length; j += 2)
+                {
+                    var i0 = DrawKeypointsPostProcessor.Edges[j];
+                    var i1 = DrawKeypointsPostProcessor.Edges[j + 1];
+                    var p0 = detections[i].Points[i0];
+                    var p1 = detections[i].Points[i1];
+                    mat.Line(new Point(p0.X, p0.Y), new Point(p1.X, p1.Y), clrs[j / 2], 2);
+                }
+                /* if (detections[i].Conf < visTresh) continue;
+                 mat.Rectangle(detections[i].Rect, new OpenCvSharp.Scalar(255, 0, 0), 2);
+
+                 var text = Math.Round(detections[i].Conf, 4).ToString();
+                 if (detections[i].Class != null)
+                 {
+                     int cls = detections[i].Class.Value;
+                     text += $"(cls: {cls} {detections[i].Label})";
+                 }
+                 var cx = detections[i].Rect.X;
+                 var cy = detections[i].Rect.Y + 12;
+                 mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 250, cy - 15), new Scalar(0, 0, 0), -1);
+                 mat.PutText(text, new OpenCvSharp.Point(cx, cy),
+                             HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));*/
             }
             return mat;
         }
@@ -358,10 +417,10 @@ namespace Dendrite
             Array.Copy(array.Data, pos, ret.Data, 0, ret.Data.Length);
             return ret;
         }
-        public static InternalArray Get1DImageFrom3DArray(this InternalArray array, int ind1,int ind2)
+        public static InternalArray Get1DImageFrom3DArray(this InternalArray array, int ind1, int ind2)
         {
-            var pos = ind1 * array.offsets[0] + ind2 * array.offsets[1]; 
-            InternalArray ret = new InternalArray(new int[] {  array.Shape[2] });
+            var pos = ind1 * array.offsets[0] + ind2 * array.offsets[1];
+            InternalArray ret = new InternalArray(new int[] { array.Shape[2] });
             Array.Copy(array.Data, pos, ret.Data, 0, ret.Data.Length);
             return ret;
         }

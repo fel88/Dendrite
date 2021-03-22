@@ -265,6 +265,12 @@
     <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.Designer.cs">
       <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Preprocessors\Controls\DrawBoxesConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\DrawBoxesConfigControl.Designer.cs">
+      <DependentUpon>DrawBoxesConfigControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Preprocessors\Controls\ResizeConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -284,8 +290,10 @@
       <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Preprocessors\DrawBoxesPostProcessor.cs" />
+    <Compile Include="Preprocessors\DrawKeypointsPostProcessor.cs" />
     <Compile Include="Preprocessors\GrayscalePreprocessor.cs" />
     <Compile Include="Preprocessors\IInputPreprocessor.cs" />
+    <Compile Include="Preprocessors\KeypointsDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\MeanStdPreprocessor.cs" />
     <Compile Include="MergerWindow.cs">
       <SubType>Form</SubType>
@@ -387,6 +395,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\AspectResizeConfigControl.resx">
       <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\DrawBoxesConfigControl.resx">
+      <DependentUpon>DrawBoxesConfigControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\MeanStdConfigControl.resx">
       <DependentUpon>MeanStdConfigControl.cs</DependentUpon>
