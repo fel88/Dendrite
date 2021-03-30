@@ -876,39 +876,106 @@ namespace Dendrite
 
             gr.FillRectangle(Brushes.LightBlue, 0, 0, (int)(forwPosPercetange * bmp.Width), bmp.Height);
             pictureBox2.Image = bmp;
+            rewindVideo(false);
 
+
+            if (InputDatas.Count == 0) return;
+            if (!(InputDatas.First().Value.Data is VideoCapture cap)) return;
+
+            Mat mat = new Mat();
+            cap.Read(mat);
+            pictureBox1.Image = BitmapConverter.ToBitmap(mat);
         }
 
         bool exit = false;
-
+        bool pause = false;
+        AutoResetEvent pauseEvent = new AutoResetEvent(false);
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
 
-            if (th != null) { exit = true; return; }
+            if (th != null) { exit = true; pause = false; pauseEvent.Set(); return; }
             th = new Thread((() =>
             {
                 int cntr = 0;
                 InferenceSession session = new InferenceSession(net.NetPath);
 
+                bool b = false;
                 while (true)
                 {
+                    if (pause)
+                        pauseEvent.WaitOne();
+
+                    if (oneFrameStep && oneFrameStepDir == -1)
+                    {
+                        var cap = InputDatas.First().Value.Data as VideoCapture;
+                        var pf = cap.Get(1);//1 posframes
+                        cap.Set(1, Math.Max(0, pf - 2));
+                    }
+                    if (oneFrameStep) { pause = true; oneFrameStep = false; }
+
                     if (exit) { th = null; exit = false; break; }
                     rewindVideo();
-                    net.run(session);
-                    if (vid != null)
+                    if (b || disableVideoProcessing)
                     {
-                        var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
-                        if (fr != null)
+                        var cap = InputDatas.First().Value.Data as VideoCapture;
+                        Mat mat = new Mat();
+                        cap.Read(mat);
+                        pictureBox1.Invoke((Action)(() =>
                         {
-                            vid.Write((fr as IPostDrawer).LastMat);
+                            pictureBox1.Image = BitmapConverter.ToBitmap(mat);
+                        }));
+
+
+
+                        continue;
+                    }
+                    try
+                    {
+                        net.run(session);
+                        if (vid != null)
+                        {
+                            var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
+                            if (fr != null)
+                            {
+                                vid.Write((fr as IPostDrawer).LastMat);
+                            }
+                            else
+                            {
+                                vid.Write(net.lastReadedMat);
+                            }
                         }
-                        else
+                        cntr++;
+                        toolStripStatusLabel1.Text = "processed frames: " + cntr;
+                    }
+                    catch (PrepareDataException ex)
+                    {
+
+                        if (ex.IsVideo)
                         {
-                            vid.Write(net.lastReadedMat);
+                            statusStrip1.Invoke((Action)(() =>
+                            {
+                                toolStripStatusLabel1.Text = "net procces error detected. processing will be continued without nnet processing..";
+                                toolStripStatusLabel1.BackColor = Color.Red;
+                                toolStripStatusLabel1.ForeColor = Color.White;
+                                pictureBox1.Image = BitmapConverter.ToBitmap(ex.SourceMat);
+                            }));
+
+                            b = true;
+
                         }
                     }
-                    cntr++;
-                    toolStripStatusLabel1.Text = "processed frames: " + cntr;
+                    catch (Exception ex)
+                    {
+                        statusStrip1.Invoke((Action)(() =>
+                        {
+                            toolStripStatusLabel1.Text = ex.Message;
+                            toolStripStatusLabel1.BackColor = Color.Red;
+                            toolStripStatusLabel1.ForeColor = Color.White;
+                        }));
+
+                        th = null; exit = false; break;
+                    }
+
                 }
 
             }));
@@ -920,24 +987,26 @@ namespace Dendrite
         }
 
 
-        void rewindVideo()
+        void rewindVideo(bool resetForwTo = true)
         {
-            if (forwTo)
-            {
-                var cap = InputDatas.First().Value.Data as VideoCapture;
-                var ofps = cap.Get(VideoCaptureProperties.Fps);
+            if (!forwTo) return;
+            if (InputDatas.Count == 0) return;
+            if (!(InputDatas.First().Value.Data is VideoCapture cap)) return;
 
+
+            var ofps = cap.Get(VideoCaptureProperties.Fps);
+            if (resetForwTo)
                 forwTo = false;
-                var frm = cap.Get(VideoCaptureProperties.FrameCount);
-                var secs = (frm / ofps) * 1000;
+            var frm = cap.Get(VideoCaptureProperties.FrameCount);
+            var secs = (frm / ofps) * 1000;
+            cap.Set(VideoCaptureProperties.PosMsec, forwPosPercetange * secs);
 
-                cap.Set(VideoCaptureProperties.PosMsec, forwPosPercetange * secs);
-            }
         }
+
         Thread th;
         private void timer1_Tick(object sender, EventArgs e)
         {
-
+            return;
             try
             {
                 rewindVideo();
@@ -1605,6 +1674,69 @@ namespace Dendrite
             net.Postprocessors.Add(r);
             listView6.Items.Add(new ListViewItem(new string[] { "draw keypoints" }) { Tag = r });
         }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (pause)
+            {
+                pause = false;
+                pauseEvent.Set();
+            }
+            else
+            {
+                pause = true;
+            }
+        }
+        bool disableVideoProcessing = false;
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            disableVideoProcessing = checkBox4.Checked;
+        }
+        bool oneFrameStep = false;
+        int oneFrameStepDir = 1;
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            pause = false;
+            pauseEvent.Set();
+            oneFrameStep = true;
+            oneFrameStepDir = 1;
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            
+            pause = false;
+            pauseEvent.Set();
+
+            oneFrameStep = true;
+            oneFrameStepDir = -1;
+        }
+
+        private void instanceSegmentationDecoderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new InstanceSegmentationDecodePreprocessor();
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation decoder" }) { Tag = r });
+        }
+
+        private void instanceSegmentationDrawerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new DrawInstanceSegmentationPostProcessor() { Pbox = pictureBox1 };
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation drawer" }) { Tag = r });
+        }
+
+        private void nmsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new NmsPostProcessors();
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "nms" }) { Tag = r });
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            net.FetchNextFrame = checkBox5.Checked;
+        }
     }
 
     public class InputInfo
@@ -1613,29 +1745,8 @@ namespace Dendrite
         public object Data;
     }
 
-    public class NodeInfo
-    {
-        public bool IsInput;
-        public string Name;
-        public int[] Dims;
-        public Type ElementType;
-        public List<string> Tags = new List<string>();
-    }
-
     public interface IProcessorConfigControl
     {
         void Init(IInputPreprocessor proc);
-    }
-    public class ObjectDetectionInfo
-    {
-        public Rect Rect;
-        public float Conf;
-        public int? Class;
-        public string Label;
-    }
-    public class KeypointsDetectionInfo
-    {
-        public Point2f[] Points;
-        public float Conf;
     }
 }

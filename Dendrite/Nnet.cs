@@ -3,6 +3,7 @@ using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -43,7 +44,8 @@ namespace Dendrite
         public Dictionary<string, InputInfo> InputDatas = new Dictionary<string, InputInfo>();
         public Dictionary<string, object> OutputDatas = new Dictionary<string, object>();
 
-        public float[] inputData;
+        public bool FetchNextFrame = true;
+        public float[] inputData;        
         public Mat prepareData(List<NamedOnnxValue> container, InferenceSession session1)
         {
 
@@ -126,26 +128,42 @@ namespace Dendrite
                 if (data.Data is VideoCapture cap)
                 {
                     Mat mat = new Mat();
-                    cap.Read(mat);
-                    lastReadedMat = mat.Clone();
-                    if (inputMeta[name].Dimensions[2] == -1)
+                    bool w = false;
+                    try
                     {
-                        inputMeta[name].Dimensions[2] = mat.Height;
-                        inputMeta[name].Dimensions[3] = mat.Width;
+                        if (FetchNextFrame)
+                        {
+                            cap.Read(mat);
+                            lastReadedMat = mat.Clone();
+                        }
+                        else
+                        {
+                            mat = lastReadedMat.Clone();
+                        }
+                        w = true;
+                        if (inputMeta[name].Dimensions[2] == -1)
+                        {
+                            inputMeta[name].Dimensions[2] = mat.Height;
+                            inputMeta[name].Dimensions[3] = mat.Width;
+                        }
+                        //  pictureBox1.Image = BitmapConverter.ToBitmap(mat);
+                        mat2 = mat.Clone();
+                        mat.ConvertTo(mat, MatType.CV_32F);
+                        object param = mat;
+                        foreach (var pitem in data.Preprocessors)
+                        {
+                            param = pitem.Process(param);
+                        }
+
+                        inputData = param as float[];
+                        var tensor = new DenseTensor<float>(param as float[], inputMeta[name].Dimensions);
+
+                        container.Add(NamedOnnxValue.CreateFromTensor<float>(name, tensor));
                     }
-                    //  pictureBox1.Image = BitmapConverter.ToBitmap(mat);
-                    mat2 = mat.Clone();
-                    mat.ConvertTo(mat, MatType.CV_32F);
-                    object param = mat;
-                    foreach (var pitem in data.Preprocessors)
+                    catch (Exception ex)
                     {
-                        param = pitem.Process(param);
+                        throw new PrepareDataException() { IsVideo = true, SourceMat = w ? lastReadedMat : null };
                     }
-
-                    inputData = param as float[];
-                    var tensor = new DenseTensor<float>(param as float[], inputMeta[name].Dimensions);
-
-                    container.Add(NamedOnnxValue.CreateFromTensor<float>(name, tensor));
                 }
                 if (data.Data is float[] fl)
                 {
@@ -226,5 +244,11 @@ namespace Dendrite
         public Mat lastReadedMat;
         public List<IInputPreprocessor> Postprocessors = new List<IInputPreprocessor>();
 
+    }
+
+    public class PrepareDataException : Exception
+    {
+        public bool IsVideo;
+        public Mat SourceMat;
     }
 }

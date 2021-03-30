@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props')" />
   <Import Project="..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props" Condition="Exists('..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props')" />
-  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -33,7 +33,7 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -41,6 +41,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,7 +57,7 @@
       <HintPath>..\packages\Google.Protobuf.3.14.0\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ML.OnnxRuntime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=f27f157f0a5b7bb6, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ML.OnnxRuntime.Managed.1.6.0\lib\netstandard1.1\Microsoft.ML.OnnxRuntime.dll</HintPath>
+      <HintPath>..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\lib\netstandard1.1\Microsoft.ML.OnnxRuntime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
@@ -243,6 +244,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GraphModel.cs" />
     <Compile Include="Decoders.cs" />
+    <Compile Include="KeypointsDetectionInfo.cs" />
     <Compile Include="Mdi.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -256,7 +258,9 @@
       <DependentUpon>MdiChildForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Nnet.cs" />
+    <Compile Include="NodeInfo.cs" />
     <Compile Include="NpyLoader.cs" />
+    <Compile Include="ObjectDetectionInfo.cs" />
     <Compile Include="Preprocessors\AbstractPreprocessor.cs" />
     <Compile Include="Preprocessors\AspectResizePreprocessor.cs" />
     <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.cs">
@@ -270,6 +274,24 @@
     </Compile>
     <Compile Include="Preprocessors\Controls\DrawBoxesConfigControl.Designer.cs">
       <DependentUpon>DrawBoxesConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.Designer.cs">
+      <DependentUpon>InstanceSegmentationDecoderConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.Designer.cs">
+      <DependentUpon>InstanceSegmentatorDrawerConfigControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\NmsConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\NmsConfigControl.Designer.cs">
+      <DependentUpon>NmsConfigControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Preprocessors\Controls\ResizeConfigControl.cs">
       <SubType>UserControl</SubType>
@@ -290,9 +312,11 @@
       <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Preprocessors\DrawBoxesPostProcessor.cs" />
+    <Compile Include="Preprocessors\DrawInstanceSegmentationPostProcessor.cs" />
     <Compile Include="Preprocessors\DrawKeypointsPostProcessor.cs" />
     <Compile Include="Preprocessors\GrayscalePreprocessor.cs" />
     <Compile Include="Preprocessors\IInputPreprocessor.cs" />
+    <Compile Include="Preprocessors\InstanceSegmentationDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\KeypointsDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\MeanStdPreprocessor.cs" />
     <Compile Include="MergerWindow.cs">
@@ -310,6 +334,7 @@
       <DependentUpon>MeanStdConfigControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Preprocessors\NCHWPreprocessor.cs" />
+    <Compile Include="Preprocessors\NmsPostProcessors.cs" />
     <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
     <Compile Include="Preprocessors\ResizePreprocessor.cs" />
     <Compile Include="Preprocessors\YoloDecodePreprocessor.cs" />
@@ -319,6 +344,7 @@
     <Compile Include="Processing.Designer.cs">
       <DependentUpon>Processing.cs</DependentUpon>
     </Compile>
+    <Compile Include="SegmentationDetectionInfo.cs" />
     <Compile Include="StaticColors.cs" />
     <Compile Include="StatisticForm.cs">
       <SubType>Form</SubType>
@@ -399,8 +425,17 @@
     <EmbeddedResource Include="Preprocessors\Controls\DrawBoxesConfigControl.resx">
       <DependentUpon>DrawBoxesConfigControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.resx">
+      <DependentUpon>InstanceSegmentationDecoderConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.resx">
+      <DependentUpon>InstanceSegmentatorDrawerConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\MeanStdConfigControl.resx">
       <DependentUpon>MeanStdConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\NmsConfigControl.resx">
+      <DependentUpon>NmsConfigControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\ResizeConfigControl.resx">
       <DependentUpon>ResizeConfigControl.cs</DependentUpon>
@@ -428,6 +463,7 @@
       <DependentUpon>StatisticForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="coco.names" />
+    <EmbeddedResource Include="coco.2.names" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -455,15 +491,15 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.Managed.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.Managed.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.Managed.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.Managed.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets'))" />
     <Error Condition="!Exists('..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets'))" />
   </Target>
-  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.1.6.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets')" />
+  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets')" />
+  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets')" />
 </Project>

@@ -32,7 +32,6 @@ namespace Dendrite.Preprocessors
             return ret;
         }
     }
-
     public interface IPostDrawer
     {
         Mat LastMat { get; }
