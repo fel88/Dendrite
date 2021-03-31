@@ -937,7 +937,14 @@ namespace Dendrite
                             var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
                             if (fr != null)
                             {
-                                vid.Write((fr as IPostDrawer).LastMat);
+                                var lm = (fr as IPostDrawer).LastMat;
+
+                                if (vid.FrameSize.Width != lm.Width)
+                                {
+                                    vid = new VideoWriter("output.mp4", FourCC.XVID, OutputVideoFps, new OpenCvSharp.Size(lm.Width, lm.Height));
+                                }
+
+                                vid.Write(lm);
                             }
                             else
                             {
@@ -1704,7 +1711,7 @@ namespace Dendrite
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            
+
             pause = false;
             pauseEvent.Set();
 
@@ -1736,6 +1743,51 @@ namespace Dendrite
         private void checkBox5_CheckedChanged(object sender, EventArgs e)
         {
             net.FetchNextFrame = checkBox5.Checked;
+        }
+
+        private void depthmsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            var f1 = net.Nodes.FirstOrDefault(z => z.Tags.Contains("depthmap"));
+
+            if (f1 == null)
+            {
+                return;
+            }
+
+            var rets3 = OutputDatas[f1.Name] as float[];
+            InternalArray arr = new InternalArray(f1.Dims);
+            arr.Data = rets3.Select(z => (double)z).ToArray();
+
+
+            Mat mat = new Mat(f1.Dims[2],
+                f1.Dims[3], MatType.CV_8UC1,
+                arr.Data.Select(z => (byte)(z * 255)).ToArray());
+
+            Cv2.ApplyColorMap(mat, mat, ColormapTypes.Magma);
+            OutputDatas[f1.Name] = mat;
+        }
+
+        private void depthmapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            currentNode = (NodeInfo)((listView1.SelectedItems[0] as ListViewItem).Tag);
+            if (OutputDatas.ContainsKey(currentNode.Name))
+            {
+                if (!currentNode.Tags.Contains("depthmap"))
+                {
+                    currentNode.Tags.Add("depthmap");
+                    listView1.SelectedItems[0].SubItems[2].Text
+                        = string.Join(", ", currentNode.Tags);
+                }
+            }
+        }
+
+        private void depthmapDecodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new DepthmapDecodePreprocessor() { Pbox = pictureBox1 };
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "depthmap" }) { Tag = r });
         }
     }
 

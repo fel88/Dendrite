@@ -269,6 +269,12 @@
     <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.Designer.cs">
       <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Preprocessors\Controls\DepthmapConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\DepthmapConfigControl.Designer.cs">
+      <DependentUpon>DepthmapConfigControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Preprocessors\Controls\DrawBoxesConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -311,6 +317,7 @@
     <Compile Include="Preprocessors\Controls\ZeroImageConfigControl.Designer.cs">
       <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Preprocessors\DepthmapDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\DrawBoxesPostProcessor.cs" />
     <Compile Include="Preprocessors\DrawInstanceSegmentationPostProcessor.cs" />
     <Compile Include="Preprocessors\DrawKeypointsPostProcessor.cs" />
@@ -421,6 +428,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\AspectResizeConfigControl.resx">
       <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\DepthmapConfigControl.resx">
+      <DependentUpon>DepthmapConfigControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\DrawBoxesConfigControl.resx">
       <DependentUpon>DrawBoxesConfigControl.cs</DependentUpon>

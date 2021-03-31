@@ -53,6 +53,7 @@
             this.locationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.heatmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.yToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.depthmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.decodeAllAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.boxesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.yoloToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,6 +61,7 @@
             this.textToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.greedyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.руфеьфзToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.depthmsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compareWithNumpyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listView2 = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -163,6 +165,7 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.depthmapDecodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip3.SuspendLayout();
@@ -334,7 +337,8 @@
             // 
             this.setAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.boxesToolStripMenuItem,
-            this.heatmapToolStripMenuItem});
+            this.heatmapToolStripMenuItem,
+            this.depthmapToolStripMenuItem});
             this.setAsToolStripMenuItem.Name = "setAsToolStripMenuItem";
             this.setAsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.setAsToolStripMenuItem.Text = "set as";
@@ -345,7 +349,7 @@
             this.confToolStripMenuItem,
             this.locationToolStripMenuItem});
             this.boxesToolStripMenuItem.Name = "boxesToolStripMenuItem";
-            this.boxesToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.boxesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.boxesToolStripMenuItem.Text = "boxes";
             // 
             // confToolStripMenuItem
@@ -367,7 +371,7 @@
             this.heatmapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.yToolStripMenuItem});
             this.heatmapToolStripMenuItem.Name = "heatmapToolStripMenuItem";
-            this.heatmapToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.heatmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.heatmapToolStripMenuItem.Text = "heatmap";
             // 
             // yToolStripMenuItem
@@ -376,6 +380,13 @@
             this.yToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
             this.yToolStripMenuItem.Text = "y";
             this.yToolStripMenuItem.Click += new System.EventHandler(this.yToolStripMenuItem_Click);
+            // 
+            // depthmapToolStripMenuItem
+            // 
+            this.depthmapToolStripMenuItem.Name = "depthmapToolStripMenuItem";
+            this.depthmapToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.depthmapToolStripMenuItem.Text = "depthmap";
+            this.depthmapToolStripMenuItem.Click += new System.EventHandler(this.depthmapToolStripMenuItem_Click);
             // 
             // decodeAllAsToolStripMenuItem
             // 
@@ -404,7 +415,8 @@
             // 
             this.decodeAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.textToolStripMenuItem,
-            this.руфеьфзToolStripMenuItem});
+            this.руфеьфзToolStripMenuItem,
+            this.depthmsToolStripMenuItem});
             this.decodeAsToolStripMenuItem.Name = "decodeAsToolStripMenuItem";
             this.decodeAsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.decodeAsToolStripMenuItem.Text = "decode as";
@@ -414,7 +426,7 @@
             this.textToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.greedyToolStripMenuItem});
             this.textToolStripMenuItem.Name = "textToolStripMenuItem";
-            this.textToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.textToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.textToolStripMenuItem.Text = "text";
             this.textToolStripMenuItem.Click += new System.EventHandler(this.textToolStripMenuItem_Click);
             // 
@@ -428,9 +440,16 @@
             // руфеьфзToolStripMenuItem
             // 
             this.руфеьфзToolStripMenuItem.Name = "руфеьфзToolStripMenuItem";
-            this.руфеьфзToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.руфеьфзToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.руфеьфзToolStripMenuItem.Text = "heatmap";
             this.руфеьфзToolStripMenuItem.Click += new System.EventHandler(this.heatmapToolStripMenuItem_Click);
+            // 
+            // depthmsToolStripMenuItem
+            // 
+            this.depthmsToolStripMenuItem.Name = "depthmsToolStripMenuItem";
+            this.depthmsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.depthmsToolStripMenuItem.Text = "depthmap";
+            this.depthmsToolStripMenuItem.Click += new System.EventHandler(this.depthmsToolStripMenuItem_Click);
             // 
             // compareWithNumpyToolStripMenuItem
             // 
@@ -1255,7 +1274,7 @@
             this.addToolStripMenuItem1,
             this.deleteToolStripMenuItem1});
             this.contextMenuStrip4.Name = "contextMenuStrip4";
-            this.contextMenuStrip4.Size = new System.Drawing.Size(107, 48);
+            this.contextMenuStrip4.Size = new System.Drawing.Size(181, 70);
             // 
             // addToolStripMenuItem1
             // 
@@ -1266,9 +1285,10 @@
             this.drawKeypointsToolStripMenuItem,
             this.instanceSegmentationDecoderToolStripMenuItem,
             this.instanceSegmentationDrawerToolStripMenuItem,
-            this.nmsToolStripMenuItem});
+            this.nmsToolStripMenuItem,
+            this.depthmapDecodeToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(106, 22);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.addToolStripMenuItem1.Text = "add";
             // 
             // yoloDecodeToolStripMenuItem
@@ -1323,7 +1343,7 @@
             // deleteToolStripMenuItem1
             // 
             this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
-            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(106, 22);
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.deleteToolStripMenuItem1.Text = "delete";
             this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem1_Click);
             // 
@@ -1373,6 +1393,13 @@
             this.toolStripButton3.Size = new System.Drawing.Size(71, 22);
             this.toolStripButton3.Text = "copy frame";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
+            // depthmapDecodeToolStripMenuItem
+            // 
+            this.depthmapDecodeToolStripMenuItem.Name = "depthmapDecodeToolStripMenuItem";
+            this.depthmapDecodeToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.depthmapDecodeToolStripMenuItem.Text = "depthmap decode";
+            this.depthmapDecodeToolStripMenuItem.Click += new System.EventHandler(this.depthmapDecodeToolStripMenuItem_Click);
             // 
             // Processing
             // 
@@ -1554,5 +1581,8 @@
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.ToolStripMenuItem nmsToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBox5;
+        private System.Windows.Forms.ToolStripMenuItem depthmsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem depthmapToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem depthmapDecodeToolStripMenuItem;
     }
 }
