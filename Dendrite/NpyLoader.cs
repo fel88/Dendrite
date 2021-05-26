@@ -50,6 +50,7 @@ namespace Dendrite
             var dims = arr3.Select(z => int.Parse(z)).ToArray();
 
             var descr = GetProp(str, "descr");
+            var order = bool.Parse(GetProp(str, "fortran_order"));
 
             int bytesPerItem = 4;
             bool isFloat = descr.Contains("<f4");
@@ -57,16 +58,55 @@ namespace Dendrite
             InternalArray ret = new InternalArray(dims);
 
             int cnt = 0;
-            for (int i = 10 + len; i < bts.Length; i += bytesPerItem)
-            {
-                if (isFloat)
-                {
-                    var val = BitConverter.ToSingle(bts, i);
-                    ret.Data[cnt] = val;
-                }
-               
 
-                cnt++;
+            if (order)
+            {
+                int[] inds = new int[dims.Length];
+
+                for (int i = 10 + len; i < bts.Length; i += bytesPerItem)
+                {
+                    if (isFloat)
+                    {
+                        var val = BitConverter.ToSingle(bts, i);
+                        ret.Set(inds, val);
+                    }
+
+                    bool full = true;
+                    for (int j = 0; j < dims.Length; j++)
+                    {
+                        if (inds[j] != dims[j] - 1)
+                        {
+                            full = false;
+                            break;
+                        }
+                    }
+                    if (full) break;
+                    for (int j = 0; j < dims.Length; j++)
+                    {
+                        inds[j]++;
+                        if (inds[j] == dims[j])
+                        {
+                            inds[j] = 0;
+                            continue;
+                        }
+                        break;
+                    }
+                }
+            }
+            else
+            {
+
+
+                for (int i = 10 + len; i < bts.Length; i += bytesPerItem)
+                {
+                    if (isFloat)
+                    {
+                        var val = BitConverter.ToSingle(bts, i);
+                        ret.Data[cnt] = val;
+                    }
+
+                    cnt++;
+                }
             }
             return ret;
         }

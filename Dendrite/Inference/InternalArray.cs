@@ -75,7 +75,7 @@ namespace Dendrite
         #endregion
 
 
-        
+
         public static InternalArray FromXml(string path)
         {
             XDocument doc = XDocument.Load(path);
@@ -248,7 +248,7 @@ namespace Dendrite
 
         internal InternalArray Transpose(int[] v)
         {
-            
+            //3d only!
             InternalArray ret = new InternalArray(v.Select(z => Shape[z]).ToArray());
 
             for (int i = 0; i < Shape[0]; i++)
@@ -267,7 +267,23 @@ namespace Dendrite
             return ret;
 
         }
-
+        internal void Set(int[] inds, double val)
+        {
+            switch (inds.Length)
+            {
+                case 2:
+                    Set2D(inds[0], inds[1], val);
+                    break;
+                case 3:
+                    Set3D(inds[0], inds[1], inds[2], val);
+                    break;
+                case 4:
+                    Set4D(inds[0], inds[1], inds[2], inds[3], val);
+                    break;
+                default:
+                    throw new Exception($"set value: unsupported dim len: {inds.Length}");
+            }            
+        }
         internal void Set2D(int i, int j, double val)
         {
             int pos = i * Shape[1] + j;

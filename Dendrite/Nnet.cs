@@ -208,6 +208,13 @@ namespace Dendrite
                         var rets = data.ToArray();
                         OutputDatas.Add(result.Name, rets);
                     }
+                    else if (tnm.Contains("uint8"))
+                    {
+                        var data = result.AsTensor<byte>();
+                        //var dims = data.Dimensions;
+                        var rets = data.ToArray();
+                        OutputDatas.Add(result.Name, rets);
+                    }
                 }
             }
             /*

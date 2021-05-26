@@ -133,28 +133,35 @@ namespace Dendrite
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
-            currentNode = (NodeInfo)((listView1.SelectedItems[0] as ListViewItem).Tag);
-            if (OutputDatas.ContainsKey(currentNode.Name))
+            currentNode = (NodeInfo)(listView1.SelectedItems[0].Tag);
+            if (!OutputDatas.ContainsKey(currentNode.Name)) return;
+
+            richTextBox1.Clear();
+
+            if (OutputDatas[currentNode.Name] is float[] farr)
             {
-                richTextBox1.Clear();
-
-
-                if (OutputDatas[currentNode.Name] is float[] farr)
+                var txt = Form1.GetFormattedArray(new InputData() { Dims = currentNode.Dims.Select(z => (long)z).ToArray(), Weights = farr }, 1000);
+                richTextBox1.Text = txt;
+                listView4.Items.Clear();
+                for (int j = 0; j < 20; j++)
                 {
-                    var txt = Form1.GetFormattedArray(new InputData() { Dims = currentNode.Dims.Select(z => (long)z).ToArray(), Weights = farr }, 1000);
-                    richTextBox1.Text = txt;
-                    listView4.Items.Clear();
-                    for (int j = 0; j < 20; j++)
-                    {
-                        listView4.Items.Add(new ListViewItem(new string[] { j.ToString(), farr[j].ToString() }) { Tag = (long)j });
-                    }
-                }
-
-                if (OutputDatas[currentNode.Name] is Mat mat)
-                {
-                    pictureBox1.Image = BitmapConverter.ToBitmap(mat);
+                    listView4.Items.Add(new ListViewItem(new string[] { j.ToString(), farr[j].ToString() }) { Tag = (long)j });
                 }
             }
+            if (OutputDatas[currentNode.Name] is byte[] barr)
+            {
+                richTextBox1.Text = "";
+                listView4.Items.Clear();
+                for (int j = 0; j < 20; j++)
+                {
+                    listView4.Items.Add(new ListViewItem(new string[] { j.ToString(), barr[j].ToString() }) { Tag = (long)j });
+                }
+            }
+            if (OutputDatas[currentNode.Name] is Mat mat)
+            {
+                pictureBox1.Image = BitmapConverter.ToBitmap(mat);
+            }
+
         }
 
         //private void textBox1_TextChanged(object sender, EventArgs e)
@@ -1248,38 +1255,37 @@ namespace Dendrite
         {
             if (listView1.SelectedItems.Count == 0) return;
             var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
-            if (OutputDatas.ContainsKey(cc.Name) && OutputDatas[cc.Name] is float[] dd)
+            if (!(OutputDatas.ContainsKey(cc.Name) && OutputDatas[cc.Name] is float[] dd)) return;
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "npy files (*.npy)|*.npy";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            var npy = NpyLoader.Load(ofd.FileName);
+            var arr1 = new InternalArray(cc.Dims);
+            arr1.Data = dd.Select(z => (double)z).ToArray();
+            if (dd.Length != npy.Data.Length)
             {
-                OpenFileDialog ofd = new OpenFileDialog();
-                if (ofd.ShowDialog() != DialogResult.OK) return;
-                var npy = NpyLoader.Load(ofd.FileName);
-                var arr1 = new InternalArray(cc.Dims);
-                arr1.Data = dd.Select(z => (double)z).ToArray();
-                if (dd.Length != npy.Data.Length)
+                Helpers.ShowError($"size mismatch: ({string.Join(",", arr1.Shape.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
+                return;
+            }
+            float eps = 10e-5f;
+            double maxDiff = 0;
+
+
+
+            for (int i = 0; i < dd.Length; i++)
+            {
+                maxDiff = Math.Max(Math.Abs(dd[i] - npy.Data[i]), maxDiff);
+                if (Math.Abs(dd[i] - npy.Data[i]) > eps)
                 {
-                    Helpers.ShowError($"size mismatch: ({string.Join(",", arr1.Shape.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
+                    Helpers.ShowError("value mismatch", Text);
+                    ArrayComparer arc = new ArrayComparer();
+                    arc.Init(dd, npy.Data.Select(z => (float)z).ToArray());
+                    arc.ShowDialog();
                     return;
                 }
-                float eps = 10e-5f;
-                double maxDiff = 0;
-
-
-
-                for (int i = 0; i < dd.Length; i++)
-                {
-                    maxDiff = Math.Max(Math.Abs(dd[i] - npy.Data[i]), maxDiff);
-                    if (Math.Abs(dd[i] - npy.Data[i]) > eps)
-                    {
-                        Helpers.ShowError("value mismatch", Text);
-                        ArrayComparer arc = new ArrayComparer();
-                        arc.Init(dd, npy.Data.Select(z => (float)z).ToArray());
-                        arc.ShowDialog();
-                        return;
-                    }
-                }
-                Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
-
             }
+            Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
         }
 
         private void showPostprocessDataToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1311,7 +1317,8 @@ namespace Dendrite
         {
             var session1 = new InferenceSession(net.NetPath);
             var container = new List<NamedOnnxValue>();
-            net.prepareData(container, session1);
+            net.prepareData(container, session1);           
+
         }
 
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1328,7 +1335,7 @@ namespace Dendrite
 
             var nd = (NodeInfo)((listView2.SelectedItems[0] as ListViewItem).Tag);
             OpenFileDialog ofd = new OpenFileDialog();
-
+            ofd.Filter = "npy files (*.npy)|*.npy";
             if (ofd.ShowDialog() != DialogResult.OK) return;
             var b = NpyLoader.Load(ofd.FileName);
 
@@ -1788,6 +1795,77 @@ namespace Dendrite
             var r = new DepthmapDecodePreprocessor() { Pbox = pictureBox1 };
             net.Postprocessors.Add(r);
             listView6.Items.Add(new ListViewItem(new string[] { "depthmap" }) { Tag = r });
+        }
+
+        private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void byteArrayasisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (!(OutputDatas[cc.Name] is byte[] dd)) return;
+
+            Mat mat = null;
+            if (cc.Dims.Last() == 3)
+            {
+                mat = new Mat(new int[] { cc.Dims[0], cc.Dims[1] }, MatType.CV_8UC3, dd.ToArray());
+            }
+            else
+            {
+                mat = new Mat(new int[] { cc.Dims[1], cc.Dims[2] }, MatType.CV_8UC3, dd.ToArray());
+            }
+            mat = mat.CvtColor(ColorConversionCodes.RGB2BGR);
+            OutputDatas[cc.Name] = mat;
+
+        }
+
+        private void nCWHToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        
+        public void ShowArray(Array bb)
+        {
+            listView4.Items.Clear();
+
+            for (int j = 0; j < 20; j++)
+            {
+                var val = bb.GetValue(j);
+                listView4.Items.Add(new ListViewItem(new string[] { j.ToString(), val.ToString() }) { Tag = (long)j });
+            }
+        }
+
+        private void updateAnDShowRawToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            var vv = InputDatas.First().Value;
+            var mat = vv.Data as Mat;
+            object param = mat;
+            foreach (var pitem in vv.Preprocessors)
+            {
+                param = pitem.Process(param);
+            }
+
+            ShowArray(param as Array);
+        }
+
+        private void transposeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentNode == null) return;
+
+            var r = new TransposePreprocessor();
+            InputDatas[currentNode.Name].Preprocessors.Add(r);
+            listView3.Items.Add(new ListViewItem(new string[] { "transpose" }) { Tag = r });
+        }
+
+        private void rgb2bgrToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new BGR2RGBPreprocessor();
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "rgb2bgr" }) { Tag = r });
         }
     }
 

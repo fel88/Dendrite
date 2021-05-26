@@ -35,5 +35,5 @@ namespace Dendrite.Preprocessors
     public interface IPostDrawer
     {
         Mat LastMat { get; }
-    }
+    }    
 }

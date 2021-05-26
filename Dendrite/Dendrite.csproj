@@ -299,6 +299,12 @@
     <Compile Include="Preprocessors\Controls\NmsConfigControl.Designer.cs">
       <DependentUpon>NmsConfigControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Preprocessors\Controls\NormalizeConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\NormalizeConfigControl.Designer.cs">
+      <DependentUpon>NormalizeConfigControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Preprocessors\Controls\ResizeConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -344,6 +350,7 @@
     <Compile Include="Preprocessors\NmsPostProcessors.cs" />
     <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
     <Compile Include="Preprocessors\ResizePreprocessor.cs" />
+    <Compile Include="Preprocessors\TransposePreprocessor.cs" />
     <Compile Include="Preprocessors\YoloDecodePreprocessor.cs" />
     <Compile Include="Processing.cs">
       <SubType>Form</SubType>
@@ -446,6 +453,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\NmsConfigControl.resx">
       <DependentUpon>NmsConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\NormalizeConfigControl.resx">
+      <DependentUpon>NormalizeConfigControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\ResizeConfigControl.resx">
       <DependentUpon>ResizeConfigControl.cs</DependentUpon>
