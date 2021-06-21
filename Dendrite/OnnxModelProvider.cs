@@ -78,6 +78,10 @@ namespace Dendrite
                             atr1.Type = AttributeInfoDataType.Ints;
                             atr1.Ints = aitem.Ints.ToList();
                             break;
+                        case Onnx.AttributeProto.Types.AttributeType.Floats:
+                            atr1.Type = AttributeInfoDataType.Floats;
+                            atr1.Floats = aitem.Floats.ToList();
+                            break;
                         case Onnx.AttributeProto.Types.AttributeType.Float:
                             atr1.Type = AttributeInfoDataType.Float32;
                             atr1.FloatData = aitem.F;
@@ -89,6 +93,10 @@ namespace Dendrite
                         case Onnx.AttributeProto.Types.AttributeType.String:
                             atr1.Type = AttributeInfoDataType.String;
                             atr1.StringData = aitem.S.ToStringUtf8();
+                            break;
+                        case Onnx.AttributeProto.Types.AttributeType.Strings:
+                            atr1.Type = AttributeInfoDataType.Strings;
+                            atr1.Strings = aitem.Strings.Select(z=>z.ToStringUtf8()).ToList();
                             break;
                         case AttributeProto.Types.AttributeType.Tensor:
                             break;

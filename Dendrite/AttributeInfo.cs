@@ -12,5 +12,6 @@ namespace Dendrite
         public float FloatData;
         public float IntData;
         public string StringData;
+        public List<string> Strings;
     }
 }

@@ -1121,7 +1121,10 @@ namespace Dendrite
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             rewindVideo();
+            var sw = Stopwatch.StartNew();
             net.run();
+            sw.Stop();
+            toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
         }
 
         private void loadImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1261,7 +1264,25 @@ namespace Dendrite
             ofd.Filter = "npy files (*.npy)|*.npy";
             if (ofd.ShowDialog() != DialogResult.OK) return;
             var npy = NpyLoader.Load(ofd.FileName);
-            var arr1 = new InternalArray(cc.Dims);
+            int[] dims = new int[cc.Dims.Length];
+            for (int i = 0; i < dims.Length; i++)
+            {
+                if (cc.Dims[i] == -1)
+                {
+                    dims[i] = npy.Shape[i];
+                }
+                else
+                {
+                    dims[i] = cc.Dims[i];
+                    if (dims[i] != npy.Shape[i])
+                    {
+                        Helpers.ShowError($"size mismatch: ({string.Join(",", cc.Dims.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
+                        return;
+                    }
+                }
+            }
+
+            var arr1 = new InternalArray(dims);
             arr1.Data = dd.Select(z => (double)z).ToArray();
             if (dd.Length != npy.Data.Length)
             {
@@ -1317,7 +1338,7 @@ namespace Dendrite
         {
             var session1 = new InferenceSession(net.NetPath);
             var container = new List<NamedOnnxValue>();
-            net.prepareData(container, session1);           
+            net.prepareData(container, session1);
 
         }
 
@@ -1826,7 +1847,7 @@ namespace Dendrite
         {
 
         }
-        
+
         public void ShowArray(Array bb)
         {
             listView4.Items.Clear();

@@ -31,6 +31,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gatherStatisticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeWeightsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,8 +43,7 @@
             this.verticaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.inferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.gatherStatisticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.npyEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,22 +74,37 @@
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            // 
+            // inferenceToolStripMenuItem
+            // 
+            this.inferenceToolStripMenuItem.Name = "inferenceToolStripMenuItem";
+            this.inferenceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.inferenceToolStripMenuItem.Text = "Inference";
+            this.inferenceToolStripMenuItem.Click += new System.EventHandler(this.inferenceToolStripMenuItem_Click);
+            // 
+            // gatherStatisticToolStripMenuItem
+            // 
+            this.gatherStatisticToolStripMenuItem.Name = "gatherStatisticToolStripMenuItem";
+            this.gatherStatisticToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gatherStatisticToolStripMenuItem.Text = "Gather statistic";
+            this.gatherStatisticToolStripMenuItem.Click += new System.EventHandler(this.gatherStatisticToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mergeWeightsToolStripMenuItem});
+            this.mergeWeightsToolStripMenuItem,
+            this.npyEditorToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // mergeWeightsToolStripMenuItem
             // 
             this.mergeWeightsToolStripMenuItem.Name = "mergeWeightsToolStripMenuItem";
-            this.mergeWeightsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mergeWeightsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.mergeWeightsToolStripMenuItem.Text = "Merge weights";
             this.mergeWeightsToolStripMenuItem.Click += new System.EventHandler(this.mergeWeightsToolStripMenuItem_Click);
             // 
@@ -152,19 +168,11 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
             // 
-            // inferenceToolStripMenuItem
+            // npyEditorToolStripMenuItem
             // 
-            this.inferenceToolStripMenuItem.Name = "inferenceToolStripMenuItem";
-            this.inferenceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.inferenceToolStripMenuItem.Text = "Inference";
-            this.inferenceToolStripMenuItem.Click += new System.EventHandler(this.inferenceToolStripMenuItem_Click);
-            // 
-            // gatherStatisticToolStripMenuItem
-            // 
-            this.gatherStatisticToolStripMenuItem.Name = "gatherStatisticToolStripMenuItem";
-            this.gatherStatisticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.gatherStatisticToolStripMenuItem.Text = "Gather statistic";
-            this.gatherStatisticToolStripMenuItem.Click += new System.EventHandler(this.gatherStatisticToolStripMenuItem_Click);
+            this.npyEditorToolStripMenuItem.Name = "npyEditorToolStripMenuItem";
+            this.npyEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.npyEditorToolStripMenuItem.Text = "Npy editor";
             // 
             // Mdi
             // 
@@ -203,5 +211,6 @@
         private System.Windows.Forms.ToolStripMenuItem closeAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem inferenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gatherStatisticToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem npyEditorToolStripMenuItem;
     }
 }

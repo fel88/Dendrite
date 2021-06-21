@@ -61,14 +61,15 @@ namespace Dendrite
                 {
 
 
-                    if (inputMeta[name].Dimensions[2] == -1)
+                    for (int i = 0; i < inputMeta[name].Dimensions.Length; i++)
                     {
-                        inputMeta[name].Dimensions[2] = intar.Shape[2];
+                        if (inputMeta[name].Dimensions[i] == -1)
+                        {
+                            inputMeta[name].Dimensions[i] = intar.Shape[i];
+                        }
                     }
-                    if (inputMeta[name].Dimensions[3] == -1)
-                    {
-                        inputMeta[name].Dimensions[3] = intar.Shape[3];
-                    }
+                    
+                    
 
 
                     inputData = intar.Data.Select(z => (float)z).ToArray();
@@ -189,7 +190,6 @@ namespace Dendrite
             OutputDatas.Clear();
             using (var results = session1.Run(container))
             {
-
                 // Get the results
                 foreach (var result in results)
                 {

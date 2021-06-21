@@ -2,6 +2,6 @@
 {
     public enum AttributeInfoDataType
     {
-        Ints, Floats, Float32, Int, String
+        Ints, Floats, Float32, Int, String, Strings
     }
 }

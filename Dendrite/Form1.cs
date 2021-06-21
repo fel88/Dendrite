@@ -233,7 +233,10 @@ namespace Dendrite
             foreach (var item in selected.Data)
             {
                 var res = group3.AddItem("", "name:" + item.Name);
-                res.AddSubItem("dims", item.Dims.Aggregate("", (x, y) => x + y + ","));
+                if (item.Dims != null)
+                {
+                    res.AddSubItem("dims", item.Dims.Aggregate("", (x, y) => x + y + ","));
+                }
                 if (item.Weights != null)
                 {
                     if (item.Weights.Length > 10)

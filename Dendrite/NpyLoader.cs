@@ -54,6 +54,11 @@ namespace Dendrite
 
             int bytesPerItem = 4;
             bool isFloat = descr.Contains("<f4");
+            bool isDouble  = descr.Contains("<f8");
+            if (isDouble)
+            {
+                bytesPerItem = 8;
+            }
 
             InternalArray ret = new InternalArray(dims);
 
@@ -102,6 +107,11 @@ namespace Dendrite
                     if (isFloat)
                     {
                         var val = BitConverter.ToSingle(bts, i);
+                        ret.Data[cnt] = val;
+                    }
+                    if (isDouble)
+                    {
+                        var val = BitConverter.ToDouble(bts, i);
                         ret.Data[cnt] = val;
                     }
 
