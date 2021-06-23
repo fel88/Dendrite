@@ -10,6 +10,8 @@ namespace Dendrite
 {
     public class TorchScriptModelProvider : ModelProvider
     {
+        public override string SaveDialogFilter => "TorchScript files (*.pth)|*.pth";
+
         public override bool IsSuitableFile(string path)
         {
             if (!(path.EndsWith(".pt") || path.EndsWith(".pth"))) return false;
@@ -422,6 +424,11 @@ namespace Dendrite
         }
 
         public override void AppendToOutput(GraphModel model, GraphNode node)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateIntAttributeValue(GraphModel model, GraphNode parentNode, string name, int val)
         {
             throw new NotImplementedException();
         }

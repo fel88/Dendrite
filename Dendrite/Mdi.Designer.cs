@@ -35,6 +35,7 @@
             this.gatherStatisticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeWeightsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.npyEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +44,6 @@
             this.verticaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.npyEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,7 +56,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(909, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -104,9 +104,15 @@
             // mergeWeightsToolStripMenuItem
             // 
             this.mergeWeightsToolStripMenuItem.Name = "mergeWeightsToolStripMenuItem";
-            this.mergeWeightsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mergeWeightsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.mergeWeightsToolStripMenuItem.Text = "Merge weights";
             this.mergeWeightsToolStripMenuItem.Click += new System.EventHandler(this.mergeWeightsToolStripMenuItem_Click);
+            // 
+            // npyEditorToolStripMenuItem
+            // 
+            this.npyEditorToolStripMenuItem.Name = "npyEditorToolStripMenuItem";
+            this.npyEditorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.npyEditorToolStripMenuItem.Text = "Npy editor";
             // 
             // layoutToolStripMenuItem
             // 
@@ -167,23 +173,19 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
-            // 
-            // npyEditorToolStripMenuItem
-            // 
-            this.npyEditorToolStripMenuItem.Name = "npyEditorToolStripMenuItem";
-            this.npyEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.npyEditorToolStripMenuItem.Text = "Npy editor";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // Mdi
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(909, 572);
             this.Controls.Add(this.menuStrip1);
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Mdi";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dendrite";
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Mdi_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Mdi_DragEnter);

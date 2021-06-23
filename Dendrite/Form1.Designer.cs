@@ -48,6 +48,8 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.extractWeightsToZipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -60,8 +62,7 @@
             this.dagreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.extractWeightsToZipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -79,6 +80,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(544, 492);
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDoubleClick);
             // 
             // tableLayoutPanel1
             // 
@@ -196,7 +198,8 @@
             this.toolStripDropDownButton1,
             this.toolStripButton5,
             this.toolStripDropDownButton2,
-            this.toolStripButton6});
+            this.toolStripButton6,
+            this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(800, 25);
@@ -222,27 +225,39 @@
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(183, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(182, 6);
             // 
             // recentToolStripMenuItem
             // 
             this.recentToolStripMenuItem.Name = "recentToolStripMenuItem";
-            this.recentToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.recentToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.recentToolStripMenuItem.Text = "Recent";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(182, 6);
+            // 
+            // extractWeightsToZipToolStripMenuItem
+            // 
+            this.extractWeightsToZipToolStripMenuItem.Name = "extractWeightsToZipToolStripMenuItem";
+            this.extractWeightsToZipToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.extractWeightsToZipToolStripMenuItem.Text = "Extract weights to zip";
+            this.extractWeightsToZipToolStripMenuItem.Click += new System.EventHandler(this.extractWeightsToZipToolStripMenuItem_Click);
             // 
             // toolStripButton3
             // 
@@ -252,6 +267,7 @@
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(37, 22);
             this.toolStripButton3.Text = "fit all";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripButton4
             // 
@@ -316,21 +332,21 @@
             // tableToolStripMenuItem
             // 
             this.tableToolStripMenuItem.Name = "tableToolStripMenuItem";
-            this.tableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tableToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.tableToolStripMenuItem.Text = "table";
             this.tableToolStripMenuItem.Click += new System.EventHandler(this.tableToolStripMenuItem_Click);
             // 
             // simpleToolStripMenuItem
             // 
             this.simpleToolStripMenuItem.Name = "simpleToolStripMenuItem";
-            this.simpleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.simpleToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.simpleToolStripMenuItem.Text = "simple";
             this.simpleToolStripMenuItem.Click += new System.EventHandler(this.simpleToolStripMenuItem_Click);
             // 
             // dagreToolStripMenuItem
             // 
             this.dagreToolStripMenuItem.Name = "dagreToolStripMenuItem";
-            this.dagreToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dagreToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.dagreToolStripMenuItem.Text = "dagre";
             this.dagreToolStripMenuItem.Click += new System.EventHandler(this.dagreToolStripMenuItem_Click);
             // 
@@ -350,17 +366,15 @@
             this.timer1.Interval = 50;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // toolStripSeparator2
+            // toolStripButton1
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
-            // 
-            // extractWeightsToZipToolStripMenuItem
-            // 
-            this.extractWeightsToZipToolStripMenuItem.Name = "extractWeightsToZipToolStripMenuItem";
-            this.extractWeightsToZipToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.extractWeightsToZipToolStripMenuItem.Text = "Extract weights to zip";
-            this.extractWeightsToZipToolStripMenuItem.Click += new System.EventHandler(this.extractWeightsToZipToolStripMenuItem_Click);
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(31, 22);
+            this.toolStripButton1.Text = "edit";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click_1);
             // 
             // Form1
             // 
@@ -418,6 +432,7 @@
         private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem extractWeightsToZipToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
 

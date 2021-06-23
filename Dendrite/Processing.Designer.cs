@@ -64,6 +64,8 @@
             this.руфеьфзToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.depthmsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compareWithNumpyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.numpyFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.binaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listView2 = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -163,13 +165,13 @@
             this.instanceSegmentationDrawerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nmsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.depthmapDecodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rgb2bgrToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.rgb2bgrToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip3.SuspendLayout();
@@ -265,7 +267,7 @@
             this.decodeAsToolStripMenuItem,
             this.compareWithNumpyToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(189, 158);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 158);
             // 
             // convertToIamgeToolStripMenuItem
             // 
@@ -274,7 +276,7 @@
             this.rGBToolStripMenuItem,
             this.rgbMaskToolStripMenuItem});
             this.convertToIamgeToolStripMenuItem.Name = "convertToIamgeToolStripMenuItem";
-            this.convertToIamgeToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.convertToIamgeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.convertToIamgeToolStripMenuItem.Text = "convert to image";
             this.convertToIamgeToolStripMenuItem.Click += new System.EventHandler(this.convertToIamgeToolStripMenuItem_Click);
             // 
@@ -314,7 +316,7 @@
             this.toFileToolStripMenuItem,
             this.toClipboardToolStripMenuItem});
             this.saveImageToFileToolStripMenuItem.Name = "saveImageToFileToolStripMenuItem";
-            this.saveImageToFileToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.saveImageToFileToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.saveImageToFileToolStripMenuItem.Text = "save image";
             this.saveImageToFileToolStripMenuItem.Click += new System.EventHandler(this.saveImageToFileToolStripMenuItem_Click);
             // 
@@ -337,13 +339,13 @@
             this.saveArrayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.binaryAsisToolStripMenuItem});
             this.saveArrayToolStripMenuItem.Name = "saveArrayToolStripMenuItem";
-            this.saveArrayToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.saveArrayToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.saveArrayToolStripMenuItem.Text = "save array";
             // 
             // binaryAsisToolStripMenuItem
             // 
             this.binaryAsisToolStripMenuItem.Name = "binaryAsisToolStripMenuItem";
-            this.binaryAsisToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.binaryAsisToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.binaryAsisToolStripMenuItem.Text = "binary as-is";
             this.binaryAsisToolStripMenuItem.Click += new System.EventHandler(this.binaryAsisToolStripMenuItem_Click);
             // 
@@ -354,7 +356,7 @@
             this.heatmapToolStripMenuItem,
             this.depthmapToolStripMenuItem});
             this.setAsToolStripMenuItem.Name = "setAsToolStripMenuItem";
-            this.setAsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.setAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.setAsToolStripMenuItem.Text = "set as";
             // 
             // boxesToolStripMenuItem
@@ -408,7 +410,7 @@
             this.boxesToolStripMenuItem1,
             this.yoloToolStripMenuItem});
             this.decodeAllAsToolStripMenuItem.Name = "decodeAllAsToolStripMenuItem";
-            this.decodeAllAsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.decodeAllAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.decodeAllAsToolStripMenuItem.Text = "decode all as";
             // 
             // boxesToolStripMenuItem1
@@ -432,7 +434,7 @@
             this.руфеьфзToolStripMenuItem,
             this.depthmsToolStripMenuItem});
             this.decodeAsToolStripMenuItem.Name = "decodeAsToolStripMenuItem";
-            this.decodeAsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.decodeAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.decodeAsToolStripMenuItem.Text = "decode as";
             // 
             // textToolStripMenuItem
@@ -467,10 +469,27 @@
             // 
             // compareWithNumpyToolStripMenuItem
             // 
+            this.compareWithNumpyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.numpyFileToolStripMenuItem,
+            this.binaryToolStripMenuItem});
             this.compareWithNumpyToolStripMenuItem.Name = "compareWithNumpyToolStripMenuItem";
-            this.compareWithNumpyToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.compareWithNumpyToolStripMenuItem.Text = "compare with numpy";
+            this.compareWithNumpyToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.compareWithNumpyToolStripMenuItem.Text = "compare with";
             this.compareWithNumpyToolStripMenuItem.Click += new System.EventHandler(this.compareWithNumpyToolStripMenuItem_Click);
+            // 
+            // numpyFileToolStripMenuItem
+            // 
+            this.numpyFileToolStripMenuItem.Name = "numpyFileToolStripMenuItem";
+            this.numpyFileToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.numpyFileToolStripMenuItem.Text = "numpy file";
+            this.numpyFileToolStripMenuItem.Click += new System.EventHandler(this.numpyFileToolStripMenuItem_Click);
+            // 
+            // binaryToolStripMenuItem
+            // 
+            this.binaryToolStripMenuItem.Name = "binaryToolStripMenuItem";
+            this.binaryToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.binaryToolStripMenuItem.Text = "binary float array file";
+            this.binaryToolStripMenuItem.Click += new System.EventHandler(this.binaryToolStripMenuItem_Click);
             // 
             // listView2
             // 
@@ -1304,7 +1323,7 @@
             this.addToolStripMenuItem1,
             this.deleteToolStripMenuItem1});
             this.contextMenuStrip4.Name = "contextMenuStrip4";
-            this.contextMenuStrip4.Size = new System.Drawing.Size(181, 70);
+            this.contextMenuStrip4.Size = new System.Drawing.Size(107, 48);
             // 
             // addToolStripMenuItem1
             // 
@@ -1319,7 +1338,7 @@
             this.depthmapDecodeToolStripMenuItem,
             this.rgb2bgrToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(106, 22);
             this.addToolStripMenuItem1.Text = "add";
             // 
             // yoloDecodeToolStripMenuItem
@@ -1378,10 +1397,17 @@
             this.depthmapDecodeToolStripMenuItem.Text = "depthmap decode";
             this.depthmapDecodeToolStripMenuItem.Click += new System.EventHandler(this.depthmapDecodeToolStripMenuItem_Click);
             // 
+            // rgb2bgrToolStripMenuItem
+            // 
+            this.rgb2bgrToolStripMenuItem.Name = "rgb2bgrToolStripMenuItem";
+            this.rgb2bgrToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.rgb2bgrToolStripMenuItem.Text = "rgb2bgr";
+            this.rgb2bgrToolStripMenuItem.Click += new System.EventHandler(this.rgb2bgrToolStripMenuItem_Click);
+            // 
             // deleteToolStripMenuItem1
             // 
             this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
-            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(106, 22);
             this.deleteToolStripMenuItem1.Text = "delete";
             this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem1_Click);
             // 
@@ -1431,13 +1457,6 @@
             this.toolStripButton3.Size = new System.Drawing.Size(71, 22);
             this.toolStripButton3.Text = "copy frame";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
-            // 
-            // rgb2bgrToolStripMenuItem
-            // 
-            this.rgb2bgrToolStripMenuItem.Name = "rgb2bgrToolStripMenuItem";
-            this.rgb2bgrToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
-            this.rgb2bgrToolStripMenuItem.Text = "rgb2bgr";
-            this.rgb2bgrToolStripMenuItem.Click += new System.EventHandler(this.rgb2bgrToolStripMenuItem_Click);
             // 
             // Processing
             // 
@@ -1626,5 +1645,7 @@
         private System.Windows.Forms.ToolStripMenuItem updateAnDShowRawToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transposeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rgb2bgrToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem numpyFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem binaryToolStripMenuItem;
     }
 }

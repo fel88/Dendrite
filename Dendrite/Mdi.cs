@@ -206,5 +206,10 @@ namespace Dendrite
             s.MdiParent = this;
             s.Show();
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -70,7 +70,7 @@ namespace Dendrite
                 }
                 else
                 {
-                    if (Math.Abs(arr1[i] - arr2[i]) > 10e-5)
+                    if (Math.Abs(arr1[i] - arr2[i]) > eps)
                     {
                         lvi.BackColor = Color.Yellow;
 

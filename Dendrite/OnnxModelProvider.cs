@@ -1,14 +1,18 @@
-﻿using Onnx;
+﻿using Google.Protobuf;
+using Onnx;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Dendrite
 {
     public class OnnxModelProvider : ModelProvider
     {
+        public override string SaveDialogFilter => "Onnx files (*.onnx)|*.onnx";
+
         public override void AppendToOutput(GraphModel model, GraphNode node)
         {
             var proto = (model as OnnxGraphModel).ProtoModel;
@@ -35,6 +39,7 @@ namespace Dendrite
             {
                 Name = z.Name,
                 Tag = z
+                
             }).ToArray());
 
             Dictionary<string, GraphNode> outs = new Dictionary<string, GraphNode>();
@@ -64,7 +69,6 @@ namespace Dendrite
             for (int i = 0; i < res2.Graph.Node.Count; i++)
             {
                 Onnx.NodeProto item = res2.Graph.Node[i];
-
 
                 string ss = "";
                 foreach (var aitem in item.Attribute)
@@ -96,9 +100,20 @@ namespace Dendrite
                             break;
                         case Onnx.AttributeProto.Types.AttributeType.Strings:
                             atr1.Type = AttributeInfoDataType.Strings;
-                            atr1.Strings = aitem.Strings.Select(z=>z.ToStringUtf8()).ToList();
+                            atr1.Strings = aitem.Strings.Select(z => z.ToStringUtf8()).ToList();
                             break;
                         case AttributeProto.Types.AttributeType.Tensor:
+                            var dims = aitem.T.Dims;
+                            var bar = aitem.T.RawData.ToByteArray();
+                            List<float> fff = new List<float>();
+                            for (int j = 0; j < bar.Length; j += 4)
+                            {
+                                /*var bar1 = bar.Skip(j).Take(4).ToArray();
+                                bar1 = bar1.Reverse().ToArray();
+                                fff.Add(BitConverter.ToSingle(bar1, 0));*/
+                                fff.Add(BitConverter.ToSingle(bar, j));
+                            }
+                            atr1.Floats = fff.ToList();
                             break;
                         default:
                             throw new NotImplementedException();
@@ -115,18 +130,34 @@ namespace Dendrite
                         nodes[i].Data.Add(id);
                         var initer = inits[iitem];
 
-                        var bts = initer.RawData.ToByteArray();
-                        var b64 = initer.RawData.ToBase64();
-
-                        TensorProto p = new TensorProto();
-                        p.RawData = Google.Protobuf.ByteString.FromBase64(b64);
-
-                        List<float> ret = new List<float>();
-                        for (int j = 0; j < bts.Length; j += 4)
+                        if (initer.HasRawData)
                         {
-                            ret.Add(BitConverter.ToSingle(bts, j));
+                            var bts = initer.RawData.ToByteArray();
+                            var b64 = initer.RawData.ToBase64();
+
+                            TensorProto p = new TensorProto();
+                            p.RawData = Google.Protobuf.ByteString.FromBase64(b64);
+
+                            List<float> ret = new List<float>();
+                            for (int j = 0; j < bts.Length; j += 4)
+                            {
+                                ret.Add(BitConverter.ToSingle(bts, j));
+                            }
+                            id.Weights = ret.ToArray();
                         }
-                        id.Weights = ret.ToArray();
+                        else if (initer.Int64Data != null && initer.Int64Data.Count > 0)
+                        {
+                            var arr = initer.Int64Data.ToArray();
+                            id.LWeights = arr.ToArray();
+                        }
+                        else if (initer.FloatData != null && initer.FloatData.Count > 0)
+                        {
+                            id.Weights = initer.FloatData.ToArray();
+                        }
+                        else
+                        {
+
+                        }
                         id.Dims = initer.Dims.ToArray();
                         continue;
                     }
@@ -202,13 +233,10 @@ namespace Dendrite
             ret2.ProtoModel = res2;
             ret2.Nodes = nodes.ToArray();
             return ret2;
-
-
         }
 
         public override void SaveModel(GraphModel model, string path)
-        {
-            //res2.Graph.Input[0].Name = "input_";            
+        {            
             using (var output = File.Create(path))
             {
                 using (Google.Protobuf.CodedOutputStream ff = new Google.Protobuf.CodedOutputStream(output))
@@ -217,6 +245,12 @@ namespace Dendrite
                 }
             }
             return;
+        }
+        public override void UpdateIntAttributeValue(GraphModel model, GraphNode parentNode, string name, int val)
+        {
+            var ff = (model as OnnxGraphModel).ProtoModel.Graph.Node.First(z => z.Name == parentNode.Name);
+            var attr = ff.Attribute.First(z => z.Name == name);
+            attr.I = val;
         }
 
         public override void UpdateFloatTensor(GraphModel model, GraphNode parentNode, string name, float[] data, long[] dims)
@@ -257,11 +291,6 @@ namespace Dendrite
             {
                 ret2.Add(BitConverter.ToSingle(bts2, j));
             }
-        }
-
-        public class OnnxGraphModel : GraphModel
-        {
-            public Onnx.ModelProto ProtoModel;
-        }
+        }       
     }
 }

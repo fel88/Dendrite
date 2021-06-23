@@ -14,7 +14,6 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using OpenCvSharp;
 using System.Xml.Linq;
 using System.IO.Compression;
 
@@ -85,8 +84,15 @@ namespace Dendrite
             {
                 LoadModel(args[1]);
             }
+            Load += Form1_Load;
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            mf = new MessageFilter();
+            Application.AddMessageFilter(mf);
         }
 
+        MessageFilter mf = null;
         private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             StringBuilder sb = new StringBuilder();
@@ -196,10 +202,13 @@ namespace Dendrite
         public void UpdateInfo()
         {
             group1.Clear();
+
             group1.AddItem("type", $"{selected.OpType}:{selected.LayerType}");
             group1.AddItem("name", selected.Name);
             group2.Clear();
             group2.Top = group1.Bottom;
+            group2.SetModel(Model);
+
             foreach (var item in selected.Attributes)
             {
                 string vall = "";
@@ -221,7 +230,7 @@ namespace Dendrite
                         vall = item.Floats.Aggregate("", (x, y) => x + y + ", ");
                         break;
                 }
-                group2.AddItem(item.Name, vall);
+                group2.AddItem(item.Name, vall, selected.Name);
             }
             group3.Clear();
             group3.Top = group2.Bottom;
@@ -287,7 +296,7 @@ namespace Dendrite
 
         private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            pictureBox1.Focus();
+            //pictureBox1.Focus();
         }
         public void DrawRoundedRectangle(Graphics g,
                                  Rectangle r, int d, Pen pen)
@@ -337,9 +346,8 @@ namespace Dendrite
                 ctx.Graphics.Clear(Color.White);
                 ctx.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-
                 ctx.Graphics.ResetTransform();
-
+                                
                 ///axis
                 //ctx.Graphics.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
                 //ctx.Graphics.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
@@ -493,8 +501,6 @@ namespace Dendrite
 
         DrawingContext ctx = new DrawingContext();
 
-
-
         public List<ModelProvider> Providers = new List<ModelProvider>();
 
 
@@ -547,6 +553,7 @@ namespace Dendrite
             {
                 ParentForm.Text = Path.GetFileName(path);
             }
+            fitAll();
             return true;
         }
 
@@ -873,6 +880,7 @@ namespace Dendrite
             if (Model == null) { MessageBox.Show("load model first", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
             SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = Model.Provider.SaveDialogFilter;
             if (sfd.ShowDialog() != DialogResult.OK) return;
             Model.Provider.SaveModel(Model, sfd.FileName);
         }
@@ -893,10 +901,10 @@ namespace Dendrite
                     foreach (var item in model.Nodes)
                     {
                         foreach (var w in item.Data)
-                        {                            
+                        {
                             if (w.Weights == null || w.Weights.Length == 0) continue;
                             sb.AppendLine($"<weights file=\"{cntr}.dat\" name=\"{w.Name}\" dims=\"{w.Dims.Aggregate("", (x, y) => x + y + ",").TrimEnd(',')}\"/>");
-                            
+
 
                             List<byte> bb = new List<byte>();
                             MemoryStream ms = new MemoryStream();
@@ -906,8 +914,8 @@ namespace Dendrite
                                 foreach (var b in BitConverter.GetBytes(bitem))
                                 {
                                     ms.WriteByte(b);
-                                }                               
-                                
+                                }
+
                             }
                             ms.Seek(0, SeekOrigin.Begin);
                             ZipArchiveEntry w1 = archive.CreateEntry($"weights/{cntr++}.dat");
@@ -918,7 +926,7 @@ namespace Dendrite
                             }
                         }
                     }
-                  
+
 
 
                     sb.AppendLine("</net>");
@@ -930,7 +938,7 @@ namespace Dendrite
                     {
                         writer.Write(sb.ToString());
                     }
-              
+
 
                 }
             }
@@ -938,9 +946,48 @@ namespace Dendrite
         }
         private void extractWeightsToZipToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();            
+            SaveFileDialog sfd = new SaveFileDialog();
             if (sfd.ShowDialog() != DialogResult.OK) return;
             ExportAsZip(sfd.FileName, Model);
+        }
+
+       void edit()
+        {
+            if (selected == null) return;
+            if (!(selected.Tag is NodeProto)) return;
+            Edit ee = new Edit();
+            if (Model is OnnxGraphModel gm)
+            {
+                ee.Init(gm.ProtoModel, (selected.Tag as NodeProto));
+                ee.ShowDialog(ParentForm);
+            }
+        }
+        private void toolStripButton1_Click_1(object sender, EventArgs e)
+        {
+            edit();
+        }
+
+        void fitAll()
+        {
+            List<PointF> pp = new List<PointF>();
+            foreach (var item in Model.Nodes)
+            {
+                var dtag = item.DrawTag as GraphNodeDrawInfo;
+                pp.Add(dtag.Rect.Location);
+                pp.Add(new PointF(dtag.Rect.Right, dtag.Rect.Bottom));
+            }
+
+            ctx.FitToPoints(pp.ToArray(), 5);
+        }
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            fitAll();
+        }
+
+        private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {            
+            ctx.StopDrag();
+            edit();
         }
     }
 }

@@ -86,18 +86,27 @@ namespace Dendrite
             btn.Visible = false;
             //Height = SubItems.Max(z => z.Label.Bottom);
 
+        }
 
+        GraphModel model;
+        string attributeName;
+        string nodeName;
+        internal void SetModel(GraphModel model, string name, string nodeName)
+        {
+            attributeName = name;
+            this.nodeName = nodeName;
+            this.model = model;
         }
 
         private void Btn_Click(object sender, EventArgs e)
         {
-            if((sender as Button).Tag is string s)
+            if ((sender as Button).Tag is string s)
             {
                 Clipboard.SetText(s);
             }
             else
             {
-                Clipboard.SetText(((sender as Button).Tag as Func<string>)());              
+                Clipboard.SetText(((sender as Button).Tag as Func<string>)());
 
             }
             MessageBox.Show("Data saved to clipboard!");
@@ -129,7 +138,14 @@ namespace Dendrite
         public Action PlusChanged;
         private void button1_Click(object sender, EventArgs e)
         {
-            Switch();
+            if (SubItems.Count == 0)
+            {
+                model.Provider.UpdateIntAttributeValue(model, new GraphNode() { Name = nodeName }, attributeName, 0);
+            }
+            else
+            {
+                Switch();
+            }
         }
     }
     public class ExpandSubItem

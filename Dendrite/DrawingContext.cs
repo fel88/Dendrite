@@ -88,13 +88,17 @@ namespace Dendrite
 
         }
 
-        private void Box_MouseUp(object sender, MouseEventArgs e)
+        public void StopDrag()
         {
             isDrag = false;
         }
+        private void Box_MouseUp(object sender, MouseEventArgs e)
+        {
+            StopDrag();
+        }
 
         private void Box_MouseDown(object sender, MouseEventArgs e)
-        {
+        {            
             var pos = Box.PointToClient(Cursor.Position);
             var p = Transform(pos);
 
@@ -135,6 +139,37 @@ namespace Dendrite
         {
             var t1 = Transform(new PointF(rect.Left, rect.Top));
             return new Rectangle((int)t1.X, (int)t1.Y, (int)(rect.Width * zoom), (int)(rect.Height * zoom));
+        }
+
+        public void FitToPoints(PointF[] points, int gap = 0)
+        {
+            var maxx = points.Max(z => z.X) + gap;
+            var minx = points.Min(z => z.X) - gap;
+            var maxy = points.Max(z => z.Y) + gap;
+            var miny = points.Min(z => z.Y) - gap;
+
+            var w = Box.Width;
+            var h = Box.Height;
+
+            var dx = maxx - minx;
+            var kx = w / dx;
+            var dy = maxy - miny;
+            var ky = h / dy;
+
+            var oz = zoom;
+            var sz1 = new Size((int)(dx * kx), (int)(dy * kx));
+            var sz2 = new Size((int)(dx * ky), (int)(dy * ky));
+            zoom = kx;
+            if (sz1.Width > w || sz1.Height > h) zoom = ky;
+
+            var x = dx / 2 + minx;
+            var y = dy / 2 + miny;
+
+            sx = ((w / 2f) / zoom - x);
+            sy = ((h / 2f) / zoom - y);
+
+            var test = Transform(new PointF(x, y));
+
         }
     }
 }

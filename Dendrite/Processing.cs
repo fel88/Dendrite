@@ -381,7 +381,6 @@ namespace Dendrite
                     Array.Copy(BitConverter.GetBytes(dd[i]), 0, arrr, i * 4, 4);
                 }
                 File.WriteAllBytes(sfd.FileName, arrr);
-
             }
         }
 
@@ -1256,57 +1255,7 @@ namespace Dendrite
 
         private void compareWithNumpyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count == 0) return;
-            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
-            if (!(OutputDatas.ContainsKey(cc.Name) && OutputDatas[cc.Name] is float[] dd)) return;
 
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "npy files (*.npy)|*.npy";
-            if (ofd.ShowDialog() != DialogResult.OK) return;
-            var npy = NpyLoader.Load(ofd.FileName);
-            int[] dims = new int[cc.Dims.Length];
-            for (int i = 0; i < dims.Length; i++)
-            {
-                if (cc.Dims[i] == -1)
-                {
-                    dims[i] = npy.Shape[i];
-                }
-                else
-                {
-                    dims[i] = cc.Dims[i];
-                    if (dims[i] != npy.Shape[i])
-                    {
-                        Helpers.ShowError($"size mismatch: ({string.Join(",", cc.Dims.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
-                        return;
-                    }
-                }
-            }
-
-            var arr1 = new InternalArray(dims);
-            arr1.Data = dd.Select(z => (double)z).ToArray();
-            if (dd.Length != npy.Data.Length)
-            {
-                Helpers.ShowError($"size mismatch: ({string.Join(",", arr1.Shape.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
-                return;
-            }
-            float eps = 10e-5f;
-            double maxDiff = 0;
-
-
-
-            for (int i = 0; i < dd.Length; i++)
-            {
-                maxDiff = Math.Max(Math.Abs(dd[i] - npy.Data[i]), maxDiff);
-                if (Math.Abs(dd[i] - npy.Data[i]) > eps)
-                {
-                    Helpers.ShowError("value mismatch", Text);
-                    ArrayComparer arc = new ArrayComparer();
-                    arc.Init(dd, npy.Data.Select(z => (float)z).ToArray());
-                    arc.ShowDialog();
-                    return;
-                }
-            }
-            Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
         }
 
         private void showPostprocessDataToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1887,6 +1836,106 @@ namespace Dendrite
             var r = new BGR2RGBPreprocessor();
             net.Postprocessors.Add(r);
             listView6.Items.Add(new ListViewItem(new string[] { "rgb2bgr" }) { Tag = r });
+        }
+
+        private void numpyFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (!(OutputDatas.ContainsKey(cc.Name) && OutputDatas[cc.Name] is float[] dd)) return;
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "npy files (*.npy)|*.npy";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            var npy = NpyLoader.Load(ofd.FileName);
+            int[] dims = new int[cc.Dims.Length];
+            for (int i = 0; i < dims.Length; i++)
+            {
+                if (cc.Dims[i] == -1)
+                {
+                    dims[i] = npy.Shape[i];
+                }
+                else
+                {
+                    dims[i] = cc.Dims[i];
+                    if (dims[i] != npy.Shape[i])
+                    {
+                        Helpers.ShowError($"size mismatch: ({string.Join(",", cc.Dims.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
+                        return;
+                    }
+                }
+            }
+
+            var arr1 = new InternalArray(dims);
+            arr1.Data = dd.Select(z => (double)z).ToArray();
+            if (dd.Length != npy.Data.Length)
+            {
+                Helpers.ShowError($"size mismatch: ({string.Join(",", arr1.Shape.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
+                return;
+            }
+            float eps = 10e-5f;
+            double maxDiff = 0;
+
+
+
+            for (int i = 0; i < dd.Length; i++)
+            {
+                maxDiff = Math.Max(Math.Abs(dd[i] - npy.Data[i]), maxDiff);
+                if (Math.Abs(dd[i] - npy.Data[i]) > eps)
+                {
+                    Helpers.ShowError("value mismatch", Text);
+                    ArrayComparer arc = new ArrayComparer();
+                    arc.Init(dd, npy.Data.Select(z => (float)z).ToArray());
+                    arc.ShowDialog();
+                    return;
+                }
+            }
+            Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
+        }
+
+        private void binaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (!(OutputDatas.ContainsKey(cc.Name) && OutputDatas[cc.Name] is float[] dd)) return;
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "All files (*.*)|*.*";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            var bb = File.ReadAllBytes(ofd.FileName);
+
+            var cnt = bb.Length / 4;
+            var ar1 = new InternalArray(new int[] { 1 });
+            List<float> ff = new List<float>();
+            for (int i = 0; i < bb.Length; i+=4)
+            {
+                ff.Add(BitConverter.ToSingle(bb, i));
+            }
+            
+            if (ff.Count != dd.Length)
+            {
+                Helpers.ShowError($"size mismatch: ({string.Join(",", ff.Count)}) and ({string.Join(",", dd.Length)})", Text);
+                return;
+            }           
+                
+                
+            float eps = 10e-5f;
+            double maxDiff = 0;
+            for (int i = 0; i < ff.Count; i++)
+            {
+                maxDiff = Math.Abs(ff[i] - dd[i]);
+                if (Math.Abs(ff[i] - dd[i]) > eps)
+                {                    
+                    Helpers.ShowError("value mismatch", Text);
+                    ArrayComparer arc = new ArrayComparer();
+                    arc.Init(dd, ff.ToArray());
+                    arc.ShowDialog();
+                    return;
+                }
+            }
+            Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
+
         }
     }
 

@@ -36,15 +36,7 @@ namespace Dendrite
             }
         }
 
-        public class ComboBoxItem
-        {
-            public string Name { get; set; }
-            public object Tag;
-            public override string ToString()
-            {
-                return Name;
-            }
-        }
+        
 
         GraphModel model1;
         GraphModel model2;
@@ -65,6 +57,7 @@ namespace Dendrite
             {
                 foreach (var ccc in item.Data)
                 {
+                    if (ccc.Dims == null) continue;
                     var c1 = $"{item.Name}:{ccc.Name}";
                     var c2 = string.Join(", ", ccc.Dims);
                     if (!string.IsNullOrEmpty(mask))
