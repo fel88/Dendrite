@@ -114,6 +114,11 @@
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.listView4 = new System.Windows.Forms.ListView();
@@ -132,9 +137,6 @@
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.textBox9 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.tabControl2 = new System.Windows.Forms.TabControl();
@@ -172,6 +174,7 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip3.SuspendLayout();
@@ -181,6 +184,8 @@
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.panel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -199,7 +204,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 0);
+            this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(31, 13);
             this.label1.TabIndex = 2;
@@ -220,7 +225,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 153);
+            this.label2.Location = new System.Drawing.Point(3, 222);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 13);
             this.label2.TabIndex = 6;
@@ -233,12 +238,13 @@
             this.columnHeader2,
             this.columnHeader9});
             this.listView1.ContextMenuStrip = this.contextMenuStrip1;
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(9, 169);
+            this.listView1.Location = new System.Drawing.Point(3, 245);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(230, 91);
+            this.listView1.Size = new System.Drawing.Size(238, 196);
             this.listView1.TabIndex = 7;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -265,9 +271,10 @@
             this.setAsToolStripMenuItem,
             this.decodeAllAsToolStripMenuItem,
             this.decodeAsToolStripMenuItem,
-            this.compareWithNumpyToolStripMenuItem});
+            this.compareWithNumpyToolStripMenuItem,
+            this.infoToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 158);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 202);
             // 
             // convertToIamgeToolStripMenuItem
             // 
@@ -276,7 +283,7 @@
             this.rGBToolStripMenuItem,
             this.rgbMaskToolStripMenuItem});
             this.convertToIamgeToolStripMenuItem.Name = "convertToIamgeToolStripMenuItem";
-            this.convertToIamgeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.convertToIamgeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.convertToIamgeToolStripMenuItem.Text = "convert to image";
             this.convertToIamgeToolStripMenuItem.Click += new System.EventHandler(this.convertToIamgeToolStripMenuItem_Click);
             // 
@@ -316,7 +323,7 @@
             this.toFileToolStripMenuItem,
             this.toClipboardToolStripMenuItem});
             this.saveImageToFileToolStripMenuItem.Name = "saveImageToFileToolStripMenuItem";
-            this.saveImageToFileToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.saveImageToFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveImageToFileToolStripMenuItem.Text = "save image";
             this.saveImageToFileToolStripMenuItem.Click += new System.EventHandler(this.saveImageToFileToolStripMenuItem_Click);
             // 
@@ -339,7 +346,7 @@
             this.saveArrayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.binaryAsisToolStripMenuItem});
             this.saveArrayToolStripMenuItem.Name = "saveArrayToolStripMenuItem";
-            this.saveArrayToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.saveArrayToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveArrayToolStripMenuItem.Text = "save array";
             // 
             // binaryAsisToolStripMenuItem
@@ -356,7 +363,7 @@
             this.heatmapToolStripMenuItem,
             this.depthmapToolStripMenuItem});
             this.setAsToolStripMenuItem.Name = "setAsToolStripMenuItem";
-            this.setAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.setAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.setAsToolStripMenuItem.Text = "set as";
             // 
             // boxesToolStripMenuItem
@@ -410,7 +417,7 @@
             this.boxesToolStripMenuItem1,
             this.yoloToolStripMenuItem});
             this.decodeAllAsToolStripMenuItem.Name = "decodeAllAsToolStripMenuItem";
-            this.decodeAllAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.decodeAllAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.decodeAllAsToolStripMenuItem.Text = "decode all as";
             // 
             // boxesToolStripMenuItem1
@@ -434,7 +441,7 @@
             this.руфеьфзToolStripMenuItem,
             this.depthmsToolStripMenuItem});
             this.decodeAsToolStripMenuItem.Name = "decodeAsToolStripMenuItem";
-            this.decodeAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.decodeAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.decodeAsToolStripMenuItem.Text = "decode as";
             // 
             // textToolStripMenuItem
@@ -473,7 +480,7 @@
             this.numpyFileToolStripMenuItem,
             this.binaryToolStripMenuItem});
             this.compareWithNumpyToolStripMenuItem.Name = "compareWithNumpyToolStripMenuItem";
-            this.compareWithNumpyToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.compareWithNumpyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.compareWithNumpyToolStripMenuItem.Text = "compare with";
             this.compareWithNumpyToolStripMenuItem.Click += new System.EventHandler(this.compareWithNumpyToolStripMenuItem_Click);
             // 
@@ -498,12 +505,13 @@
             this.columnHeader4,
             this.columnHeader5});
             this.listView2.ContextMenuStrip = this.contextMenuStrip3;
+            this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView2.FullRowSelect = true;
             this.listView2.GridLines = true;
             this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(7, 16);
+            this.listView2.Location = new System.Drawing.Point(3, 23);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(232, 131);
+            this.listView2.Size = new System.Drawing.Size(238, 196);
             this.listView2.TabIndex = 8;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
@@ -887,29 +895,84 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.tabControl1);
-            this.panel1.Controls.Add(this.button5);
-            this.panel1.Controls.Add(this.button4);
-            this.panel1.Controls.Add(this.textBox9);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.listView1);
-            this.panel1.Controls.Add(this.listView2);
+            this.panel1.Controls.Add(this.tableLayoutPanel2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 33);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(244, 688);
             this.panel1.TabIndex = 0;
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.panel5, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.tabControl1, 0, 5);
+            this.tableLayoutPanel2.Controls.Add(this.listView2, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label2, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.listView1, 0, 3);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 6;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(244, 688);
+            this.tableLayoutPanel2.TabIndex = 29;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.textBox9);
+            this.panel5.Controls.Add(this.button4);
+            this.panel5.Controls.Add(this.button5);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel5.Location = new System.Drawing.Point(3, 447);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(238, 34);
+            this.panel5.TabIndex = 30;
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(3, 11);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(100, 20);
+            this.textBox9.TabIndex = 27;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(109, 7);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(54, 26);
+            this.button4.TabIndex = 25;
+            this.button4.Text = "set addr";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(169, 7);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(54, 26);
+            this.button5.TabIndex = 28;
+            this.button5.Text = "set val";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(3, 298);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(3, 487);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(236, 250);
+            this.tabControl1.Size = new System.Drawing.Size(238, 198);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
@@ -919,7 +982,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(228, 224);
+            this.tabPage1.Size = new System.Drawing.Size(230, 172);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -959,7 +1022,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(228, 224);
+            this.tabPage2.Size = new System.Drawing.Size(230, 172);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1019,7 +1082,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(228, 224);
+            this.tabPage3.Size = new System.Drawing.Size(230, 172);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Video settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1086,33 +1149,6 @@
             this.textBox1.TabIndex = 0;
             this.textBox1.Text = "25";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(176, 266);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(54, 26);
-            this.button5.TabIndex = 28;
-            this.button5.Text = "set val";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(116, 266);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(54, 26);
-            this.button4.TabIndex = 25;
-            this.button4.Text = "set addr";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // textBox9
-            // 
-            this.textBox9.Location = new System.Drawing.Point(10, 270);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(100, 20);
-            this.textBox9.TabIndex = 27;
             // 
             // panel2
             // 
@@ -1458,6 +1494,13 @@
             this.toolStripButton3.Text = "copy frame";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
+            // infoToolStripMenuItem
+            // 
+            this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
+            this.infoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.infoToolStripMenuItem.Text = "info";
+            this.infoToolStripMenuItem.Click += new System.EventHandler(this.infoToolStripMenuItem_Click);
+            // 
             // Processing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1468,7 +1511,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Name = "Processing";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Processing";
+            this.Text = "Inference";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip3.ResumeLayout(false);
@@ -1480,7 +1523,10 @@
             this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
@@ -1647,5 +1693,8 @@
         private System.Windows.Forms.ToolStripMenuItem rgb2bgrToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem numpyFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem binaryToolStripMenuItem;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
     }
 }

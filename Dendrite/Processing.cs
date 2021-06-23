@@ -4,18 +4,14 @@ using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Dendrite.MergerWindow;
 
 namespace Dendrite
 {
@@ -161,7 +157,6 @@ namespace Dendrite
             {
                 pictureBox1.Image = BitmapConverter.ToBitmap(mat);
             }
-
         }
 
         //private void textBox1_TextChanged(object sender, EventArgs e)
@@ -831,7 +826,7 @@ namespace Dendrite
         {
             net.Init(lastPath);
 
-            Text = "Processing: " + lastPath;
+            Text = "Inference: " + lastPath;
             var _netPath = lastPath;
 
             foreach (var item in net.Nodes.Where(z => !z.IsInput))
@@ -1908,25 +1903,25 @@ namespace Dendrite
             var cnt = bb.Length / 4;
             var ar1 = new InternalArray(new int[] { 1 });
             List<float> ff = new List<float>();
-            for (int i = 0; i < bb.Length; i+=4)
+            for (int i = 0; i < bb.Length; i += 4)
             {
                 ff.Add(BitConverter.ToSingle(bb, i));
             }
-            
+
             if (ff.Count != dd.Length)
             {
                 Helpers.ShowError($"size mismatch: ({string.Join(",", ff.Count)}) and ({string.Join(",", dd.Length)})", Text);
                 return;
-            }           
-                
-                
+            }
+
+
             float eps = 10e-5f;
             double maxDiff = 0;
             for (int i = 0; i < ff.Count; i++)
             {
                 maxDiff = Math.Abs(ff[i] - dd[i]);
                 if (Math.Abs(ff[i] - dd[i]) > eps)
-                {                    
+                {
                     Helpers.ShowError("value mismatch", Text);
                     ArrayComparer arc = new ArrayComparer();
                     arc.Init(dd, ff.ToArray());
@@ -1937,16 +1932,15 @@ namespace Dendrite
             Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
 
         }
-    }
 
-    public class InputInfo
-    {
-        public List<IInputPreprocessor> Preprocessors = new List<IInputPreprocessor>();
-        public object Data;
-    }
+        private void infoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (!(OutputDatas[cc.Name] is float[] dd)) return;
+            
+            MessageBox.Show($"size: {dd.Length}", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-    public interface IProcessorConfigControl
-    {
-        void Init(IInputPreprocessor proc);
+        }
     }
 }

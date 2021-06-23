@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Onnx;
 
 namespace Dendrite
 {
@@ -88,13 +89,12 @@ namespace Dendrite
 
         }
 
-        GraphModel model;
-        string attributeName;
-        string nodeName;
-        internal void SetModel(GraphModel model, string name, string nodeName)
+        ITag model;
+
+        GraphModel graph;
+        internal void SetModel(GraphModel graph, ITag model)
         {
-            attributeName = name;
-            this.nodeName = nodeName;
+            this.graph = graph;
             this.model = model;
         }
 
@@ -110,8 +110,6 @@ namespace Dendrite
 
             }
             MessageBox.Show("Data saved to clipboard!");
-
-
         }
 
         bool collapsed = true;
@@ -140,20 +138,39 @@ namespace Dendrite
         {
             if (SubItems.Count == 0)
             {
-                model.Provider.UpdateIntAttributeValue(model, new GraphNode() { Name = nodeName }, attributeName, 0);
+                if (model.Tag is ValueInfoProto vip)
+                {
+                    TextEnterDialog t = new TextEnterDialog();
+                    t.Init(vip.Name);
+                    t.ShowDialog();
+
+                    var ww = (graph as OnnxGraphModel).ProtoModel.Graph.Node.Where(z => z.Output.Any(u => u == vip.Name)).ToArray();
+                    foreach (var item in ww)
+                    {
+                        for (int i = 0; i < item.Output.Count; i++)
+                        {
+                            if (item.Output[i] == vip.Name)
+                                item.Output[i] = t.DataText;
+                        }
+                    }
+                    ww = (graph as OnnxGraphModel).ProtoModel.Graph.Node.Where(z => z.Input.Any(u => u == vip.Name)).ToArray();
+                    foreach (var item in ww)
+                    {
+                        for (int i = 0; i < item.Input.Count; i++)
+                        {
+                            if (item.Input[i] == vip.Name)
+                                item.Input[i] = t.DataText;
+                        }
+                    }
+                    vip.Name = t.DataText;                    
+                    
+                }
+                //model.Provider.UpdateIntAttributeValue(model, new GraphNode() { Name = nodeName }, attributeName, 0);
             }
             else
             {
                 Switch();
             }
         }
-    }
-    public class ExpandSubItem
-    {
-        public string Name;
-        public string Value;
-        public TextBox Tb;
-        public Label Label;
-        public Button Btn;
     }
 }

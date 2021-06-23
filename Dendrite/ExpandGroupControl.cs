@@ -34,10 +34,9 @@ namespace Dendrite
             this.model = model;
         }
         GraphModel model;
-        string nodeName;
-        public ExpandControl AddItem(string text, string value, string nodeName = "")
-        {
-            this.nodeName = nodeName;
+        
+        public ExpandControl AddItem(string text, string value, GraphModel graph, ITag model = null)
+        {            
             ExpandControl ec = new ExpandControl();
             ec.PlusChanged = () =>
             {
@@ -49,7 +48,7 @@ namespace Dendrite
                 }
                 Height = expands.Max(z => z.Bottom);
             };
-            ec.SetModel(model, text,nodeName);
+            ec.SetModel(graph, model);
             ec.PlusVisible = true;
             expands.Add(ec);
             ec.Left = 10;
@@ -62,5 +61,5 @@ namespace Dendrite
             Height = expands.Max(z => z.Bottom);
             return ec;
         }
-    }
+    }        
 }

@@ -248,9 +248,13 @@
     <Compile Include="Edit.Designer.cs">
       <DependentUpon>Edit.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExpandSubItem.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GraphModel.cs" />
     <Compile Include="Decoders.cs" />
+    <Compile Include="InputInfo.cs" />
+    <Compile Include="IProcessorConfigControl.cs" />
+    <Compile Include="ITag.cs" />
     <Compile Include="KeypointsDetectionInfo.cs" />
     <Compile Include="Mdi.cs">
       <SubType>Form</SubType>
@@ -375,6 +379,12 @@
     <Compile Include="StatisticForm.Designer.cs">
       <DependentUpon>StatisticForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextEnterDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextEnterDialog.Designer.cs">
+      <DependentUpon>TextEnterDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="TorchProto.cs" />
     <Compile Include="Dagre\acyclic.cs" />
     <Compile Include="Dagre\addBorderSegments.cs" />
@@ -496,6 +506,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="coco.names" />
     <EmbeddedResource Include="coco.2.names" />
+    <EmbeddedResource Include="TextEnterDialog.resx">
+      <DependentUpon>TextEnterDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

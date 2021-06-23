@@ -203,11 +203,14 @@ namespace Dendrite
         {
             group1.Clear();
 
-            group1.AddItem("type", $"{selected.OpType}:{selected.LayerType}");
-            group1.AddItem("name", selected.Name);
+            group1.SetModel(Model);
+
+            group1.AddItem("type", $"{selected.OpType}:{selected.LayerType}", Model);
+            group1.AddItem("name", selected.Name, Model, selected);
             group2.Clear();
             group2.Top = group1.Bottom;
             group2.SetModel(Model);
+
 
             foreach (var item in selected.Attributes)
             {
@@ -230,18 +233,18 @@ namespace Dendrite
                         vall = item.Floats.Aggregate("", (x, y) => x + y + ", ");
                         break;
                 }
-                group2.AddItem(item.Name, vall, selected.Name);
+                group2.AddItem(item.Name, vall, Model, item);
             }
             group3.Clear();
             group3.Top = group2.Bottom;
             if (selected.Parent != null)
             {
-                group3.AddItem("name", "input:" + selected.Input);
+                group3.AddItem("name", "input:" + selected.Input, Model);
 
             }
             foreach (var item in selected.Data)
             {
-                var res = group3.AddItem("", "name:" + item.Name);
+                var res = group3.AddItem("", "name:" + item.Name, Model);
                 if (item.Dims != null)
                 {
                     res.AddSubItem("dims", item.Dims.Aggregate("", (x, y) => x + y + ","));
@@ -268,11 +271,12 @@ namespace Dendrite
             group4.Top = group3.Bottom;
             if (selected.Tag != null)
             {
-                var tag = selected.Tag as NodeProto;
-
-                if (tag.Output.Any())
+                if (selected.Tag is NodeProto tag)
                 {
-                    group4.AddItem("Y", "name:" + tag.Output[0]);
+                    if (tag.Output.Any())
+                    {
+                        group4.AddItem("Y", "name:" + tag.Output[0], Model);
+                    }
                 }
             }
         }
@@ -347,7 +351,7 @@ namespace Dendrite
                 ctx.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
                 ctx.Graphics.ResetTransform();
-                                
+
                 ///axis
                 //ctx.Graphics.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
                 //ctx.Graphics.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
@@ -951,15 +955,27 @@ namespace Dendrite
             ExportAsZip(sfd.FileName, Model);
         }
 
-       void edit()
+        void edit()
         {
             if (selected == null) return;
-            if (!(selected.Tag is NodeProto)) return;
+            bool exit = true;
+            if (selected.Tag is NodeProto) exit = false;
+            if (selected.Tag is ValueInfoProto) exit = false;
+            if (exit) return;
+
             Edit ee = new Edit();
             if (Model is OnnxGraphModel gm)
             {
-                ee.Init(gm.ProtoModel, (selected.Tag as NodeProto));
-                ee.ShowDialog(ParentForm);
+                if (selected.Tag is NodeProto np)
+                {
+                    ee.Init(gm.ProtoModel, np);
+                    ee.ShowDialog(ParentForm);
+                }
+                if (selected.Tag is ValueInfoProto vip)
+                {
+                    //ee.Init(gm.ProtoModel, vip);
+                    //ee.ShowDialog(ParentForm);
+                }
             }
         }
         private void toolStripButton1_Click_1(object sender, EventArgs e)
@@ -985,7 +1001,7 @@ namespace Dendrite
         }
 
         private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {            
+        {
             ctx.StopDrag();
             edit();
         }

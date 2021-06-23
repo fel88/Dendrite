@@ -39,7 +39,7 @@ namespace Dendrite
             {
                 Name = z.Name,
                 Tag = z
-                
+
             }).ToArray());
 
             Dictionary<string, GraphNode> outs = new Dictionary<string, GraphNode>();
@@ -73,7 +73,7 @@ namespace Dendrite
                 string ss = "";
                 foreach (var aitem in item.Attribute)
                 {
-                    var atr1 = new AttributeInfo() { Name = aitem.Name };
+                    var atr1 = new AttributeInfo() { Name = aitem.Name, Tag = aitem, Owner = nodes[i] };
                     nodes[i].Attributes.Add(atr1);
                     List<int[]> dd = new List<int[]>();
                     switch (aitem.Type)
@@ -217,8 +217,8 @@ namespace Dendrite
 
             foreach (var item in res2.Graph.Output)
             {
-
                 var gn = new GraphNode() { Name = item.Name };
+                gn.Tag = item;
                 nodes.Add(gn);
                 var pp = outs[gn.Name];
                 gn.Parents.Add(pp);
@@ -236,7 +236,7 @@ namespace Dendrite
         }
 
         public override void SaveModel(GraphModel model, string path)
-        {            
+        {
             using (var output = File.Create(path))
             {
                 using (Google.Protobuf.CodedOutputStream ff = new Google.Protobuf.CodedOutputStream(output))
@@ -291,6 +291,6 @@ namespace Dendrite
             {
                 ret2.Add(BitConverter.ToSingle(bts2, j));
             }
-        }       
+        }
     }
 }

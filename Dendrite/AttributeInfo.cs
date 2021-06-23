@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Dendrite
 {
-    public class AttributeInfo
+    public class AttributeInfo : ITag
     {
         public string Name;
         public List<float> Floats = new List<float>();
@@ -13,5 +13,7 @@ namespace Dendrite
         public float IntData;
         public string StringData;
         public List<string> Strings;
+        public GraphNode Owner;
+        public object Tag { get; set; }
     }
 }

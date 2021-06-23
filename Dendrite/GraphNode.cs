@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Dendrite
 {
-    public class GraphNode
+    public class GraphNode: ITag
     {
         public GraphNode()
         {
