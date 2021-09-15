@@ -138,7 +138,7 @@ namespace Dendrite.Dagre
          */
         public static DagreGraph buildLayerGraph(DagreGraph g, int rank, string relationship)
         {
-            var result = new DagreGraph() { compound = true };
+            var result = new DagreGraph() { _isCompound = true };
             /*var root = createRootNode(g),
               result = new Graph({ compound: true }).setGraph({ root: root })
       .setDefaultNodeLabel(function(v) { return g.node(v); });

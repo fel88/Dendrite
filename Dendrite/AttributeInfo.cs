@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Onnx;
+using System;
 using System.Collections.Generic;
 
 namespace Dendrite
@@ -15,5 +16,6 @@ namespace Dendrite
         public List<string> Strings;
         public GraphNode Owner;
         public object Tag { get; set; }
+
     }
 }

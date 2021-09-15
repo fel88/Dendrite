@@ -214,6 +214,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -239,6 +240,8 @@
     <Compile Include="AttributeInfoDataType.cs" />
     <Compile Include="Caffe2Proto.cs" />
     <Compile Include="ComboBoxItem.cs" />
+    <Compile Include="DagreTester.cs" />
+    <Compile Include="Layouts\DagreGraphLayout.cs" />
     <Compile Include="Dagre\bk.cs" />
     <Compile Include="Dagre\coordinateSystem.cs" />
     <Compile Include="Dagre\networkSimplexModule.cs" />
@@ -250,6 +253,7 @@
     </Compile>
     <Compile Include="ExpandSubItem.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="GraphLayout.cs" />
     <Compile Include="GraphModel.cs" />
     <Compile Include="Decoders.cs" />
     <Compile Include="InputInfo.cs" />
@@ -372,6 +376,7 @@
       <DependentUpon>Processing.cs</DependentUpon>
     </Compile>
     <Compile Include="SegmentationDetectionInfo.cs" />
+    <Compile Include="Layouts\SimpleGraphLayout.cs" />
     <Compile Include="StaticColors.cs" />
     <Compile Include="StatisticForm.cs">
       <SubType>Form</SubType>
@@ -379,6 +384,7 @@
     <Compile Include="StatisticForm.Designer.cs">
       <DependentUpon>StatisticForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Layouts\TableGraphLayout.cs" />
     <Compile Include="TextEnterDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -534,6 +540,23 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterMakeSpaceForEdgeLabels.txt" />
+    <EmbeddedResource Include="JsonsDebug\beforeAsNoneCompoundGraph.txt" />
+    <EmbeddedResource Include="JsonsDebug\beforeNestingRun.txt" />
+    <EmbeddedResource Include="JsonsDebug\json.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JsonsDebug\runLayoutInput.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeRank.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="JsonsDebug\beforeInjectEdgeLabelProxies.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -23,35 +23,7 @@ namespace Dendrite
 
         NodeProto node;
 
-        string getAttrValueString(AttributeProto item)
-        {
-            string val = string.Empty;
-            if (item.HasF)
-            {
-                val = item.F.ToString();
-            }
-            if (item.HasI)
-            {
-                val = item.I.ToString();
-            }
-            if (item.HasS)
-            {
-                val = item.S.ToStringUtf8();
-            }
-            if (item.Strings != null && item.Strings.Any())
-            {
-                val = string.Join("; ", item.Strings.Select(z => z.ToStringUtf8()));
-            }
-            if (item.Floats != null && item.Floats.Any())
-            {
-                val = string.Join("; ", item.Floats);
-            }
-            if (item.Ints != null && item.Ints.Any())
-            {
-                val = string.Join("; ", item.Ints);
-            }
-            return val;
-        }
+
 
         void updateList()
         {
@@ -60,7 +32,7 @@ namespace Dendrite
 
             foreach (var item in node.Attribute)
             {
-                string val = getAttrValueString(item);
+                string val = item.AsString();
                 listView1.Items.Add(new ListViewItem(new string[] { item.Name, item.Type.ToString(), val }) { Tag = item });
             }
 
@@ -108,7 +80,7 @@ namespace Dendrite
             if ((listView1.SelectedItems[0].Tag is AttributeProto attr))
             {
                 textBox1.Text = attr.Name;
-                textBox2.Text = getAttrValueString(attr);
+                textBox2.Text = attr.AsString();
             }
             if ((listView1.SelectedItems[0].Tag is TensorProto tensor))
             {

@@ -1,4 +1,5 @@
 ﻿using Dendrite.Preprocessors;
+using Onnx;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -118,11 +119,46 @@ namespace Dendrite
         {
             MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+        public static DialogResult ShowQuestion(string msg, string caption, MessageBoxButtons btn = MessageBoxButtons.YesNo)
+        {
+            return MessageBox.Show(msg, caption, btn, MessageBoxIcon.Question);
+        }
+
         public static void ShowInfo(string msg, string caption)
         {
             MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        public static string AsString(this AttributeProto item)
+        {
+            string val = string.Empty;
+            if (item.HasF)
+            {
+                val = item.F.ToString();
+            }
+            if (item.HasI)
+            {
+                val = item.I.ToString();
+            }
+            if (item.HasS)
+            {
+                val = item.S.ToStringUtf8();
+            }
+            if (item.Strings != null && item.Strings.Any())
+            {
+                val = string.Join("; ", item.Strings.Select(z => z.ToStringUtf8()));
+            }
+            if (item.Floats != null && item.Floats.Any())
+            {
+                val = string.Join("; ", item.Floats);
+            }
+            if (item.Ints != null && item.Ints.Any())
+            {
+                val = string.Join("; ", item.Ints);
+            }
+            return val;
+        }
         public static InternalArray Pad2d(InternalArray ar)
         {
             InternalArray ret = new InternalArray(new int[] { ar.Shape[0] + 2, ar.Shape[1] + 2 });

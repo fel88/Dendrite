@@ -28,23 +28,24 @@ namespace Dendrite.Dagre
 
         public static DagreGraph asNonCompoundGraph(DagreGraph g)
         {
-            var simplified = new DagreGraph() { multigraph = g.isMultigraph() }.setGraph(g.graph());
+            var graph = new DagreGraph() { _isMultigraph = g.isMultigraph() };
+            graph.setGraph(g.graph());
             foreach (var v in g.nodes())
             {
                 if (g.children(v).Length > 0)
                 {
-                    simplified.setNode(v, g.node(v));
+                    graph.setNodeRaw(v, g.nodeRaw(v));
                 }
             }
 
             foreach (var e in g.edges())
             {
-                simplified.setEdge(e, g.edge(e));
+                graph.setEdgeRaw(new object[] { e, g.edgeRaw(e) });
 
             }
 
 
-            return simplified;
+            return graph;
         }
 
         public static int[] range(int start, int end)
@@ -64,14 +65,16 @@ namespace Dendrite.Dagre
         public static string addDummyNode(DagreGraph g, string type, object attrs, string name)
         {
             string v = null;
-
+            
             do
             {
                 v = uniqueId(name);
             } while (g.hasNode(v));
 
-            //attrs.dummy = type;
-            g.setNode(v, new DagreNode() { dummy = type });
+            var dic = attrs as Dictionary<string, object>;
+            DagreGraph.addOrUpdate("dummy", dic, type);
+            
+            g.setNodeRaw(v, attrs);
             return v;
         }
 

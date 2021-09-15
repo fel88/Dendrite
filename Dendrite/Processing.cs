@@ -139,7 +139,7 @@ namespace Dendrite
                 var txt = Form1.GetFormattedArray(new InputData() { Dims = currentNode.Dims.Select(z => (long)z).ToArray(), Weights = farr }, 1000);
                 richTextBox1.Text = txt;
                 listView4.Items.Clear();
-                for (int j = 0; j < 20; j++)
+                for (int j = 0; j < Math.Min(farr.Length, 20); j++)
                 {
                     listView4.Items.Add(new ListViewItem(new string[] { j.ToString(), farr[j].ToString() }) { Tag = (long)j });
                 }
@@ -148,7 +148,7 @@ namespace Dendrite
             {
                 richTextBox1.Text = "";
                 listView4.Items.Clear();
-                for (int j = 0; j < 20; j++)
+                for (int j = 0; j < Math.Min(barr.Length, 20); j++)
                 {
                     listView4.Items.Add(new ListViewItem(new string[] { j.ToString(), barr[j].ToString() }) { Tag = (long)j });
                 }
@@ -173,6 +173,11 @@ namespace Dendrite
         {
             if (currentNode == null) return;
             var r = new ResizePreprocessor() { Dims = currentNode.Dims };
+            if (!InputDatas.ContainsKey(currentNode.Name))
+            {
+                Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
+                return;
+            }
             InputDatas[currentNode.Name].Preprocessors.Add(r);
             listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
         }
@@ -409,11 +414,21 @@ namespace Dendrite
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView3.SelectedItems.Count == 0) return;
-            var prep = listView3.SelectedItems[0].Tag as IInputPreprocessor;
             if (currentNode == null) return;
             if (!InputDatas.ContainsKey(currentNode.Name)) return;
-            InputDatas[currentNode.Name].Preprocessors.Remove(prep);
-            listView3.Items.Remove(listView3.SelectedItems[0]);
+            if (Helpers.ShowQuestion($"Are you sure to delete {listView3.SelectedItems.Count} items?", Text) != DialogResult.Yes) return;
+
+            List<ListViewItem> todel = new List<ListViewItem>();
+            for (int i = 0; i < listView3.SelectedItems.Count; i++)
+            {
+                var prep = listView3.SelectedItems[i].Tag as IInputPreprocessor;
+                InputDatas[currentNode.Name].Preprocessors.Remove(prep);
+                todel.Add(listView3.SelectedItems[i]);
+            }
+            foreach (var tt in todel)
+            {
+                listView3.Items.Remove(tt);
+            }
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -1938,7 +1953,7 @@ namespace Dendrite
             if (listView1.SelectedItems.Count == 0) return;
             var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
             if (!(OutputDatas[cc.Name] is float[] dd)) return;
-            
+
             MessageBox.Show($"size: {dd.Length}", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }

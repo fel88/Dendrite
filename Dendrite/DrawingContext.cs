@@ -74,17 +74,19 @@ namespace Dendrite
 
         private void Box_MouseWheel(object sender, MouseEventArgs e)
         {
+            lock (lock1)
+            {
+                float zold = zoom;
+                if (e.Delta > 0) { zoom *= 1.2f; }
+                else { zoom *= 0.8f; }
+                if (zoom < 0.01) { zoom = 0.01f; }
+                if (zoom > 1000) { zoom = 1000f; }
 
-            float zold = zoom;
-            if (e.Delta > 0) { zoom *= 1.2f; }
-            else { zoom *= 0.8f; }
-            if (zoom < 0.01) { zoom = 0.01f; }
-            if (zoom > 1000) { zoom = 1000f; }
+                var pos = Box.PointToClient(Cursor.Position);
 
-            var pos = Box.PointToClient(Cursor.Position);
-
-            sx = -(pos.X / zold - sx - pos.X / zoom);
-            sy = -(pos.Y / zold - sy - pos.Y / zoom);
+                sx = -(pos.X / zold - sx - pos.X / zoom);
+                sy = -(pos.Y / zold - sy - pos.Y / zoom);
+            }
 
         }
 

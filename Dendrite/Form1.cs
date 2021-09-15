@@ -1,5 +1,4 @@
-﻿using Dendrite.Dagre;
-using Onnx;
+﻿using Onnx;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,6 +15,7 @@ using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using System.Xml.Linq;
 using System.IO.Compression;
+using Dendrite.Layouts;
 
 namespace Dendrite
 {
@@ -71,7 +71,7 @@ namespace Dendrite
             panel1.Controls.Add(group4);
             group4.SetCaption("Outputs");
 
-            CurrentLayout = TableLayoutGraph;
+            CurrentLayout = new TableGraphLayout();
 
 
             pictureBox1.Focus();
@@ -162,7 +162,8 @@ namespace Dendrite
 
         internal void StopDrawThread()
         {
-            drawThread.Abort();
+            if (drawThread != null)
+                drawThread.Abort();
         }
 
         public static void Rec(StringBuilder sb, long[] dims, int level, float[] array, long offset, int? lenLimit = null)
@@ -476,12 +477,13 @@ namespace Dendrite
 
                 }
 
-                ctx.Box.Invoke((Action)(() =>
+
+            }
+            ctx.Box.Invoke((Action)(() =>
                 {
                     ctx.Swap();
                     //ctx.Box.Refresh();
                 }));
-            }
         }
 
         Thread drawThread;
@@ -501,18 +503,10 @@ namespace Dendrite
         }
 
 
-
-
         DrawingContext ctx = new DrawingContext();
 
         public List<ModelProvider> Providers = new List<ModelProvider>();
 
-
-
-        private void toolStripButton1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         public const string WindowCaption = "Dendrite";
         private string _lastPath;
@@ -551,7 +545,7 @@ namespace Dendrite
             //nodes.InsertRange(0, res2.Graph.Input.Select(z => outs[z.Name]));
 
 
-            CurrentLayout();
+            CurrentLayout.Layout(Model);
             //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
             if (ParentForm != null)
             {
@@ -561,146 +555,8 @@ namespace Dendrite
             return true;
         }
 
-        public Action CurrentLayout;
-        public void DagreLayoutGraph()
-        {
-            DagreGraph dg = new DagreGraph();
-            int ii = 0;
-
-            foreach (var item in Model.Nodes)
-            {
-                dg._nodes2.Add(ii.ToString(), new DagreNode() { });
-                ii++;
-            }
-
-            DagreLayout dl = new DagreLayout();
-            dl.layout(dg);
-
-
-        }
-
-        public void TableLayoutGraph()
-        {
-            var www = Model.Nodes.OrderBy(z => z.Parents.Count).Reverse().ToArray();
-            www = Model.Nodes.ToArray();
-            List<GraphNode> topo = new List<GraphNode>();
-            List<GraphNode> visited = new List<GraphNode>();
-
-            foreach (var item in www)
-            {
-                if (visited.Contains(item)) continue;
-                dfs(item, topo, visited);
-            }
-            topo.Reverse();
-
-            int cntr = 0;
-            var s1 = (int)Math.Ceiling(Math.Sqrt(topo.Count));
-            for (int i = 0; i < s1; i++)
-            {
-                for (int j = 0; j < s1; j++)
-                {
-                    if (cntr >= topo.Count) break;
-                    topo[cntr].DrawTag = new GraphNodeDrawInfo() { Text = topo[cntr].Name, Rect = new Rectangle(i * 350, j * 150, 300, 100) };
-                    cntr++;
-                }
-                if (cntr >= topo.Count) break;
-            }
-        }
-
-
-        public void dfs(GraphNode node, List<GraphNode> outp, List<GraphNode> visited)
-        {
-            visited.Add(node);
-            foreach (var item in node.Childs)
-            {
-                if (visited.Contains(item)) continue;
-                dfs(item, outp, visited);
-            }
-            outp.Add(node);
-        }
-
-        public void LayoutGraph()
-        {
-
-            List<GraphNode> topo = new List<GraphNode>();
-            List<GraphNode> visited = new List<GraphNode>();
-
-            foreach (var item in Model.Nodes)
-            {
-                if (!visited.Contains(item))
-                {
-                    dfs(item, topo, visited);
-                }
-            }
-
-            topo.Reverse();
-
-            int yy = 100;
-            int line = 0;
-            /*   var inps = Graph.Where(z => z.Parent == null).ToArray();
-               GraphNode crnt = inps[0];
-               Queue<GraphNode> q = new Queue<GraphNode>();
-               q.Enqueue(crnt);
-               List<GraphNode> visited = new List<GraphNode>();
-               while (q.Any())
-               {
-                   var deq = q.Dequeue();
-                   if (visited.Contains(deq)) continue;
-                   if (deq.DrawTag != null) continue;
-                   if (deq.Parent == null)
-                   {
-                       deq.DrawTag = new GraphNodeDrawInfo() { Text = deq.Name, Rect = new Rectangle(100, 100, 300, 100) };
-                   }
-                   else
-                   {
-                       var dtag = deq.Parent.DrawTag as GraphNodeDrawInfo;
-                       var ind = deq.Parent.Childs.IndexOf(deq);
-                       var rect = dtag.Rect;
-                       deq.DrawTag = new GraphNodeDrawInfo() { Text = deq.Name, Rect = new Rectangle(rect.X + ind * 350, rect.Bottom+50, rect.Width, rect.Height) };
-                   }
-
-                   foreach (var item in deq.Childs)
-                   {                    
-                       q.Enqueue(item);
-                   }
-               }*/
-            /*while (true)
-            {
-                crnt.DrawTag = new GraphNodeDrawInfo() { Text = crnt.Name, Rect = new Rectangle(100, yy, 300, 100) };
-                if (crnt.Childs.Count == 0) break;
-
-                crnt = crnt.Childs[0];
-
-                yy += 150;
-            }*/
-            /*return;
-             * */
-            foreach (var item in topo)
-            {
-                int shift = 0;
-                int xx = 100;
-                if (item.Parent != null)
-                {
-                    shift += item.Parent.Childs.IndexOf(item) * 350;
-                    if (item.Parent.Childs.IndexOf(item) != 0)
-                    {
-                        line++;
-                        shift = line * 350;
-                    }
-                    var info = (item.Parent.DrawTag as GraphNodeDrawInfo);
-                    xx = info.Rect.Left + shift;
-                    yy = info.Rect.Bottom + 50;
-                }
-                item.DrawTag = new GraphNodeDrawInfo() { Text = item.Name, Rect = new Rectangle(xx, yy, 300, 100) };
-                yy += 150;
-            }
-        }
-
-        private void toolStripButton2_Click(object sender, EventArgs e)
-        {
-
-
-        }
+        public GraphLayout CurrentLayout;
+        
 
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
@@ -730,6 +586,7 @@ namespace Dendrite
                 }
             }
             hovered = hovered2;
+            //Redraw();
         }
 
         public void UpdateSearch()
@@ -842,14 +699,15 @@ namespace Dendrite
 
         private void tableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CurrentLayout = TableLayoutGraph;
-            TableLayoutGraph();
+            CurrentLayout = new TableGraphLayout();
+            CurrentLayout.Layout(Model);
         }
 
         private void simpleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CurrentLayout = LayoutGraph;
-            CurrentLayout();
+            CurrentLayout = new SimpleGraphLayout();
+            CurrentLayout.Layout(Model);
+
         }
 
         private void toolStripButton6_Click(object sender, EventArgs e)
@@ -867,8 +725,8 @@ namespace Dendrite
 
         private void dagreToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CurrentLayout = DagreLayoutGraph;
-            CurrentLayout();
+            CurrentLayout = new DagreGraphLayout();
+            CurrentLayout.Layout(Model);
         }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -897,13 +755,32 @@ namespace Dendrite
             {
                 using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
                 {
-
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("<?xml version=\"1.0\"?>");
                     sb.AppendLine("<net>");
+
                     ZipArchiveEntry wg = archive.CreateEntry("weights/");
                     foreach (var item in model.Nodes)
                     {
+                        sb.AppendLine($"<node id=\"{item.Id}\" name=\"{item.Name}\" opType=\"{item.LayerType.ToString()}\">");
+                        sb.AppendLine("<attributes>");
+                        foreach (var attr in item.Attributes)
+                        {
+                            sb.AppendLine($"<attr name=\"{attr.Name}\" value=\"{(attr.Tag as AttributeProto).AsString()}\"/>");
+                        }
+                        sb.AppendLine("</attributes>");
+                        sb.AppendLine("<childs>");
+                        foreach (var attr in item.Childs)
+                        {
+                            sb.AppendLine($"<child id=\"{attr.Id}\"/>");
+                        }
+                        sb.AppendLine("</childs>");
+                        sb.AppendLine("<parents>");
+                        foreach (var attr in item.Parents)
+                        {
+                            sb.AppendLine($"<parent id=\"{attr.Id}\"/>");
+                        }
+                        sb.AppendLine("</parents>");
                         foreach (var w in item.Data)
                         {
                             if (w.Weights == null || w.Weights.Length == 0) continue;
@@ -929,6 +806,7 @@ namespace Dendrite
                                 ms.CopyTo(writer.BaseStream);
                             }
                         }
+                        sb.AppendLine($"</node>");
                     }
 
 

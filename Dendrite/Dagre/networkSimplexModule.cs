@@ -363,7 +363,7 @@ namespace Dendrite.Dagre
 
         public static DagreGraph feasibleTree(DagreGraph g)
         {
-            var t = new DagreGraph() { directed = false };
+            var t = new DagreGraph() { _isDirected = false };
 
             // Choose arbitrary node from which to start our tree
             var start = g.nodes()[0];
@@ -445,7 +445,7 @@ namespace Dendrite.Dagre
 
 
             Func<string, string[]> navigation = null;
-            if (g.directed) navigation = (u) =>
+            if (g._isDirected) navigation = (u) =>
                {
                    return g.successors(u);
                };

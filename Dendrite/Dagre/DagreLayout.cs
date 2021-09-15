@@ -68,19 +68,20 @@ namespace Dendrite.Dagre
         {
             var graph = g.graph();
             graph.ranksep /= 2;
-            foreach (var e in g.edges())
+            foreach (var e in g.edgesRaw())
             {
-                var edge = g.edge(e);
-                edge.minlen *= 2;
-                if (edge.labelpos.ToLower() != "c")
+                dynamic edge = g.edgeRaw(e);
+                var aa = ((int)edge["minlen"]) * 2;
+                edge["minlen"] = aa;
+                if (edge["labelpos"].ToLower() != "c")
                 {
                     if (graph.rankdir == "TB" || graph.rankdir == "BT")
                     {
-                        edge.width += edge.labeloffset;
+                        edge["width"] += edge["labeloffset"];
                     }
                     else
                     {
-                        edge.height += edge.labeloffset;
+                        edge["height"] += edge["labeloffset"];
                     }
                 }
             }
@@ -198,50 +199,44 @@ namespace Dendrite.Dagre
             string[] nodeNumAttrs = new string[] { "width", "height" };
             string[] graphAttrs = new string[] { "acyclicer", "ranker", "rankdir", "align" };
             string[] edgeAttrs = new string[] { "labelpos" };
-            var g = new DagreGraph() { multigraph = true, compound = true };
+            var g = new DagreGraph() { _isMultigraph = true, _isCompound = true };
             var graph = canonicalize(inputGraph.graph());
 
             g.setGraph(merge(new object[] { null, new GraphDefaults(), selectNumberAttrs(graph, graphNumAttrs), pick(graph, graphAttrs) }));
 
 
-            foreach (var v in inputGraph.nodes())
+            foreach (var v in inputGraph.nodesRaw())
             {
-                var node = canonicalize(inputGraph.node(v));
-                g.setNode(v, defaults(selectNumberAttrs(node, nodeNumAttrs), new NodeDefaults()));
+                var node = canonicalize(inputGraph.nodeRaw(v));
+                g.setNodeRaw(v, defaults(selectNumberAttrs(node, nodeNumAttrs), new NodeDefaults()));
                 g.setParent(v, inputGraph.parent(v));
-
-
             }
 
 
-            foreach (var e in inputGraph.edges())
+            foreach (var e in inputGraph.edgesRaw())
             {
-                var edge = canonicalize(inputGraph.edge(e));
-                g.setEdge(e, merge(new object[] { null, new EdgeDefaults(), selectNumberAttrs(edge, edgeNumAttrs), pick(edge, edgeAttrs) }));
-
+                var edge = canonicalize(inputGraph.edgeRaw(e));
+                g.setEdgeRaw(new object[] { e, merge(new object[] { null, new EdgeDefaults(), selectNumberAttrs(edge, edgeNumAttrs), pick(edge, edgeAttrs) }) });
             }
-
-
             return g;
         }
 
         public void removeSelfEdges(DagreGraph g)
         {
-            var ar = g.edges().ToArray();
-            foreach (var e in ar)
+            var ar = g.edgesRaw().ToArray();
+            foreach (dynamic e in ar)
             {
-                if (e.v == e.w)
+                if (e["v"] == e["w"])
                 {
-                    var node = g.node(e.v);
-                    if (node.selfEdges == null)
+                    dynamic node = g.nodeRaw(e.v);
+                    if (node["selfEdges"] == null)
                     {
-                        node.selfEdges = new List<SelfEdgeInfo>();
+                        node["selfEdges"] = new List<SelfEdgeInfo>();
                     }
-                    node.selfEdges.Add(new SelfEdgeInfo() { e = e, label = g.edge(e) });
+                    node["selfEdges"].Add(new SelfEdgeInfo() { e = e, label = g.edgeRaw(e) });
                     g.removeEdge(e);
                 }
             }
-
         }
 
         public void rank(DagreGraph g)
@@ -274,18 +269,20 @@ namespace Dendrite.Dagre
  */
         public static void injectEdgeLabelProxies(DagreGraph g)
         {
-            foreach (var e in g.edges())
+            foreach (dynamic e in g.edgesRaw())
             {
-                var edge = g.edge(e);
-                if (edge.width != null && edge.height != null)
+                var edge = g.edgeRaw(e);
+                if (edge["width"] != null && edge["height"] != null)
                 {
-                    var v = g.node(e.v);
-                    var w = g.node(e.w);
-                    var label = new DagreNode() { rank = (w.rank - v.rank) / 2 + v.rank, e = e };
+                    dynamic v = g.nodeRaw(e["v"]);
+                    dynamic w = g.nodeRaw(e["w"]);
+                    
+                    JavaScriptLikeObject label = new JavaScriptLikeObject();
+                    label.AddOrUpdate("rank", (w.rank - v.rank) / 2 + v.rank);
+                    label.AddOrUpdate("e", e);
                     util.addDummyNode(g, "edge-proxy", label, "_ep");
                 }
             }
-
         }
 
         public static void removeEmptyRanks(DagreGraph g)

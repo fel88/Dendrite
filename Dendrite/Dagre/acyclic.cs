@@ -70,21 +70,21 @@ namespace Dendrite.Dagre
                 }
                 visited.Add(v);
                 stack.Add(v);
-                foreach (var e in g.outEdges(v).OfType<DagreEdgeIndex>())
+                foreach (dynamic e in g.outEdges(v))
                 {
-                    if (stack.Contains(e.w))
+                    if (stack.Contains(e["w"]))
                     {
                         fas.Add(e);
                     }
                     else
                     {
-                        dfs(e.w);
+                        dfs(e["w"]);
                     }
                 }
                 stack.Remove(v);
 
             };
-            foreach (var item in g.nodes())
+            foreach (var item in g.nodesRaw())
             {
                 dfs(item);
             }

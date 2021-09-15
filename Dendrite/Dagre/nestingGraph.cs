@@ -32,7 +32,7 @@ namespace Dendrite.Dagre
          */
         public static void run(DagreGraph g)
         {
-            var root = util.addDummyNode(g, "root", null, "_root");
+            var root = util.addDummyNode(g, "root", new Dictionary<string, object>(), "_root");
             var depths = treeDepths(g);
             Dictionary<string, int> d = new Dictionary<string, int>();
 
@@ -43,9 +43,10 @@ namespace Dendrite.Dagre
 
 
             // Multiply minlen by nodeSep to align nodes on non-border ranks.
-            foreach (var e in g.edges())
+            foreach (var e in g.edgesRaw())
             {
-                g.edge(e).minlen *= nodeSep;
+                dynamic edge = g.edgeRaw(e);
+                edge["minlen"] = edge["minlen"] * nodeSep;
 
             }
 
@@ -80,9 +81,15 @@ namespace Dendrite.Dagre
                     g.removeEdge(e);
                 }
             }
-            
-        }
 
+        }
+        static object generateEmptyWidHei()
+        {
+            Dictionary<string, object> ret = new Dictionary<string, object>();
+            ret.Add("width", 0);
+            ret.Add("height", 0);
+            return ret;
+        }
         public static void dfs(DagreGraph g, string root, int nodeSep, int weight, int height, Dictionary<string, int> depths, string v)
         {
             var children = g.children(v);
@@ -90,20 +97,33 @@ namespace Dendrite.Dagre
             {
                 if (v != root)
                 {
+                    Dictionary<string, object> arg = new Dictionary<string, object>();
+                    arg.Add("weight", 0);
+                    arg.Add("minlen", nodeSep);
+                    g.setEdgeRaw(new object[] { root, v, arg });
                     //g.setEdge(root, v, { weight: 0, minlen: nodeSep });
                 }
                 return;
             }
 
 
-            var top = util.addBorderNode(g, "_bt");
-            var bottom = util.addBorderNode(g, "_bb");
-            var label = g.node(v);
+            var top = util.addDummyNode(g, "border", generateEmptyWidHei(), "_bt");
+            var bottom = util.addDummyNode(g, "border", generateEmptyWidHei(), "_bb");
+            var label = g.nodeRaw(v);
+            g.setParent(top, v);
+            DagreGraph.addOrUpdate("borderTop", label, top);
+            
+            g.setParent(bottom, v);
+            DagreGraph.addOrUpdate("borderBottom", label, bottom);
         }
 
         public static int sumWeights(DagreGraph g)
         {
-            return g.edges().Sum(z => g.edge(z).weight);
+            return g.edgesRaw().Sum(z =>
+            {
+                dynamic edge = g.edgeRaw(z);
+                return edge["weight"];
+            });
 
         }
 
@@ -121,7 +141,11 @@ namespace Dendrite.Dagre
                         dfs(child, depth + 1);
                     }
                 }
-                depths.Add(v, depth);
+                if (!depths.ContainsKey(v))
+                {
+                    depths.Add(v, depth);
+                }
+                depths[v] = depth;
             };
 
             foreach (var v in g.children())
