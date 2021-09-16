@@ -15,13 +15,28 @@ namespace Dendrite.Dagre
          */
         public static void normalizeRanks(DagreGraph g)
         {
-            var min = g.nodes().Min(z => g.node(z).rank);
-            foreach (var v in g.nodes())
+            int min = int.MaxValue;
+            //var min = g.nodesRaw().Min(z => g.nodeRaw(z)["rank"]);
+            foreach (var v in g.nodesRaw())
             {
-                var node = g.node(v);
-                if (node.rank.HasValue)
+
+                var node = g.nodeRaw(v);
+                if (node.ContainsKey("rank"))
                 {
-                    node.rank -= min;
+                    var rank = node["rank"];
+                    if (rank < min)
+                    {
+                        min = rank;
+                    }
+                    //node["rank"] -= min;
+                }
+            }
+            foreach (var v in g.nodesRaw())
+            {
+                var node = g.nodeRaw(v);
+                if (node.ContainsKey("rank"))
+                {
+                    node["rank"] -= min;
                 }
             }
         }
@@ -30,15 +45,15 @@ namespace Dendrite.Dagre
         {
             var graph = new DagreGraph() { _isMultigraph = g.isMultigraph() };
             graph.setGraph(g.graph());
-            foreach (var v in g.nodes())
+            foreach (var v in g.nodesRaw())
             {
-                if (g.children(v).Length > 0)
+                if (g.children(v).Length == 0)
                 {
                     graph.setNodeRaw(v, g.nodeRaw(v));
                 }
             }
 
-            foreach (var e in g.edges())
+            foreach (var e in g.edgesRaw())
             {
                 graph.setEdgeRaw(new object[] { e, g.edgeRaw(e) });
 
@@ -65,15 +80,15 @@ namespace Dendrite.Dagre
         public static string addDummyNode(DagreGraph g, string type, object attrs, string name)
         {
             string v = null;
-            
+
             do
             {
                 v = uniqueId(name);
             } while (g.hasNode(v));
 
-            var dic = attrs as Dictionary<string, object>;
+            var dic = attrs as IDictionary<string, object>;
             DagreGraph.addOrUpdate("dummy", dic, type);
-            
+
             g.setNodeRaw(v, attrs);
             return v;
         }
@@ -90,20 +105,23 @@ namespace Dendrite.Dagre
         public static DagreGraph simplify(DagreGraph g)
         {
             var simplified = new DagreGraph().setGraph(g.graph());
-            foreach (var v in g.nodes())
+            foreach (var v in g.nodesRaw())
             {
-                simplified.setNode(v, g.node(v));
+                simplified.setNodeRaw(v, g.nodeRaw(v));
             }
-            foreach (var e in g.edges())
+            foreach (dynamic e in g.edgesRaw())
             {
-                var r = simplified.edge(e.v, e.w);
-                var simpleLabel = r == null ? (new DagreLabel() { minlen = 1, weight = 0 }) : r; ;
-                var label = g.edge(e);
-                simplified.setEdge(e.v, e.w, new DagreLabel
-                {
-                    weight = simpleLabel.weight + label.weight,
-                    minlen = Math.Max(simpleLabel.minlen, label.minlen)
-                });
+                var r = simplified.edgeRaw(new[] { e["v"], e["w"] });
+                JavaScriptLikeObject jo = new JavaScriptLikeObject();
+                jo.Add("minlen", 1);
+                jo.Add("weight", 0);
+                dynamic simpleLabel = r == null ? jo : r;
+                dynamic label = g.edgeRaw(e);
+                JavaScriptLikeObject jo2 = new JavaScriptLikeObject();
+                jo2.Add("weight", simpleLabel["weight"] + label["weight"]);
+                jo2.Add("minlen", Math.Max(simpleLabel["minlen"], label["minlen"]));
+
+                simplified.setEdgeRaw(new object[] { e["v"], e["w"], jo2 });
             }
 
 

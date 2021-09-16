@@ -21,8 +21,8 @@
          */
         public static void run(DagreGraph g)
         {
-            g.graph().dummyChains = new System.Collections.Generic.List<string>();  
-            foreach (var edge in g.edges())
+            g.graph().dummyChains = new System.Collections.Generic.List<string>();
+            foreach (var edge in g.edgesRaw())
             {
                 normalizeEdge(g, edge);
             }
@@ -36,7 +36,7 @@
                 var v = vv;
                 var node = g.node(v);
                 var origLabel = node.edgeLabel;
-                string  w = null;
+                string w = null;
                 g.setEdge(node.edgeObj, origLabel);
                 while (node.dummy != null)
                 {
@@ -57,9 +57,60 @@
 
         }
 
-        public static void normalizeEdge(DagreGraph g, DagreEdgeIndex edge)
+        public static void normalizeEdge(DagreGraph g, dynamic e)
         {
+            var v = e["v"];
+            var vRank = (int)g.nodeRaw(v)["rank"];
+            var w = e["w"];
+            var wRank = (int)(g.nodeRaw(w)["rank"]);
+            string name = null;
+            if (e.ContainsKey("name"))
+                name = (string)e["name"];
+            var edgeLabel = g.edgeRaw(e);
+            object labelRank = null;
+            if (edgeLabel.ContainsKey("labelRank"))
+                labelRank = edgeLabel["labelRank"];
+            if (wRank != vRank + 1)
+            {
+                g.removeEdge(e);
+                object dummy = null;
+                //    let attrs;
+                ++vRank;
+                for (int i = 0; vRank < wRank; ++i, ++vRank)
+                {
+                    //        edgeLabel.points = [];
 
+                    JavaScriptLikeObject attrs = new JavaScriptLikeObject();
+
+
+                    attrs.Add("width", 0);
+                    attrs.Add("height", 0);
+                    attrs.Add("edgeLabel", edgeLabel);
+                    attrs.Add("edgeObj", e);
+                    attrs.Add("rank", vRank);
+                    dummy = util.addDummyNode(g, "edge", attrs, "_d");
+                    if (labelRank!=null && vRank == (int)labelRank)
+                    {
+                        attrs["width"] = edgeLabel["width"];
+                        attrs["height"] = edgeLabel["height"];
+                        attrs["dummy"] = "edge-label";
+                        attrs["labelpos"] = edgeLabel["labelpos"];
+                    }
+                    JavaScriptLikeObject jo1 = new JavaScriptLikeObject();
+                    jo1.Add("weight", edgeLabel["weight"]);
+
+                    g.setEdgeRaw(new object[] { v, (string)dummy, jo1, name });
+                    if (i == 0)
+                    {
+                        g.graph().dummyChains.Add((string)dummy);
+                    }
+                    v = dummy;
+                }
+                JavaScriptLikeObject jo2 = new JavaScriptLikeObject();
+                jo2.Add("weight", edgeLabel["weight"]);
+
+                g.setEdgeRaw(new object[] { v, w, jo2, name });
+            }
         }
     }
 

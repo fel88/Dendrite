@@ -73,10 +73,10 @@ namespace Dendrite.Dagre
             g.removeNode(graphLabel.nestingRoot);
             graphLabel.nestingRoot = null;
 
-            foreach (var e in g.edges())
+            foreach (var e in g.edgesRaw())
             {
-                var edge = g.edge(e);
-                if (edge.nesingEdge != null)
+                var edge = g.edgeRaw(e);
+                if (edge.ContainsKey("nesingEdge"))
                 {
                     g.removeEdge(e);
                 }

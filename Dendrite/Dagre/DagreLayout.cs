@@ -272,13 +272,13 @@ namespace Dendrite.Dagre
             foreach (dynamic e in g.edgesRaw())
             {
                 var edge = g.edgeRaw(e);
-                if (edge["width"] != null && edge["height"] != null)
+                if (edge.ContainsKey("width") && edge["width"] != 0 && edge.ContainsKey("height") && edge["height"] != 0)
                 {
                     dynamic v = g.nodeRaw(e["v"]);
                     dynamic w = g.nodeRaw(e["w"]);
-                    
+
                     JavaScriptLikeObject label = new JavaScriptLikeObject();
-                    label.AddOrUpdate("rank", (w.rank - v.rank) / 2 + v.rank);
+                    label.AddOrUpdate("rank", (w["rank"] - v["rank"]) / 2 + v["rank"]);
                     label.AddOrUpdate("e", e);
                     util.addDummyNode(g, "edge-proxy", label, "_ep");
                 }
@@ -287,25 +287,28 @@ namespace Dendrite.Dagre
 
         public static void removeEmptyRanks(DagreGraph g)
         {
-            // Ranks may not start at 0, so we need to offset them
-            var offset = g.nodes().Select(v => g.node(v).rank).Min();
-            //var offset = _.min(_.map(g.nodes(), function(v) { return g.node(v).rank; }));
-
             Dictionary<int, List<string>> layers = new Dictionary<int, List<string>>();
-            foreach (var v in g.nodes())
-            {
-                var rank = (g.node(v).rank - offset).Value;
-                if (!layers.ContainsKey(rank))
-                {
-                    layers.Add(rank, new List<string>());
-                }
-                layers[rank].Add(v);
-            }
 
+            // Ranks may not start at 0, so we need to offset them
+            if (g.nodesRaw().Length > 0)
+            {
+                var offset = g.nodesRaw().Select(v => g.nodeRaw(v)["rank"]).Min();
+                //var offset = _.min(_.map(g.nodes(), function(v) { return g.node(v).rank; }));
+
+                foreach (var v in g.nodesRaw())
+                {
+                    var rank = (g.nodeRaw(v)["rank"] - offset);
+                    if (!layers.ContainsKey(rank))
+                    {
+                        layers.Add(rank, new List<string>());
+                    }
+                    layers[rank].Add(v);
+                }
+            }
 
             var delta = 0;
             var nodeRankFactor = g.graph().nodeRankFactor;
-            foreach (var pair in layers)
+            foreach (var pair in layers.OrderBy(z => z.Key))
             {
 
                 var vs = pair.Value;
@@ -318,7 +321,7 @@ namespace Dendrite.Dagre
                 {
                     foreach (var v in vs)
                     {
-                        g.node(v).rank += delta;
+                        g.nodeRaw(v)["rank"] += delta;
                     }
                 }
             }
@@ -603,31 +606,31 @@ namespace Dendrite.Dagre
             }
         }
 
-        private void removeEdgeLabelProxies(DagreGraph g)
+        public void removeEdgeLabelProxies(DagreGraph g)
         {
-            foreach (var v in g.nodes())
+            foreach (var v in g.nodesRaw())
             {
-                var node = g.node(v);
-                if (node.dummy == "edge-proxy")
+                var node = g.nodeRaw(v);
+                if (node.ContainsKey("dummy") && node["dummy"] == "edge-proxy")
                 {
-                    g.edge(node.e).labelRank = node.rank;
+                    g.edgeRaw(node["e"])["labelRank"] = node["rank"];
                     g.removeNode(v);
                 }
             }
 
         }
 
-        private void assignRankMinMax(DagreGraph g)
+        public void assignRankMinMax(DagreGraph g)
         {
             int maxRank = 0;
-            foreach (var v in g.nodes())
+            foreach (var v in g.nodesRaw())
             {
-                var node = g.node(v);
-                if (node.borderTop != null)
+                var node = g.nodeRaw(v);
+                if (node.ContainsKey("borderTop"))
                 {
-                    node.minRank = g.node(node.borderTop).rank;
+                    node["minRank"] = g.nodeRaw(node["borderTop"])["rank"];
                     //node.maxRank = g.node(node.borderLeft).rank;
-                    maxRank = Math.Max(maxRank, node.maxRank.Value);
+                    maxRank = Math.Max(maxRank, node["maxRank"]);
                 }
             }
 

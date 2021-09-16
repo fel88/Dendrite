@@ -50,36 +50,49 @@ namespace Dendrite.Dagre
         {
             if (root == null)
             {
-                root = tree.nodes()[0];
+                root = tree.nodesRaw()[0];
             }
-            dfsAssignLowLim(tree, new HashSet<string>(), 1, root);
+
+            dfsAssignLowLim(tree, new JavaScriptLikeObject(), 1, root);
         }
 
-        public static int dfsAssignLowLim(DagreGraph tree, HashSet<string> visited, int nextLim, string v, object parent = null)
+        public static int dfsAssignLowLim(DagreGraph tree, JavaScriptLikeObject visited, int nextLim, string v, object parent = null)
         {
             var low = nextLim;
-            var label = tree.node(v);
+            var label = tree.nodeRaw(v);
 
-            visited.Add(v);
+
+            visited.AddOrUpdate(v, true);
             foreach (var w in tree.neighbors(v))
             {
-                if (!visited.Contains(w))
+                if (!visited.ContainsKey(w))
                 {
                     nextLim = dfsAssignLowLim(tree, visited, nextLim, w, v);
                 }
             }
 
 
-            label.low = low;
-            label.lim = nextLim++;
+            if (!label.ContainsKey("low"))
+            {
+                label.Add("low", low);
+            }
+            label["low"] = low;
+            if (!label.ContainsKey("lim"))
+            {
+                label.Add("lim", low);
+            }
+            label["lim"] = nextLim++;
             if (parent != null)
             {
-                label.parent = parent;
+                label["parent"] = parent;
             }
             else
             {
                 // TODO should be able to remove this when we incrementally update low lim
-                label.parent = null;
+                //label["parent"] = null;
+                dynamic d = label;
+                if (d.ContainsKey("parent"))
+                    d.Remove("parent");
                 //delete label.parent;
             }
 
@@ -99,8 +112,9 @@ namespace Dendrite.Dagre
  */
         public static void initCutValues(DagreGraph t, DagreGraph g)
         {
-            var vs = postorder(t, t.nodes());
+            var vs = postorder(t, t.nodesRaw());
             //vs = vs.slice(0, vs.length - 1);
+            vs = vs.Take(vs.Length - 1).ToArray();
             foreach (var v in vs)
             {
                 assignCutValue(t, g, v);
@@ -108,9 +122,9 @@ namespace Dendrite.Dagre
         }
         public static void assignCutValue(DagreGraph t, DagreGraph g, string child)
         {
-            var childLab = t.node(child);
-            var parent = childLab.parent as string;
-            t.edge(child, parent).cutvalue = calcCutValue(t, g, child);
+            var childLab = t.nodeRaw(child);
+            var parent = childLab["parent"];
+            t.edgeRaw(new object[] { child, parent })["cutvalue"] = calcCutValue(t, g, child);
         }
 
         /*
@@ -119,36 +133,36 @@ namespace Dendrite.Dagre
          */
         public static int calcCutValue(DagreGraph t, DagreGraph g, string child)
         {
-            var childLab = t.node(child);
-            var parent = childLab.parent as string;
+            var childLab = t.nodeRaw(child);
+            var parent = childLab["parent"];
             // True if the child is on the tail end of the edge in the directed graph
             var childIsTail = true;
             // The graph's view of the tree edge we're inspecting
-            var graphEdge = g.edge(child, parent);
+            var graphEdge = g.edgeRaw(new object[] { child, parent });
             // The accumulated cut value for the edge between this node and its parent
             var cutValue = 0;
 
-            if (graphEdge != null)
+            if (graphEdge == null)
             {
                 childIsTail = false;
-                graphEdge = g.edge(parent, child);
+                graphEdge = g.edgeRaw(new object[] { parent, child });
             }
 
-            cutValue = graphEdge.weight;
+            cutValue = graphEdge["weight"];
 
-            foreach (var e in g.nodeEdges(child).OfType<DagreEdgeIndex>())
+            foreach (dynamic e in g.nodeEdges(child))
             {
-                var isOutEdge = e.v == child;
-                var other = isOutEdge ? e.w : e.v;
+                var isOutEdge = e["v"] == child;
+                var other = isOutEdge ? e["w"] : e["v"];
                 if (other != parent)
                 {
                     var pointsToHead = isOutEdge == childIsTail;
-                    var otherWeight = g.edge(e).weight;
+                    var otherWeight = g.edgeRaw(e)["weight"];
 
                     cutValue += pointsToHead ? otherWeight : -otherWeight;
                     if (isTreeEdge(t, child, other))
                     {
-                        var otherCutValue = t.edge(child, other).cutvalue.Value;
+                        var otherCutValue = t.edgeRaw(new object[] { child, other })["cutvalue"];
                         cutValue += pointsToHead ? -otherCutValue : otherCutValue;
                     }
                 }
@@ -163,40 +177,40 @@ namespace Dendrite.Dagre
          */
         public static bool isTreeEdge(DagreGraph tree, string u, string v)
         {
-            return tree.hasEdge(u, v);
+            return tree.hasEdgeRaw(new object[] { u, v });
         }
 
-        public static DagreEdgeIndex enterEdge(DagreGraph t, DagreGraph g, DagreEdgeIndex edge)
+        public static DagreEdgeIndex enterEdge(DagreGraph t, DagreGraph g, dynamic edge)
         {
-            var v = edge.v;
-            var w = edge.w;
+            var v = edge["v"];
+            var w = edge["w"];
 
             // For the rest of this function we assume that v is the tail and w is the
             // head, so if we don't have this edge in the graph we should flip it to
             // match the correct orientation.
-            if (!g.hasEdge(v, w))
+            if (!g.hasEdgeRaw(new object[] { v, w }))
             {
-                v = edge.w;
-                w = edge.v;
+                v = edge["w"];
+                w = edge["v"];
             }
 
-            var vLabel = t.node(v);
-            var wLabel = t.node(w);
+            var vLabel = t.nodeRaw(v);
+            var wLabel = t.nodeRaw(w);
             var tailLabel = vLabel;
             var flip = false;
 
             // If the root is in the tail of the edge then we need to flip the logic that
             // checks for the head and tail nodes in the candidates function below.
-            if (vLabel.lim > wLabel.lim)
+            if (vLabel["lim"] > wLabel["lim"])
             {
                 tailLabel = wLabel;
                 flip = true;
             }
 
-            var candidates = g.edges().Where(ee =>
+            var candidates = g.edgesRaw().Where(ee =>
             {
-                return flip == isDescendant(t, t.node(ee.v), tailLabel) &&
-                       flip != isDescendant(t, t.node(ee.w), tailLabel);
+                return flip == isDescendant(t, t.nodeRaw(ee["v"]), tailLabel) &&
+                       flip != isDescendant(t, t.nodeRaw(ee["w"]), tailLabel);
             });
 
             //return _.minBy(candidates, function(edge) { return slack(g, edge); });
@@ -208,18 +222,29 @@ namespace Dendrite.Dagre
          * Returns true if the specified node is descendant of the root node per the
          * assigned low and lim attributes in the tree.
          */
-        public static bool isDescendant(DagreGraph tree, DagreNode vLabel, DagreNode rootLabel)
+        public static bool isDescendant(dynamic tree, dynamic vLabel, dynamic rootLabel)
         {
-            return rootLabel.low <= vLabel.lim && vLabel.lim <= rootLabel.lim;
+            return rootLabel["low"] <= vLabel["lim"] && vLabel["lim"] <= rootLabel["lim"];
         }
 
         public static void networkSimplex(DagreGraph g)
         {
             g = util.simplify(g);
-            initRank(g);
-            var t = feasibleTree(g);
+            var test1 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankSimplify"));
+            if (!g.Compare(test1)) throw new DagreException();
 
+            initRank(g);
+            var test2 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankLongestPath"));
+            if (!g.Compare(test2)) throw new DagreException();
+
+            var t = feasibleTree(g);
+            var test3 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeInitLowLimValues"));
+            if (!t.Compare(test3)) throw new DagreException();
             initLowLimValues(t);
+            var test4 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.tree"));
+            var test5 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.g"));
+            if (!t.Compare(test4)) throw new DagreException();
+            if (!g.Compare(test5)) throw new DagreException();
             initCutValues(t, g);
 
             object e = null, f = null;
@@ -230,19 +255,19 @@ namespace Dendrite.Dagre
             }
         }
 
-        public static void exchangeEdges(DagreGraph t, DagreGraph g, DagreEdgeIndex e, DagreEdgeIndex f)
+        public static void exchangeEdges(DagreGraph t, dynamic g, dynamic e, dynamic f)
         {
             var v = e.v;
             var w = e.w;
-            t.removeEdge(v, w);
-            t.setEdge(f.v, f.w, null);
+            t.removeEdge(new[] { v, w });
+            t.setEdgeRaw(new object[] { f["v"], f["w"], null });
             initLowLimValues(t);
             initCutValues(t, g);
             updateRanks(t, g);
         }
         public static object leaveEdge(DagreGraph tree)
         {
-            return tree.edges().FirstOrDefault(e => tree.edge(e).cutvalue < 0);
+            return tree.edgesRaw().FirstOrDefault(e => tree.edgeRaw(e)["cutvalue"] < 0);
         }
 
         public static void updateRanks(DagreGraph t, DagreGraph g)
@@ -296,23 +321,32 @@ namespace Dendrite.Dagre
             Func<string, int> dfs = null;
             dfs = (v) =>
             {
-                var label = g.node(v);
+                dynamic label = g.nodeRaw(v);
                 if (visited.Contains(v))
                 {
-                    return label.rank.Value;
+                    return label["rank"];
                 }
                 visited.Add(v);
-                var rank = g.outEdges(v).Select(e => dfs((e as DagreEdgeIndex).w) - (g.edge(e) as DagreLabel).minlen).Min();
+                var rank = int.MaxValue;
+                foreach (dynamic e in g.outEdges(v))
+                {
+                    var x = dfs(e["w"]) - g.edgeRaw(e)["minlen"];
+                    if (x < rank)
+                    {
+                        rank = x;
+                    }
+                }
+                //var rank = g.outEdges(v).Select((dynamic e) => dfs(e["w"]) - ((dynamic)g.edgeRaw(e))["minlen"]).Min();
 
-                if (rank == double.MaxValue || // return value of _.map([]) for Lodash 3
+                if (rank == int.MaxValue || // return value of _.map([]) for Lodash 3
                     rank == null // return value of _.map([]) for Lodash 4
                     )
                 { // return value of _.map([null])
                     rank = 0;
                 }
 
-                label.rank = rank;
-                return label.rank.Value;
+                label["rank"] = rank;
+                return label["rank"];
 
             };
 
@@ -326,14 +360,20 @@ namespace Dendrite.Dagre
          * Returns the amount of slack for the given edge. The slack is defined as the
          * difference between the length of the edge and its minimum length.
          */
-        public static int slack(DagreGraph g, DagreEdgeIndex e)
+        public static int? slack(dynamic g, dynamic e)
         {
-            return g.node(e.w).rank.Value - g.node(e.v).rank.Value - g.edge(e).minlen;
+            var node1 = g.nodeRaw(e["w"]);
+            var node2 = g.nodeRaw(e["v"]);
+            var edge = g.edgeRaw(e);
+            if (!node1.ContainsKey("rank")) return null;
+            if (!node2.ContainsKey("rank")) return null;
+            if (!edge.ContainsKey("minlen")) return null;
+            return node1["rank"] - node2["rank"] - edge["minlen"];
         }
-        public static int slack(DagreGraph g, object e)
+        /*public static int slack(DagreGraph g, object e)
         {
             return slack(g, e as DagreEdgeIndex);
-        }
+        }*/
 
         /*
          * Constructs a spanning tree with tight edges and adjusted the input node's
@@ -366,9 +406,9 @@ namespace Dendrite.Dagre
             var t = new DagreGraph() { _isDirected = false };
 
             // Choose arbitrary node from which to start our tree
-            var start = g.nodes()[0];
+            var start = g.nodesRaw()[0];
             var size = g.nodeCount();
-            t.setNode(start, null);
+            t.setNodeRaw(start, new JavaScriptLikeObject());
 
             dynamic edge;
             int delta;
@@ -389,27 +429,45 @@ namespace Dendrite.Dagre
          */
         public static int tightTree(DagreGraph t, DagreGraph g)
         {
-            Action<string> dfs = null;
-            dfs = (v) =>
+            //Action<string> dfs = null;
+            var stack = t.nodesRaw().Reverse().ToList();
+            while (stack.Count > 0)
             {
-                foreach (var ee in g.nodeEdges(v))
+                var v = stack[stack.Count - 1];
+                stack.RemoveAt(stack.Count - 1);
+                foreach (dynamic e in g.nodeEdges(v))
                 {
-                    var e = ee as DagreEdgeIndex;
-                    var edgeV = e.v;
-                    var w = (v == edgeV) ? e.w : edgeV;
-                    if (!t.hasNode(w) && slack(g, e) != 0)
+                    var edgeV = e["v"];
+                    var w = (v == edgeV) ? e["w"] : edgeV;
+                    var _slack = slack(g, e);
+                    if (!t.hasNode(w) && (_slack == null || _slack == 0))
                     {
-                        t.setNode(w, null);
-                        t.setEdge(v, w, null);
-                        dfs(w);
+                        t.setNodeRaw(w, new JavaScriptLikeObject() { });
+                        t.setEdgeRaw(new object[] { v, w, new JavaScriptLikeObject() { } });
+                        stack.Add(w);
                     }
                 }
-            };
-
-            foreach (var item in t.nodes())
-            {
-                dfs(item);
             }
+            //dfs = (v) =>
+            //{
+            //    foreach (var ee in g.nodeEdges(v))
+            //    {
+            //        var e = ee as DagreEdgeIndex;
+            //        var edgeV = e.v;
+            //        var w = (v == edgeV) ? e.w : edgeV;
+            //        if (!t.hasNode(w) && slack(g, e) != 0)
+            //        {
+            //            t.setNodeRaw(w, null);
+            //            t.setEdgeRaw(new object[] { v, w, null });
+            //            dfs(w);
+            //        }
+            //    }
+            //};
+
+            //foreach (var item in t.nodes())
+            //{
+            //    dfs(item);
+            //}
             return t.nodeCount();
         }
 
@@ -440,18 +498,18 @@ namespace Dendrite.Dagre
         public static string[] dfs(DagreGraph g, string[] vs, string order)
         {
 
-            HashSet<string> visited = new HashSet<string>();
+            JavaScriptLikeObject visited = new JavaScriptLikeObject();
 
 
 
             Func<string, string[]> navigation = null;
             if (g._isDirected) navigation = (u) =>
                {
-                   return g.successors(u);
+                   return g.successors(u).OrderBy(z => z).ToArray();
                };
             else
 
-                navigation = (u) => { return g.neighbors(u); };
+                navigation = (u) => { return g.neighbors(u).OrderBy(z => z).ToArray(); };
 
             List<string> acc = new List<string>();
 
@@ -466,12 +524,11 @@ namespace Dendrite.Dagre
             return acc.ToArray();
         }
 
-        public static void doDfs(DagreGraph g, string v, bool postorder, HashSet<string> visited, Func<string, string[]> navigation, List<string> acc)
+        public static void doDfs(DagreGraph g, string v, bool postorder, JavaScriptLikeObject visited, Func<string, string[]> navigation, List<string> acc)
         {
-            if (!visited.Contains(v))
-            {
-                visited.Add(v);
-            }
+            if (visited.ContainsKey(v)) return;
+
+            visited.Add(v, true);
             if (!postorder) { acc.Add(v); }
             foreach (var w in navigation(v))
             {
@@ -481,6 +538,7 @@ namespace Dendrite.Dagre
             {
                 acc.Add(v);
             }
+
         }
     }
 }

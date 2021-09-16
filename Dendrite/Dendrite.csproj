@@ -241,6 +241,7 @@
     <Compile Include="Caffe2Proto.cs" />
     <Compile Include="ComboBoxItem.cs" />
     <Compile Include="DagreTester.cs" />
+    <Compile Include="Dagre\JavaScriptLikeObject.cs" />
     <Compile Include="Layouts\DagreGraphLayout.cs" />
     <Compile Include="Dagre\bk.cs" />
     <Compile Include="Dagre\coordinateSystem.cs" />
@@ -556,7 +557,27 @@
     <EmbeddedResource Include="JsonsDebug\beforeRank.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="JsonsDebug\beforeInjectEdgeLabelProxies.txt" />
+    <EmbeddedResource Include="JsonsDebug\beforeRankInitCutValues.g.txt" />
+    <EmbeddedResource Include="JsonsDebug\beforeRankInitCutValues.tree.txt" />
+    <EmbeddedResource Include="JsonsDebug\beforeInitLowLimValues.txt" />
+    <EmbeddedResource Include="JsonsDebug\afterRankLongestPath.txt" />
+    <EmbeddedResource Include="JsonsDebug\afterRankSimplify.txt" />
+    <EmbeddedResource Include="JsonsDebug\beforeInjectEdgeLabelProxies.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeRemoveEmptyRanks.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterCleanup.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterNormalizeRanks.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeNormalize.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterNormalize.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
