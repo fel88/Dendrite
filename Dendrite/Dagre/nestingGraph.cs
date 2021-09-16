@@ -70,8 +70,8 @@ namespace Dendrite.Dagre
         public static void cleanup(DagreGraph g)
         {
             var graphLabel = g.graph();
-            g.removeNode(graphLabel.nestingRoot);
-            graphLabel.nestingRoot = null;
+            g.removeNode(graphLabel["nestingRoot"]);
+            graphLabel["nestingRoot"] = null;
 
             foreach (var e in g.edgesRaw())
             {

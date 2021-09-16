@@ -43,7 +43,7 @@ namespace Dendrite.Dagre
 
         public static DagreGraph asNonCompoundGraph(DagreGraph g)
         {
-            var graph = new DagreGraph() { _isMultigraph = g.isMultigraph() };
+            var graph = new DagreGraph(false) { _isMultigraph = g.isMultigraph() };
             graph.setGraph(g.graph());
             foreach (var v in g.nodesRaw())
             {
@@ -95,7 +95,7 @@ namespace Dendrite.Dagre
 
         public static int maxRank(DagreGraph g)
         {
-            return g.nodes().Where(z => g.node(z).rank != null).Select(z => g.node(z).rank.Value).Max();
+            return g.nodes().Where(z => g.node(z)["rank"] != null).Select(z => g.node(z)["rank"]).Max();
 
         }
         /*
@@ -104,7 +104,7 @@ namespace Dendrite.Dagre
  */
         public static DagreGraph simplify(DagreGraph g)
         {
-            var simplified = new DagreGraph().setGraph(g.graph());
+            var simplified = new DagreGraph(false).setGraph(g.graph());
             foreach (var v in g.nodesRaw())
             {
                 simplified.setNodeRaw(v, g.nodeRaw(v));
@@ -127,13 +127,13 @@ namespace Dendrite.Dagre
 
             return simplified;
         }
-        internal static string[][] cloneDeep(string[][] layering)
+        internal static object[][] cloneDeep(object[][] layering)
         {
-            List<List<string>> ss = new List<List<string>>();
+            List<List<object>> ss = new List<List<object>>();
             foreach (var item in layering)
 
             {
-                ss.Add(new List<string>());
+                ss.Add(new List<object>());
                 foreach (var ii in item)
                 {
                     ss.Last().Add(ii);

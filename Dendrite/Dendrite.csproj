@@ -579,6 +579,14 @@
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\afterNormalize.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterAddBorderSegments.txt" />
+    <EmbeddedResource Include="JsonsDebug\afterOrder.txt" />
+    <EmbeddedResource Include="JsonsDebug\afterParentDummies.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterRemoveEmptyRanks.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -7,9 +7,13 @@ namespace Dendrite.Dagre
 {
     public class DagreGraph
     {
-        public DagreGraph()
+        public DagreGraph(bool compound)
         {
-            _children.Add(GRAPH_NODE as string, new Dictionary<string, object>());
+            _isCompound = compound;
+            if (compound)
+            {
+                _children.Add(GRAPH_NODE as string, new Dictionary<string, object>());
+            }
         }
 
 
@@ -47,9 +51,61 @@ namespace Dendrite.Dagre
             if (_edgeObjs.Keys.Count != gr._edgeObjs.Keys.Count) throw new DagreException();
             if (_edgeLabels.Keys.Count != gr._edgeLabels.Keys.Count) throw new DagreException();
             if (_parent.Keys.Count != gr._parent.Keys.Count) throw new DagreException();
+            if (_children.Keys.Count != gr._children.Keys.Count) throw new DagreException();
             for (int i = 0; i < _parent.Keys.Count; i++)
             {
-                if (_parent.Keys.ToArray()[i] != gr._parent.Keys.ToArray()[i]) throw new DagreException();
+                var key1 = _parent.Keys.ToArray()[i];
+                if (!gr._parent.ContainsKey(key1)) throw new DagreException();
+            }
+            for (int i = 0; i < _parent.Keys.Count; i++)
+            {
+                var key1 = _parent.Keys.ToArray()[i];
+                if (!gr._parent.ContainsKey(key1)) throw new DagreException();
+                dynamic node1 = _parent[key1];
+                dynamic node2 = gr._parent[key1];
+                if (node1.Keys.Count != node2.Keys.Count) throw new DagreException();
+
+                foreach (var key in node1.Keys)
+                {
+                    dynamic val1 = node1[key];
+                    dynamic val2 = node2[key];
+                    if (val1 is IDictionary<string, object>)
+                    {
+
+                    }
+                    else
+                    {
+                        if (val1 != val2) throw new DagreException();
+                    }
+                }
+            }
+            for (int i = 0; i < _children.Keys.Count; i++)
+            {
+                var key1 = _children.Keys.ToArray()[i];
+                if (!gr._children.ContainsKey(key1)) throw new DagreException();
+            }
+            for (int i = 0; i < _children.Keys.Count; i++)
+            {
+                var key1 = _children.Keys.ToArray()[i];
+                if (!gr._children.ContainsKey(key1)) throw new DagreException();
+                dynamic node1 = _children[key1];
+                dynamic node2 = gr._children[key1];
+                if (node1.Keys.Count != node2.Keys.Count) throw new DagreException();
+
+                foreach (var key in node1.Keys)
+                {
+                    dynamic val1 = node1[key];
+                    dynamic val2 = node2[key];
+                    if (val1 is IDictionary<string, object>)
+                    {
+
+                    }
+                    else
+                    {
+                        if (val1 != val2) throw new DagreException();
+                    }
+                }
+
             }
             for (int i = 0; i < _nodesRaw.Keys.Count; i++)
             {
@@ -114,15 +170,21 @@ namespace Dendrite.Dagre
                 }
 
             }
-            if (!_label.Compare(gr._label)) throw new DagreException();
+            if (!DagreLabel.Compare(_label, gr._label)) throw new DagreException();
 
             return true;
 
         }
 
+        internal DagreGraph setDefaultNodeLabel(Func<object, dynamic> p)
+        {
+            _defaultNodeLabelFn = p;
+            return this;
+        }
+
         public static DagreGraph FromJson(string json)
         {
-            DagreGraph ret = new DagreGraph();
+            DagreGraph ret = new DagreGraph(false);
             ret.LoadJson(json);
             return ret;
         }
@@ -156,14 +218,19 @@ namespace Dendrite.Dagre
                     case "_label":
                         {
                             var dic = item.Value as Dictionary<string, object>;
-                            _label.ranksep = (int)dic["ranksep"];
-                            _label.edgesep = (int)dic["edgesep"];
-                            _label.nodesep = (int)dic["nodesep"];
+                            dynamic lb = _label;
+                            lb.Add("ranksep", (int)dic["ranksep"]);
+                            lb.Add("edgesep", (int)dic["edgesep"]);
+                            lb.Add("nodesep", (int)dic["nodesep"]);
+
+
                             if (dic.ContainsKey("nodeRankFactor"))
-                                _label.nodeRankFactor = (int)dic["nodeRankFactor"];
+                                lb.Add("nodeRankFactor", (int)dic["nodeRankFactor"]);
+
                             if (dic.ContainsKey("nestingRoot"))
-                                _label.nestingRoot = (string)dic["nestingRoot"];
-                            _label.rankdir = (string)dic["rankdir"];
+                                lb.Add("nestingRoot", (string)dic["nestingRoot"]);
+
+                            lb.Add("rankdir", (string)dic["rankdir"]);
                             break;
                         }
                     case "_edgeObjs":
@@ -267,36 +334,47 @@ namespace Dendrite.Dagre
 
         public string[] nodes()
         {
-            return _nodes2.Keys.ToArray();
+            return nodesRaw();
         }
         public string[] nodesRaw()
         {
             return _nodesRaw.Keys.ToArray();
         }
-        public Dictionary<string, DagreNode> _nodes2 = new Dictionary<string, DagreNode>();
+        
         public Dictionary<string, object> _nodesRaw = new Dictionary<string, object>();
-        public List<DagreNode> _nodes = new List<DagreNode>();
-        public List<DagreEdge> _edges = new List<DagreEdge>();
-        DagreLabel _label = new DagreLabel();
-        public DagreLabel graph() { return _label; }
+        
+        object _label = new JavaScriptLikeObject();
+        public dynamic graph() { return _label; }
 
-        public DagreNode node(string v) { return _nodes2[v]; }
-        public dynamic nodeRaw(string v) { return _nodesRaw[v]; }
+        
+        public dynamic nodeRaw(string v)
+        {
+            if (!_nodesRaw.ContainsKey(v))
+            {
+                return null;
+            }
+            return _nodesRaw[v];
+
+        }
 
         internal bool isMultigraph()
         {
             return _isMultigraph;
         }
 
-        public DagreNode node(DagreNode v) { return node(v.key); }
+        public dynamic node(object v)
+        {
+
+            return nodeRaw((string)v);
+        }
         public List<DagreEdgeIndex> _edgesIndexes = new List<DagreEdgeIndex>();
 
-        public DagreEdge edge(string v)
+        /*public DagreEdge edge(string v)
         {
-            /*replace with dictioanry*/
+            
             return _edges.First(z => z.key == v);
         }
-
+    */
         public static string edgeArgsToId(bool isDirectred, object _v, object _w, object name)
         {
             var v = _v + "";
@@ -370,9 +448,10 @@ namespace Dendrite.Dagre
         }
 
         public Dictionary<string, object> _edgeLabels = new Dictionary<string, object>();
-        public DagreEdgeIndex[] edges()
+        public dynamic[] edges()
         {
-            return _edgeObjs.Values.Select(z => z as DagreEdgeIndex).ToArray();
+            return edgesRaw();
+            //return _edgeObjs.Values.Select(z => z as DagreEdgeIndex).ToArray();
         }
 
         public dynamic[] edgesRaw()
@@ -519,63 +598,7 @@ namespace Dendrite.Dagre
         }
 
         public int _edgeCount;
-        internal DagreGraph setEdge(string v, string w, object obj, string ss = null)
-        {
-            return setEdge(new DagreEdgeIndex() { v = v, w = w }, obj);
-
-        }
-        internal DagreGraph setEdge(object edge, object origLabel)
-        {
-            var ee = edge as DagreEdgeIndex;
-
-            bool valueSpecified = false;
-            object val = null;
-            if (origLabel is DagreLabel)
-            {
-                val = origLabel;
-                valueSpecified = true;
-            }
-
-            var v = ee.v;
-            var w = ee.w;
-            var name = ee.name;
-            /*if (ee.name != null)
-            {
-                name = ""+ee.name;
-            }*/
-
-            var e = edgeArgsToId(_isDirected, v, w, name);
-            if (_edgeLabels.ContainsKey(e))
-            {
-                if (valueSpecified)
-                {
-                    _edgeLabels[e] = val;
-
-                }
-                return this;
-            }
-
-            if (ee.name == null && !_isMultigraph)
-            {
-                throw new DagreException("cannot set a named edge when isMultigraph = false");
-            }
-
-
-            setNode(ee.v);
-            setNode(ee.w);
-            addOrUpdate(e, _edgeLabels, valueSpecified ? val : _defaultEdgeLabelFn(ee.v, ee.w, ee.name));
-            //_edgeLabels[e] = valueSpecified ? val : _defaultEdgeLabelFn(ee.v, ee.w, ee.name);
-
-            var edgeObj = edgeArgsToObj(_isDirected, ee.v, ee.w, ee.name);
-            addOrUpdate(e, _edgeObjs, edgeObj);
-
-            incrementOrInitEntry(_predecessors[w], v);
-            incrementOrInitEntry(_successors[v], w);
-            _in[w][e] = edgeObj;
-            _out[v][e] = edgeObj;
-            _edgeCount++;
-            return this;
-        }
+        
 
         internal string[] sources()
         {
@@ -642,7 +665,7 @@ namespace Dendrite.Dagre
             {
                 if (_children.ContainsKey(v as string))
                 {
-                    var children = _children[v as string];
+                    var children = _children[v as string] as IDictionary<string, object>;
                     return children.Keys.ToArray();
                 }
 
@@ -655,26 +678,11 @@ namespace Dendrite.Dagre
             {
                 return new string[] { };
             }
-            return null;
+            return new string[] { };
         }
 
 
-        /*internal DagreEdgeIndex[] outEdges(string v)
-        {
-            throw new NotImplementedException();
-            if (_out.ContainsKey(v))
-            {
-                var outV = _out[v];
-                if (outV != null && outV.Any())
-                {
-                    return outV.Select(z => z.Value as DagreEdgeIndex).ToArray();
-                }
-                return _edgesIndexes.Where(z => z.v == z.w).ToArray();
-            }
-            return null;
-
-
-        }*/
+        
         internal object[] outEdges(string v, string w = null)
         {
             if (_out.ContainsKey(v))
@@ -707,15 +715,15 @@ namespace Dendrite.Dagre
 
 
 
-        internal void setEdge(string w, string v, object label, Guid guid)
+        /*internal void setEdge(string w, string v, object label, Guid guid)
         {
             throw new NotImplementedException();
         }
+        */
 
-
-        internal object edge(object e)
+        internal dynamic edge(object e)
         {
-            return edge(e as DagreEdgeIndex);
+            return edgeRaw(e);
         }
         public string edgeObjToIdRaw(bool isDirectred, dynamic v)
         {
@@ -770,9 +778,16 @@ namespace Dendrite.Dagre
                 {
                     if (_parent.ContainsKey(v))
                     {
-                        _children[(string)_parent[v]].Remove(v);
+                        dynamic t1 = _children[(string)_parent[v]];
+                        t1.Remove(v);
                         //delete this._children[this._parent[v]][v];                    
                         _parent.Remove(v);
+                    }
+                    else if (_children.ContainsKey((string)GRAPH_NODE))
+                    {
+                        dynamic t1 = _children[(string)GRAPH_NODE];
+
+                        t1.Remove(v);
                     }
                     foreach (var child in children(v))
                     {
@@ -825,52 +840,9 @@ namespace Dendrite.Dagre
 
         }
 
-        object _defaultNodeLabelFn(object v)
-        {
-            return null;
-        }
-        public DagreGraph setNode(object v, object o2 = null)
-        {
-            if (_nodes2.ContainsKey(v as string))
-            {
-                if (o2 != null)
-                {
-                    _nodes2[v as string] = o2 as DagreNode;
+        public Func<object, dynamic> _defaultNodeLabelFn = (t) => { return null; };
 
-                }
-                return this;
-            }
-            _nodes2.Add(v as string, o2 as DagreNode);
-
-
-            _nodes2[v as string] = (o2 != null ? o2 : _defaultNodeLabelFn(v)) as DagreNode;
-            if (_isCompound)
-            {
-                addOrUpdate(v as string, _parent, GRAPH_NODE);
-
-                if (!_children.ContainsKey(v as string))
-                {
-                    _children.Add(v as string, null);
-                }
-                _children[v as string] = new Dictionary<string, object>();
-                if (!_children.ContainsKey(GRAPH_NODE as string))
-                {
-                    _children.Add(GRAPH_NODE as string, null);
-                }
-                addOrUpdate(v as string, _children[GRAPH_NODE as string], true);
-
-            }
-
-            addOrUpdate(v as string, _in, new Dictionary<string, object>());
-            addOrUpdate(v as string, _predecessors, new Dictionary<string, object>());
-            addOrUpdate(v as string, _out, new Dictionary<string, object>());
-            addOrUpdate(v as string, _successors, new Dictionary<string, object>());
-
-
-
-            _nodeCount++;
-            return this;
-        }
+        
         public DagreGraph setNodeRaw(object v, object o2 = null)
         {
             if (_nodesRaw.ContainsKey(v as string))
@@ -900,7 +872,7 @@ namespace Dendrite.Dagre
                 _children[v as string] = new Dictionary<string, object>();
                 if (!_children.ContainsKey(GRAPH_NODE as string))
                 {
-                    _children.Add(GRAPH_NODE as string, null);
+                    _children.Add(GRAPH_NODE as string, new JavaScriptLikeObject());
                 }
                 addOrUpdate(v as string, _children[GRAPH_NODE as string], true);
 
@@ -937,11 +909,14 @@ namespace Dendrite.Dagre
 
         internal DagreGraph setGraph(object v)
         {
-            _label = v as DagreLabel;
+            _label = v;
             return this;
         }
-
-        internal void setParent(string v, object parent = null)
+        internal void setParent2(string v, object parent = null)
+        {
+            setParent(v, (string)parent);
+        }
+        internal void setParent(string v, string parent = null)
         {
             if (!_isCompound)
             {
@@ -949,16 +924,31 @@ namespace Dendrite.Dagre
             }
             if (parent == null)
             {
-                parent = GRAPH_NODE;
+                parent = (string)GRAPH_NODE;
             }
             else
             {
-                throw new NotImplementedException();
+                // Coerce parent to string
+                parent += "";
+                for (var ancestor = parent; ancestor != null; ancestor = (string)this.parent(ancestor))
+                {
+                    if (ancestor == v)
+                    {
+                        throw new DagreException("Setting " + parent + " as parent of " + v + " would create a cycle.");
+                    }
+                }
+                this.setNodeRaw(parent);
             }
-            setNode(v);
-            removeFromParentsChildList(v);
-            _parent[v] = parent;
-            _children[parent as string][v] = true;
+            setNodeRaw(v);
+            if (_parent.ContainsKey(v))
+            {
+                dynamic t1 = _children[_parent[v] as string];
+                t1.Remove(v);
+                _parent[v] = parent;
+            }
+            dynamic t2 = _children[parent as string];
+            t2[v] = true;
+
         }
 
         internal DagreGraph setEdge(DagreEdgeIndex e, object label)
@@ -966,13 +956,8 @@ namespace Dendrite.Dagre
             throw new NotImplementedException();
         }
 
-        void removeFromParentsChildList(string v)
-        {
-            _children[_parent[v as string] as string].Remove(v as string);
 
-            //_children[_parent[v]].
-        }
-        public Dictionary<string, Dictionary<string, object>> _children = new Dictionary<string, Dictionary<string, object>>();
+        public Dictionary<string, object> _children = new Dictionary<string, object>();
         public Dictionary<string, Dictionary<string, object>> _predecessors = new Dictionary<string, Dictionary<string, object>>();
         public Dictionary<string, Dictionary<string, object>> _successors = new Dictionary<string, Dictionary<string, object>>();
         public Dictionary<string, Dictionary<string, object>> _in = new Dictionary<string, Dictionary<string, object>>();
@@ -984,10 +969,11 @@ namespace Dendrite.Dagre
         {
             if (_isCompound)
             {
-                var parent = _parent[v];
-                if (parent != GRAPH_NODE)
+                if (_parent.ContainsKey(v))
                 {
-                    return parent;
+                    var parent = _parent[v];
+                    if (parent != GRAPH_NODE)
+                        return parent;
                 }
             }
             return null;
@@ -1089,6 +1075,23 @@ namespace Dendrite.Dagre
         internal double? marginx;
         internal double? marginy;
 
+        public static bool Compare(dynamic obj1, dynamic obj2)
+        {
+            //if (obj1.Keys.Count != obj2.Keys.Count) throw new DagreException("wrong");
+            for (int i = 0; i < obj1.Keys.Count; i++)
+            {
+                var tt = obj1 as IDictionary<string, object>;
+                var key = tt.Keys.ToArray()[i];
+                
+                var v1 = obj1[key];
+                var v2 = obj2[key];
+                if (v1 != v2) throw new DagreException("wrong");
+            }
+            //if (obj1["ranker"] != obj2["ranker"]) return false;
+            //if (obj1["nestingRoot"] != obj2["nestingRoot"]) return false;
+            //if (obj1["nestingRoot"] != obj2["nestingRoot"]) return false;
+            return true;
+        }
         internal bool Compare(DagreLabel label)
         {
             if (ranker != label.ranker) return false;

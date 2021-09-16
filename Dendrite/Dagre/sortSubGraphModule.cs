@@ -36,6 +36,19 @@ namespace Dendrite.Dagre
             }).ToArray();
 
         }
+        public static void mergeBarycenters(dynamic target, dynamic other)
+        {
+            if (target.barycenter != null)
+            {
+                target.barycenter = (target.barycenter * target.weight + other.barycenter * other.weight) / (target.weight + other.weight);
+                target.weight += other.weight;
+            }
+            else
+            {
+                target.barycenter = other.barycenter;
+                target.weight = other.weight;
+            }
+        }
         public static object sortSubraph(DagreGraph g, string v, DagreGraph cg, bool biasRight)
         {
             var movable = g.children(v);
@@ -53,25 +66,37 @@ namespace Dendrite.Dagre
             }
 
             var barycenters = barycenter(g, movable);
+            foreach (dynamic entry in barycenters)
+            {
+                if (g.children(entry.v).Length != 0)
+                {
+                    var subgraphResult = sortSubGraphModule.sortSubraph(g, entry.v, cg, biasRight);
+                    subgraphs[entry["v"]] = subgraphResult;
+                    if (subgraphResult.ContainsKey("barycenter"))
+                    {
+                        mergeBarycenters(entry, subgraphResult);
+                    }
+                }
+            }
 
 
-
-
-
-
-
-            
             var entries = resolveConflictsModule.resolveConflicts(barycenters, cg);
-            //expandSubgraphs(entries, subgraphs);
-
-            //var result = sort(entries, biasRight);
+            // expand subgraphs
+            foreach (var entry in entries)
+            {
+                //entry.vs = entry.vs.Select((v) => subgraphs[v] ? subgraphs[v].vs : v);
+                /* if (Array.isArray(entry.vs) && entry.vs.length !== 1 || Array.isArray(entry.vs[0]))
+                 {
+                     entry.vs = entry.vs.flat();
+                 }*/
+            }
 
 
             return new object();
         }
 
 
-   
+
 
 
         /*

@@ -6,12 +6,12 @@ namespace Dendrite.Layouts
     {
         public override void Layout(GraphModel model)
         {
-            DagreGraph dg = new DagreGraph();
+            DagreGraph dg = new DagreGraph(false);
             int ii = 0;
 
             foreach (var item in model.Nodes)
             {
-                dg._nodes2.Add(ii.ToString(), new DagreNode() { });
+                dg._nodesRaw.Add(ii.ToString(), new DagreNode() { });
                 ii++;
             }
 

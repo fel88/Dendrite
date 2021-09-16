@@ -69,8 +69,10 @@ namespace Dendrite
             DagreLayout.injectEdgeLabelProxies(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeRemoveEmptyRanks.txt")).Compare(dg)) throw new DagreException("wrong");
             DagreLayout.removeEmptyRanks(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterRemoveEmptyRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
             nestingGraph.cleanup(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterCleanup.txt")).Compare(dg)) throw new DagreException("wrong");
 
             util.normalizeRanks(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -82,6 +84,16 @@ namespace Dendrite
 
             normalize.run(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            parentDummyChains._parentDummyChains(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterParentDummies.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            addBorderSegments._addBorderSegments(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterAddBorderSegments.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            order._order(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+
 
         }
     }

@@ -74,9 +74,9 @@ namespace Dendrite.Dagre
         }
         public static string findOtherInnerSegmentNode(DagreGraph g, string v)
         {
-            if (g.node(v).dummy != null)
+            if (g.nodeRaw(v).dummy != null)
             {
-                return g.predecessors(v).FirstOrDefault(u => g.node(u).dummy != null);
+                return g.predecessors(v).FirstOrDefault(u => g.nodeRaw(u).dummy != null);
 
             }
             return null;
@@ -128,9 +128,9 @@ namespace Dendrite.Dagre
                                foreach (var u in g.predecessors(scanNode))
                                {
                                    var uLabel = g.node(u);
-                                   var uPos = uLabel.order;
+                                   var uPos = uLabel["order"];
                                    if ((uPos < k0 || k1 < uPos) &&
-                                   !(uLabel.dummy != null && g.node(scanNode).dummy != null))
+                                   !(uLabel.ContainsKey("dummy") && g.node(scanNode).ContainsKey("dummy") != null))
                                    {
                                        addConflict(conflicts, u, scanNode);
                                    }

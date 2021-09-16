@@ -403,7 +403,7 @@ namespace Dendrite.Dagre
 
         public static DagreGraph feasibleTree(DagreGraph g)
         {
-            var t = new DagreGraph() { _isDirected = false };
+            var t = new DagreGraph(false) { _isDirected = false };
 
             // Choose arbitrary node from which to start our tree
             var start = g.nodesRaw()[0];

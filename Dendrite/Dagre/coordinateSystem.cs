@@ -4,7 +4,7 @@
     {
         public static void undo(DagreGraph g)
         {
-            var rankDir = g.graph().rankdir.ToLower();
+            var rankDir = g.graph()["rankdir"].ToLower();
             if (rankDir == "bt" || rankDir == "rl")
             {
                 reverseY(g);

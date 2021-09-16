@@ -12,7 +12,7 @@ namespace Dendrite.Dagre
 
         public static void undo(DagreGraph g)
         {
-            foreach (var e in g.edges())
+            foreach (dynamic e in g.edges())
             {
                 var label = g.edge(e);
                 if (label.reversed != null)
@@ -24,7 +24,7 @@ namespace Dendrite.Dagre
                     label.forwardName = null;
 
 
-                    g.setEdge(e.w, e.v, label, forwardName);
+                    g.setEdgeRaw(new object[] { e["w"], e["v"], label, forwardName });
                 }
             }
 
@@ -32,21 +32,21 @@ namespace Dendrite.Dagre
 
         public static Func<string, int> weightFn(DagreGraph g)
         {
-            return (Func<string, int>)((e) => { return g.edge(e).weight; });
+            return (Func<string, int>)((e) => { return g.edge(e)["weight"]; });
         }
         public static void run(DagreGraph g)
         {
-            var fas = (g.graph().acyclicer == "greedy"
+            var fas = (g.graph()["acyclicer"] == "greedy"
    ? greedyFAS(g, weightFn(g))
    : dfsFAS(g));
-            foreach (var e in fas)
+            foreach (dynamic e in fas)
             {
                 var label = g.edge(e);
                 g.removeEdge(e);
                 label.forwardName = e.name;
                 label.reversed = true;
 
-                g.setEdge(e.w, e.v, label, util.uniqueId("rev"));
+                g.setEdgeRaw(new object[] { e["w"], e["v"], label, util.uniqueId("rev") });
 
             }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,29 +24,34 @@ namespace Dendrite.Dagre
          *    1. Graph nodes will have an "order" attribute based on the results of the
          *       algorithm.
          */
-        public static DagreGraph[] buildLayerGraphs(DagreGraph g, int[] ranks, string relationship)
+        /*public static DagreGraph[] buildLayerGraphs(DagreGraph g, int[] ranks, string relationship)
         {
             return ranks.Select(z => buildLayerGraph(g, z, relationship)).ToArray();
-        }
+        }*/
 
 
         public static void _order(DagreGraph g)
         {
+            List<object> downLayerGraphs = new List<object>();
+            List<object> upLayerGraphs = new List<object>();
+            var rank = util.maxRank(g);
 
-            var maxRank = util.maxRank(g);
-            var downLayerGraphs = buildLayerGraphs(g, util.range(1, maxRank + 1), "inEdges");
-            var upLayerGraphs = buildLayerGraphs(g, util.range(maxRank - 1, -1, -1), "outEdges");
+            for (int i = 0; i < rank; i++)
+            {
+                downLayerGraphs.Add(buildLayerGraph(g, i + 1, "inEdges"));
+                upLayerGraphs.Add(buildLayerGraph(g, rank - i - 1, "outEdges"));
+            }
 
 
-            var layering = initOrder(g);
+            var layering = initOrder(g) as object[][];
             assignOrder(g, layering);
 
             int bestCC = int.MaxValue;
-            string[][] best = null;
+            object[][] best = null;
 
             for (int i = 0, lastBest = 0; lastBest < 4; ++i, ++lastBest)
             {
-                sweepLayerGraphs((i % 2 == 0) ? downLayerGraphs : upLayerGraphs, i % 4 >= 2);
+                sweepLayerGraphs((i % 2 == 0) ? downLayerGraphs.ToArray() : upLayerGraphs.ToArray(), i % 4 >= 2);
 
                 layering = util.buildLayerMatrix(g);
                 var cc = crossCount(g, layering);
@@ -61,13 +67,13 @@ namespace Dendrite.Dagre
 
         }
 
-        public static void sweepLayerGraphs(DagreGraph[] layerGraphs, bool biasRight)
+        public static void sweepLayerGraphs(object[] layerGraphs, bool biasRight)
         {
-            var cg = new DagreGraph();
+            var cg = new DagreGraph(false);
             foreach (var lg in layerGraphs)
             {
-                var root = lg.graph().root;
-                var sorted = sortSubGraphModule.sortSubraph(lg, root, cg, biasRight);
+                var root = (lg as DagreGraph).graph()["root"];
+                var sorted = sortSubGraphModule.sortSubraph(lg as DagreGraph, root, cg, biasRight);
                 //foreach (var item in sorted)
                 {
 
@@ -84,7 +90,7 @@ namespace Dendrite.Dagre
             });*/
         }
 
-        public static void assignOrder(DagreGraph g, string[][] layering)
+        public static void assignOrder(DagreGraph g, object[][] layering)
         {
             foreach (var layer in layering)
             {
@@ -92,7 +98,7 @@ namespace Dendrite.Dagre
                 for (int i = 0; i < layer.Length; i++)
                 {
                     var v = layer[i];
-                    g.node(v).order = i;
+                    g.node(v)["order"] = i;
                 }
 
 
@@ -138,41 +144,59 @@ namespace Dendrite.Dagre
          */
         public static DagreGraph buildLayerGraph(DagreGraph g, int rank, string relationship)
         {
-            var result = new DagreGraph() { _isCompound = true };
-            /*var root = createRootNode(g),
-              result = new Graph({ compound: true }).setGraph({ root: root })
-      .setDefaultNodeLabel(function(v) { return g.node(v); });
-
-  _.forEach(g.nodes(), function(v)
-        {
-            var node = g.node(v),
-              parent = g.parent(v);
-
-            if (node.rank === rank || node.minRank <= rank && rank <= node.maxRank)
+            object root;
+            while (true)
             {
-                result.setNode(v);
-                result.setParent(v, parent || root);
-
-                // This assumes we have only short edges!
-                _.forEach(g[relationship](v), function(e) {
-                    var u = e.v === v ? e.w : e.v,
-                      edge = result.edge(u, v),
-                      weight = !_.isUndefined(edge) ? edge.weight : 0;
-                    result.setEdge(u, v, { weight: g.edge(e).weight + weight });
-                });
-
-                if (_.has(node, "minRank"))
+                root = util.uniqueId("_root");
+                if (!g.hasNode((string)root)) break;
+            }
+            var graph = new DagreGraph(true) { _isCompound = true };
+            JavaScriptLikeObject jo = new JavaScriptLikeObject();
+            jo.Add("root", root);
+            graph.setGraph(jo);
+            graph.setDefaultNodeLabel((v) => g.node(v));
+            foreach (var v in g.nodes())
+            {
+                var node = g.node(v);
+                if (node["rank"] == rank || (node.ContainsKey("minRank") && node.ContainsKey("maxRank") && node["minRank"] <= rank && rank <= node["maxRank"]))
                 {
-                    result.setNode(v, {
-                    borderLeft: node.borderLeft[rank],
-          borderRight: node.borderRight[rank]
-                    });
+                    graph.setNodeRaw(v);
+                    var parent = g.parent(v);
+                    graph.setParent2(v, parent != null ? parent : root);
+                    // This assumes we have only short edges!
+                    object[] rr = null;
+                    if (relationship == "inEdges")
+                    {
+                        rr = g.inEdges(v);
+                    }
+                    else if (relationship == "outEdges")
+                    {
+                        rr = g.outEdges(v);
+                    }
+                    else
+                    {
+                        throw new DagreException();
+                    }
+                    foreach (dynamic e in rr)
+                    {
+                        var u = e["v"] == v ? e["w"] : e["v"];
+                        var edge = graph.edgeRaw(new object[] { u, v });
+                        var weight = edge != null ? edge["weight"] : 0;
+                        JavaScriptLikeObject j = new JavaScriptLikeObject();
+                        j.Add("weight", g.edge(e)["weight"] + weight);
+                        graph.setEdgeRaw(new object[] { u, v, j });
+                    }
+                    if (node.ContainsKey("minRank"))
+                    {
+                        var jj = new JavaScriptLikeObject();
+                        jj.Add("borderLeft", node["borderLeft"][rank]);
+                        jj.Add("borderRight", node["borderRight"][rank]);
+
+                        graph.setNodeRaw(v, jj);
+                    }
                 }
             }
-        });
-
-  return result;*/
-            return result;
+            return graph;
         }
 
         public static void createRootNode(DagreGraph g)
@@ -186,40 +210,73 @@ namespace Dendrite.Dagre
 
         #region init order
         /*
- * Assigns an initial order value for each node by performing a DFS search
- * starting from nodes in the first rank. Nodes are assigned an order in their
- * rank as they are first visited.
- *
- * This approach comes from Gansner, et al., "A Technique for Drawing Directed
- * Graphs."
- *
- * Returns a layering matrix with an array per layer and each layer sorted by
- * the order of its nodes.
- */
-        public static string[][] initOrder(DagreGraph g)
+        * Assigns an initial order value for each node by performing a DFS search
+        * starting from nodes in the first rank. Nodes are assigned an order in their
+        * rank as they are first visited.
+        *
+        * This approach comes from Gansner, et al., "A Technique for Drawing Directed
+        * Graphs."
+        *
+        * Returns a layering matrix with an array per layer and each layer sorted by
+        * the order of its nodes.
+        */
+        public static object initOrder(DagreGraph g)
         {
             List<List<string>> ret = new List<List<string>>();
-            /*   var visited = { };
-               var simpleNodes = _.filter(g.nodes(), function(v) {
-                   return !g.children(v).length;
-               });
-               var maxRank = _.max(_.map(simpleNodes, function(v) { return g.node(v).rank; }));
-               var layers = _.map(_.range(maxRank + 1), function() { return []; });
+            JavaScriptLikeObject visited = new JavaScriptLikeObject();
+            var nodes = g.nodes().Where((v) => g.children(v).Length == 0).ToArray();
+            dynamic maxRank = null;
+            foreach (dynamic v in nodes)
+            {
+                var temp1 = g.children((string)v);
+                if (!(temp1.Length > 0))
+                {
+                    var rank = g.node(v)["rank"];
+                    if (maxRank == null || (rank != null && rank > maxRank))
+                    {
+                        maxRank = rank;
+                    }
+                }
+            }
+            if (maxRank != null)
+            {
+                List<List<object>> layers = new List<List<object>>();
+                for (int i = 0; i < maxRank + 1; i++)
+                {
+                    layers.Add(new List<object>());
+                }
+                //var layers = Array.from(new Array(maxRank + 1), () => []);
+                var temp1 = nodes.Select((v) => new object[] { g.node(v)["rank"], v }).ToArray();
+                Array.Sort(temp1, (a, b) =>
+                {
+                    dynamic aa = a[0];
+                    dynamic bb = b[0];
+                    return aa - bb;
+                });
+                var temp2 = temp1.Select(z => z[1]).ToArray();
+                foreach (var v in temp2)
+                {
+                    List<object> queue = new List<object>();
+                    queue.Add(v);
 
-               function dfs(v)
-               {
-                   if (_.has(visited, v)) return;
-                   visited[v] = true;
-                   var node = g.node(v);
-                   layers[node.rank].push(v);
-                   _.forEach(g.successors(v), dfs);
-               }
+                    while (queue.Count > 0)
+                    {
+                        var v2 = queue[0];
+                        queue.RemoveAt(0);
+                        if (!visited.ContainsKey((string)v2))
+                        {
+                            visited.Add((string)v2, true);
+                            var rank = g.node(v2)["rank"];
+                            layers[rank].Add(v2);
+                            queue.AddRange(g.successors((string)v2));
+                        }
+                    }                    
+                }
 
-               var orderedVs = _.sortBy(simpleNodes, function(v) { return g.node(v).rank; });
-               _.forEach(orderedVs, dfs);
+                return layers.Select(z => z.ToArray()).ToArray();
+            }
+            return new JavaScriptLikeObject();
 
-               return layers;*/
-            return ret.Select(z => z.ToArray()).ToArray();
         }
 
         #endregion
@@ -242,7 +299,7 @@ namespace Dendrite.Dagre
          *
          * This algorithm is derived from Barth, et al., "Bilayer Cross Counting."
          */
-        public static int crossCount(DagreGraph g, string[][] layering)
+        public static int crossCount(DagreGraph g, object[][] layering)
         {
             var cc = 0;
             for (var i = 1; i < layering.Length; ++i)
@@ -252,7 +309,7 @@ namespace Dendrite.Dagre
             return cc;
         }
 
-        public static int twoLayerCrossCount(DagreGraph g, string[] northLayer, string[] southLayer)
+        public static int twoLayerCrossCount(DagreGraph g, object[] northLayer, object[] southLayer)
         {
             // Sort all of the edges between the north and south layers by their position
             // in the north layer and then the south. Map these edges to the position of
@@ -303,4 +360,6 @@ namespace Dendrite.Dagre
         public int? barycenter = null;
         public int weight;
     }
+
 }
+

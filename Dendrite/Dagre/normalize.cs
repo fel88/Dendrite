@@ -21,7 +21,7 @@
          */
         public static void run(DagreGraph g)
         {
-            g.graph().dummyChains = new System.Collections.Generic.List<string>();
+            g.graph()["dummyChains"] = new System.Collections.Generic.List<string>();
             foreach (var edge in g.edgesRaw())
             {
                 normalizeEdge(g, edge);
@@ -102,7 +102,7 @@
                     g.setEdgeRaw(new object[] { v, (string)dummy, jo1, name });
                     if (i == 0)
                     {
-                        g.graph().dummyChains.Add((string)dummy);
+                        g.graph()["dummyChains"].Add((string)dummy);
                     }
                     v = dummy;
                 }

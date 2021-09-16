@@ -6,7 +6,7 @@ namespace Dendrite.Dagre
     public class addBorderSegments
     {
 
-        public static void   addBorderNode(DagreGraph g, string prop, string  prefix, object sg, DagreNode sgNode, int rank)
+        public static void addBorderNode(DagreGraph g, string prop, string prefix, object sg, DagreNode sgNode, int rank)
         {
             /*var label = { width: 0, height: 0, rank: rank, borderType: prop };
         var prev = sgNode[prop][rank - 1];
@@ -16,7 +16,7 @@ namespace Dendrite.Dagre
   if (prev) {
     g.setEdge(prev, curr, { weight: 1 });
   }*/
-}
+        }
 
 
         public static void _addBorderSegments(DagreGraph g)
@@ -25,7 +25,7 @@ namespace Dendrite.Dagre
             dfs = (v) =>
            {
                var children = g.children(v);
-               var node = g.node(v);
+               var node = g.nodeRaw(v);
                if (children != null && children.Length > 0)
                {
                    foreach (var item in children)
@@ -34,12 +34,11 @@ namespace Dendrite.Dagre
                    }
                }
 
-               if (node.minRank != null)
+               if (node.ContainsKey("minRank"))
                {
-                   node.borderLeft = new List<object>();
-                   node.borderRight = new List<object>();
-                   for (int rank = node.minRank.Value, maxRank = node.maxRank.Value + 1;
-                     rank < maxRank;
+                   node["borderLeft"] = new JavaScriptLikeObject();
+                   node["borderRight"] = new JavaScriptLikeObject();
+                   for (int rank = node["minRank"], maxRank = node["maxRank"] + 1; rank < maxRank;
                      ++rank)
                    {
                        addBorderNode(g, "borderLeft", "_bl", v, node, rank);
@@ -47,7 +46,7 @@ namespace Dendrite.Dagre
                    }
                }
            };
-            
+
             foreach (var item in g.children())
             {
                 dfs(item);

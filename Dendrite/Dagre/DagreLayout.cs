@@ -199,7 +199,7 @@ namespace Dendrite.Dagre
             string[] nodeNumAttrs = new string[] { "width", "height" };
             string[] graphAttrs = new string[] { "acyclicer", "ranker", "rankdir", "align" };
             string[] edgeAttrs = new string[] { "labelpos" };
-            var g = new DagreGraph() { _isMultigraph = true, _isCompound = true };
+            var g = new DagreGraph(true) { _isMultigraph = true, _isCompound = true };
             var graph = canonicalize(inputGraph.graph());
 
             g.setGraph(merge(new object[] { null, new GraphDefaults(), selectNumberAttrs(graph, graphNumAttrs), pick(graph, graphAttrs) }));
@@ -209,7 +209,7 @@ namespace Dendrite.Dagre
             {
                 var node = canonicalize(inputGraph.nodeRaw(v));
                 g.setNodeRaw(v, defaults(selectNumberAttrs(node, nodeNumAttrs), new NodeDefaults()));
-                g.setParent(v, inputGraph.parent(v));
+                g.setParent2(v, inputGraph.parent(v));
             }
 
 
@@ -241,7 +241,10 @@ namespace Dendrite.Dagre
 
         public void rank(DagreGraph g)
         {
-            switch (g.graph().ranker)
+            string res = null;
+            if (g.graph().ContainsKey("ranker"))
+                res = g.graph()["ranker"];
+            switch (res)
             {
                 case "network-simplex":
                     throw new NotImplementedException();
@@ -307,7 +310,7 @@ namespace Dendrite.Dagre
             }
 
             var delta = 0;
-            var nodeRankFactor = g.graph().nodeRankFactor;
+            var nodeRankFactor = g.graph()["nodeRankFactor"];
             foreach (var pair in layers.OrderBy(z => z.Key))
             {
 
@@ -634,7 +637,7 @@ namespace Dendrite.Dagre
                 }
             }
 
-            g.graph().maxRank = maxRank;
+            g.graph()["maxRank"] = maxRank;
         }
     }
 }
