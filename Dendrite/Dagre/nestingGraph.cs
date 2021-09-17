@@ -39,7 +39,7 @@ namespace Dendrite.Dagre
             var height = depths.Max(z => z.Value) - 1;// Note: depths is an Object not an array
             var nodeSep = 2 * height + 1;
 
-            g.graph().nestingRoot = root;
+            g.graph()["nestingRoot"] = root;
 
 
             // Multiply minlen by nodeSep to align nodes on non-border ranks.
@@ -62,7 +62,7 @@ namespace Dendrite.Dagre
 
             // Save the multiplier for node layers for later removal of empty border
             // layers.
-            g.graph().nodeRankFactor = nodeSep;
+            g.graph()["nodeRankFactor"]= nodeSep;
         }
 
 

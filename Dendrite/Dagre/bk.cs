@@ -98,11 +98,11 @@ namespace Dendrite.Dagre
          * This algorithm (safely) assumes that a dummy node will only be incident on a
          * single node in the layers being scanned.
          */
-        public static object[] findType1Conflicts(DagreGraph g, string[][] layering)
+        public static object[] findType1Conflicts(DagreGraph g, dynamic layering)
         {
             Dictionary<string, HashSet<string>> conflicts = new Dictionary<string, HashSet<string>>();
 
-            Func<string[], string[], object> visitLayer = (prevLayer, layer) =>
+            Func<dynamic, dynamic, dynamic> visitLayer = (prevLayer, layer) =>
                {
                    // last visited node in the previous layer that is incident on an inner
                    // segment.
@@ -139,8 +139,6 @@ namespace Dendrite.Dagre
                                k0 = k1;
                            }
                        }
-
-
                    }
 
 
@@ -159,7 +157,7 @@ namespace Dendrite.Dagre
         }
 
 
-        public static object[] findType2Conflicts(DagreGraph g, string[][] layering)
+        public static object[] findType2Conflicts(DagreGraph g, dynamic layering)
         {
             //var conflicts = { };
             /*

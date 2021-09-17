@@ -16,9 +16,9 @@
                 swapWidthHeight(g);
             }
         }
-        public static void reverseYOne(DagreBase attrs)
+        public static void reverseYOne(dynamic attrs)
         {
-            attrs.y = -attrs.y;
+            attrs["y"] = -attrs["y"];
         }
 
         public static void reverseY(DagreGraph g)
@@ -30,7 +30,7 @@
             foreach (var e in g.edges())
             {
                 var edge = g.edge(e);
-                foreach (var item in edge.points)
+                foreach (var item in edge["points"])
                 {
                     reverseYOne(item);
                 }
@@ -74,7 +74,7 @@
         }
         public static void adjust(DagreGraph g)
         {
-            var rankDir = g.graph().rankdir.ToLower();
+            var rankDir = g.graph()["rankdir"].ToLower();
             if (rankDir == "lr" || rankDir == "rl")
             {
                 swapWidthHeight(g);
@@ -82,14 +82,14 @@
         }
 
 
-        public static void swapWidthHeightOne(DagreBase attrs)
+        public static void swapWidthHeightOne(dynamic attrs)
         {
-            var w = attrs.width;
-            attrs.width = attrs.height;
-            attrs.height = w;
+            var w = attrs["width"];
+            attrs["width"] = attrs["height"];
+            attrs["height"] = w;
         }
 
-        public static void swapWidthHeight(DagreGraph g)
+        public static void swapWidthHeight(dynamic g)
         {
             foreach (var v in g.nodes())
             {

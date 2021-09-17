@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 
 namespace Dendrite.Dagre
 {
@@ -42,24 +43,54 @@ namespace Dendrite.Dagre
                 upLayerGraphs.Add(buildLayerGraph(g, rank - i - 1, "outEdges"));
             }
 
+            var ret1 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("downLayerGraphs1"));
+            var ret2 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("upLayerGraphs1"));
 
-            var layering = initOrder(g) as object[][];
+            for (int i = 0; i < ret1.Length; i++)
+            {
+                ret1[i].Compare(((dynamic)downLayerGraphs[i]));
+            }
+            for (int i = 0; i < ret2.Length; i++)
+            {
+                ret2[i].Compare(((dynamic)upLayerGraphs[i]));
+            }
+
+
+            dynamic layering = initOrder(g) as object[][];
             assignOrder(g, layering);
 
+            var or = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterAssignOrder"));
+            or.Compare(g);
             int bestCC = int.MaxValue;
-            object[][] best = null;
+            object[] best = null;
 
             for (int i = 0, lastBest = 0; lastBest < 4; ++i, ++lastBest)
             {
-                sweepLayerGraphs((i % 2 == 0) ? downLayerGraphs.ToArray() : upLayerGraphs.ToArray(), i % 4 >= 2);
+                sweepLayerGraphs((i % 2 != 0) ? downLayerGraphs.ToArray() : upLayerGraphs.ToArray(), i % 4 >= 2);
 
                 layering = util.buildLayerMatrix(g);
                 var cc = crossCount(g, layering);
                 if (cc < bestCC)
                 {
                     lastBest = 0;
-                    best = util.cloneDeep(layering);
+                    var length = layering.Count;
+                    best = new object[length];
+                    for (var j = 0; j < length; j++)
+                    {
+                        // best[i] = layering[i].slice()
+                        //clone here
+                        List<object> cln = new List<object>();
+                        foreach (var item in layering[j])
+                        {
+                            cln.Add(item.Value);
+                        }
+                        best[j] = cln;
+                    }
                     bestCC = cc;
+                    /////
+                    //lastBest = 0;
+                    //best = util.cloneDeep(layering);
+                    // bestCC = cc;
                 }
             }
 
@@ -74,28 +105,55 @@ namespace Dendrite.Dagre
             {
                 var root = (lg as DagreGraph).graph()["root"];
                 var sorted = sortSubGraphModule.sortSubraph(lg as DagreGraph, root, cg, biasRight);
-                //foreach (var item in sorted)
+                var vs = sorted["vs"];
+                var length = vs.Count;
+                for (var i = 0; i < length; i++)
                 {
+                    (lg as DagreGraph).node(vs[i])["order"] = i;
+                }
+                addSubgraphConstraints(lg, cg, sorted["vs"]);
+            }
 
+        }
+        public static void addSubgraphConstraints(dynamic g, dynamic cg, dynamic vs)
+        {
+            dynamic prev = new JavaScriptLikeObject();
+            object rootPrev = null;
+            foreach (dynamic v in vs)
+            {
+                var child = g.parent(v);
+                object parent = null;
+                object prevChild = null;
+                while (child != null)
+                {
+                    parent = g.parent(child);
+                    if (parent != null)
+                    {
+                        prevChild = prev[parent];
+                        prev[parent] = child;
+                    }
+                    else
+                    {
+                        prevChild = rootPrev;
+                        rootPrev = child;
+                    }
+                    if (prevChild != null && prevChild != child)
+                    {
+                        cg.setEdge(prevChild, child);
+                        return;
+                    }
+                    child = parent;
                 }
             }
-            /*
-            _.forEach(layerGraphs, function(lg) {
-                var root = lg.graph().root;
-                var sorted = sortSubgraph(lg, root, cg, biasRight);
-                _.forEach(sorted.vs, function(v, i) {
-                    lg.node(v).order = i;
-                });
-                addSubgraphConstraints(lg, cg, sorted.vs);
-            });*/
         }
-
-        public static void assignOrder(DagreGraph g, object[][] layering)
+        public static void assignOrder(DagreGraph g, dynamic layering)
         {
             foreach (var layer in layering)
             {
-
-                for (int i = 0; i < layer.Length; i++)
+                int len = 0;
+                if (layer is Array) len = layer.Length;
+                else len = layer.Count;
+                for (int i = 0; i < len; i++)
                 {
                     var v = layer[i];
                     g.node(v)["order"] = i;
@@ -270,7 +328,7 @@ namespace Dendrite.Dagre
                             layers[rank].Add(v2);
                             queue.AddRange(g.successors((string)v2));
                         }
-                    }                    
+                    }
                 }
 
                 return layers.Select(z => z.ToArray()).ToArray();
@@ -299,44 +357,63 @@ namespace Dendrite.Dagre
          *
          * This algorithm is derived from Barth, et al., "Bilayer Cross Counting."
          */
-        public static int crossCount(DagreGraph g, object[][] layering)
+        public static int crossCount(DagreGraph g, dynamic layering)
         {
             var cc = 0;
-            for (var i = 1; i < layering.Length; ++i)
+            for (var i = 1; i < layering.Count; ++i)
             {
                 cc += twoLayerCrossCount(g, layering[i - 1], layering[i]);
             }
             return cc;
         }
 
-        public static int twoLayerCrossCount(DagreGraph g, object[] northLayer, object[] southLayer)
+        public static int twoLayerCrossCount(DagreGraph g, dynamic northLayer, dynamic southLayer)
         {
             // Sort all of the edges between the north and south layers by their position
             // in the north layer and then the south. Map these edges to the position of
             // their head in the south layer.
-            /*    var southPos = _.zipObject(southLayer,
-                  _.map(southLayer, function(v, i) { return i; }));
-                var southEntries = _.flatten(_.map(northLayer, function(v) {
-                    return _.sortBy(_.map(g.outEdges(v), function(e) {
-                        return { pos: southPos[e.w], weight: g.edge(e).weight };
-                    }), "pos");
-                }), true);*/
-
+            JavaScriptLikeObject southPos = new JavaScriptLikeObject();
+            for (var i = 0; i < southLayer.Count; i++)
+            {
+                southPos[(string)southLayer["" + i]] = i;
+            }
+            //const southEntries = northLayer.map((v) => g.outEdges(v)
+            //.map((e) => {return { pos: southPos[e.w], weight: g.edge(e).weight }; })
+            //.sort((a, b) => a.pos - b.pos)).flat();
+            List<object> southEntries = new List<object>();
+            foreach (dynamic item in northLayer)
+            {
+                var temp1 = g.outEdges(item.Value);
+                List<object> ret2 = new List<object>();
+                foreach (var e in temp1)
+                {
+                    JavaScriptLikeObject ss = new JavaScriptLikeObject();
+                    ss.Add("pos", southPos[e["w"]]);
+                    ss.Add("weight", g.edge(e)["weight"]);
+                    ret2.Add(ss);
+                }
+                southEntries.AddRange(ret2);
+            }
             // Build the accumulator tree
             var firstIndex = 1;
-            while (firstIndex < southLayer.Length) firstIndex <<= 1;
-            var treeSize = 2 * firstIndex - 1;
+            while (firstIndex < southLayer.Count)
+            {
+                firstIndex <<= 1;
+            }
+            //const tree = Array.from(new Array(2 * firstIndex - 1), () => 0);
+            var tree = new List<object>() { };
+            for (int i = 0; i < 2 * firstIndex - 1; i++)
+            {
+                tree.Add(0);
+            }
             firstIndex -= 1;
-            var tree = Enumerable.Range(0, treeSize).Select(z => 0).ToArray();
-            //var tree = _.map(new Array(treeSize), function() { return 0; });
-
             // Calculate the weighted crossings
             var cc = 0;
-            /*
-            _.forEach(southEntries.forEach(function(entry) {
-                var index = entry.pos + firstIndex;
-                tree[index] += entry.weight;
-                var weightSum = 0;
+            foreach (dynamic entry in southEntries)
+            {
+                var index = entry["pos"] + firstIndex;
+                tree[index] += entry["weight"];
+                dynamic weightSum = 0;
                 while (index > 0)
                 {
                     if (index % 2)
@@ -344,11 +421,10 @@ namespace Dendrite.Dagre
                         weightSum += tree[index + 1];
                     }
                     index = (index - 1) >> 1;
-                    tree[index] += entry.weight;
+                    tree[index] += entry["weight"];
                 }
-                cc += entry.weight * weightSum;
-            }));
-            */
+                cc += entry["weight"] * weightSum;
+            }
             return cc;
         }
         #endregion

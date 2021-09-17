@@ -75,7 +75,7 @@ namespace Dendrite.Dagre
             throw new System.NotImplementedException();
         }
 
-        
+
 
         public bool Contains(KeyValuePair<string, object> item)
         {
@@ -99,7 +99,7 @@ namespace Dendrite.Dagre
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return dic.GetEnumerator();
         }
     }
 }

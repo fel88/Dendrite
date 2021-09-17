@@ -44,50 +44,121 @@ namespace Dendrite.Dagre
             public int weight;
             internal bool? merged;
         }
-        public static resolveDto1[] resolveConflicts(barycenterDto[] entities, DagreGraph cg)
+        public static void mergeEntries(dynamic target, dynamic source)
         {
-            Dictionary<string, resolveDto> mappedEntries = new Dictionary<string, resolveDto>();
+            var sum = 0;
+            var weight = 0;
+            if (target.ContainsKey("weight") && target["weight"] != 0)
+            {
+                sum += target["barycenter"] * target["weight"];
+                weight += target["weight"];
+            }
+            if (source.ContainsKey("weight") && source["weight"] != 0)
+            {
+                sum += source["barycenter"] * source["weight"];
+                weight += source["weight"];
+            }
+            target["vs"] = source["vs"].Union(target["vs"]);
+            target["barycenter"] = sum / weight;
+            target["weight"] = weight;
+            target["i"] = Math.Min(source["i"], target["i"]);
+            source["merged"] = true;
+        }
+
+        public static object resolveConflicts(dynamic entities, DagreGraph cg)
+        {
+            Dictionary<string, object> mappedEntries = new Dictionary<string, object>();
             for (int i = 0; i < entities.Length; i++)
             {
-                barycenterDto entry = entities[i];
-                var tmp = new resolveDto
+                dynamic entry = entities[i];
+
+                JavaScriptLikeObject tmp = new JavaScriptLikeObject();
+                tmp.Add("indegree", 0);
+                tmp.Add("in", new List<object>());
+                tmp.Add("out", new List<object>());
+                tmp.Add("vs", new List<object> { entry["v"] });
+                tmp.Add("i", i);
+
+                mappedEntries.Add(entry["v"], tmp);
+                if (entry["barycenter"] != null)
                 {
-                    indegree = 0,
-                    _in = new string[0],
-                    _out = new string[0],
-                    vs = new string[] { entry.v },
-                    i = i
-                };
-                mappedEntries.Add(entry.v, tmp);
-                if (entry.barycenter != null)
-                {
-                    tmp.barycenter = entry.barycenter.Value;
-                    tmp.weight = entry.weight;
+                    tmp["barycenter"] = entry["barycenter"];
+                    tmp["weight"] = entry["weight"];
                 }
             }
 
             foreach (var e in cg.edges())
             {
-                /* _.forEach(cg.edges(), function(e) {
-                     var entryV = mappedEntries[e.v];
-                     var entryW = mappedEntries[e.w];
-                     if (!_.isUndefined(entryV) && !_.isUndefined(entryW))
-                     {
-                         entryW.indegree++;
-                         entryV.out.push(mappedEntries[e.w]);
-                     }
-                 });*/
+                dynamic entryV = mappedEntries[e["v"]];
+                dynamic entryW = mappedEntries[e["w"]];
+                if (entryV != null && entryW != null)
+                {
+                    entryW["indegree"]++;
+                    entryV["out"].Add(mappedEntries[e["w"]]);
+                }
 
             }
-            var sourceSet = mappedEntries.Where(z => z.Value.indegree != null).ToArray();
-            return doResolveConflicts(sourceSet);
+            var sourceSet = mappedEntries.Values.Where(z => ((dynamic)z)["indegree"] != null).ToList();
+
+
+            //return doResolveConflicts(sourceSet);
+            List<object> results = new List<object>();
+            while (sourceSet.Count != 0)
+            {
+                dynamic entry = sourceSet[sourceSet.Count - 1];
+                sourceSet.RemoveAt(sourceSet.Count - 1);
+                results.Add(entry);
+                //entry["in"].reverse().forEach(handleIn(entry));
+                var aa = (dynamic)entry["in"];
+                aa.Reverse();
+                foreach (var uEntry in aa)
+                {
+                    var vEntry = entry;
+                    if (uEntry["merged"])
+                    {
+                        continue;
+                    }
+                    if (uEntry["barycenter"] == null || vEntry["barycenter"] == null
+                        || uEntry["barycenter"] >= vEntry["barycenter"])
+                    {
+                        mergeEntries(vEntry, uEntry);
+                    }
+                }
+                //entry["out"]forEach(handleOut(entry));
+                foreach (var wEntry in (dynamic)entry["out"])
+                {
+                    var vEntry = entry;
+                    wEntry["in"].Add(vEntry);
+                    if (--wEntry["indegree"] == 0)
+                    {
+                        sourceSet.Add(wEntry);
+                    }
+                }
+            }
+            var temp1 = results.Where(z => !((dynamic)z).ContainsKey("merged"));
+
+            return temp1.Select(obj =>
+            {
+                dynamic value = new JavaScriptLikeObject();
+                var attrs = new string[] { "vs", "i", "barycenter", "weight" };
+                dynamic _obj = obj;
+                foreach (var key in attrs)
+                {
+                    if (_obj[key] != null)
+                    {
+                        value[key] = _obj[key];
+                    }
+                }
+                return value;
+            }).ToArray();
         }
 
-        private static resolveDto1[] doResolveConflicts(KeyValuePair<string, resolveDto>[] _sourceSet)
+        private static resolveDto1[] doResolveConflicts(dynamic _sourceSet)
         {
             List<KeyValuePair<string, resolveDto>> entries = new List<KeyValuePair<string, resolveDto>>();
             var sourceSet = _sourceSet.ToList();
-            Action<KeyValuePair<string, resolveDto>> handleIn = (vEntry) => {
+            Action<KeyValuePair<string, resolveDto>> handleIn = (vEntry) =>
+            {
                 /*
                  *     return function(uEntry) {
            if (uEntry.merged)
@@ -103,7 +174,8 @@ namespace Dendrite.Dagre
        };
                  */
             };
-            Action<KeyValuePair<string, resolveDto>> handleOut = (vEntry) => {
+            Action<KeyValuePair<string, resolveDto>> handleOut = (vEntry) =>
+            {
                 /*
                  *    return function(wEntry) {
            wEntry["in"].push(vEntry);
@@ -126,13 +198,14 @@ namespace Dendrite.Dagre
                 foreach (var item in entry.Value._out)
                 {
                     handleOut(entry);
-                }                
+                }
             }
             var ww1 = entries.Where(entry => entry.Value.merged != null);
             return ww1.Select(entry => new resolveDto1 { i = entry.Value.i, weight = entry.Value.weight, barycenter = entry.Value.barycenter, vs = entry.Value.vs }).ToArray();
         }
 
-        public class resolveDto1 {
+        public class resolveDto1
+        {
             public int barycenter;
             public int i;
             public int weight;
@@ -142,38 +215,38 @@ namespace Dendrite.Dagre
 
 
 
-   
 
-   return _.map(_.filter(entries, function(entry) { return !entry.merged; }),
-function(entry) {
+
+    return _.map(_.filter(entries, function(entry) { return !entry.merged; }),
+    function(entry) {
        return _.pick(entry, ["vs", "i", "barycenter", "weight"]);
-   });
+    });
 
-}
+    }
 
-function mergeEntries(target, source)
-{
-   var sum = 0;
-   var weight = 0;
+    function mergeEntries(target, source)
+    {
+    var sum = 0;
+    var weight = 0;
 
-   if (target.weight)
-   {
+    if (target.weight)
+    {
        sum += target.barycenter * target.weight;
        weight += target.weight;
-   }
+    }
 
-   if (source.weight)
-   {
+    if (source.weight)
+    {
        sum += source.barycenter * source.weight;
        weight += source.weight;
-   }
+    }
 
-   target.vs = source.vs.concat(target.vs);
-   target.barycenter = sum / weight;
-   target.weight = weight;
-   target.i = Math.min(source.i, target.i);
-   source.merged = true;
-}
-*/
+    target.vs = source.vs.concat(target.vs);
+    target.barycenter = sum / weight;
+    target.weight = weight;
+    target.i = Math.min(source.i, target.i);
+    source.merged = true;
+    }
+    */
     }
 }

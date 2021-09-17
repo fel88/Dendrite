@@ -36,7 +36,12 @@ namespace Dendrite.Dagre
         }
         public static void run(DagreGraph g)
         {
-            var fas = (g.graph()["acyclicer"] == "greedy"
+            string cyclicer = "";
+            if (g.graph().ContainsKey("acyclicer"))
+            {
+                cyclicer = g.graph()["acyclicer"];
+            }
+            var fas = (cyclicer == "greedy"
    ? greedyFAS(g, weightFn(g))
    : dfsFAS(g));
             foreach (dynamic e in fas)

@@ -1,36 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Dendrite.Dagre
 {
     public class sortSubGraphModule
     {
-        public static barycenterDto[] barycenter(DagreGraph g, string[] movable)
+        public static object barycenter(DagreGraph g, string[] movable)
         {
             return movable.Select(v =>
             {
                 var inV = g.inEdges(v);
-                //if (!inV.length)
+                if (inV.Length == 0)
                 {
-                    return new barycenterDto { v = v };
-                    //   return { v: v };
+                    JavaScriptLikeObject ret = new JavaScriptLikeObject();
+                    ret.Add("v", v);
+                    return ret;
                 }
-                //else
+                else
                 {
-                    /*var result = _.reduce(inV, function(acc, e) {
-                        var edge = g.edge(e),
-                          nodeU = g.node(e.v);
-                        return {
-                        sum: acc.sum + (edge.weight * nodeU.order),
-              weight: acc.weight + edge.weight
-                            };
-                    }, { sum: 0, weight: 0 });
+                    JavaScriptLikeObject inp = new JavaScriptLikeObject();
+                    inp.Add("sum", 0);
+                    inp.Add("weight", 0);
+                    var result = inV.Aggregate(inp, (acc, e) =>
+                       {
+                           var edge = g.edge(e);
+                           var nodeU = g.node(((dynamic)e)["v"]);
+                           JavaScriptLikeObject ret2 = new JavaScriptLikeObject();
+                           ret2.Add("sum", (dynamic)acc["sum"] + ((dynamic)edge["weight"] * (dynamic)nodeU["order"]));
+                           ret2.Add("weight", (dynamic)acc["weight"] + (dynamic)edge["weight"]);
+                           return ret2;
+                       });
+                    JavaScriptLikeObject ret3 = new JavaScriptLikeObject();
+                    ret3.Add("v", v);
+                    ret3.Add("barycenter", (dynamic)result["sum"] / (dynamic)result["weight"]);
+                    ret3.Add("weight", result["weight"]);
 
-                return {
-                v: v,
-            barycenter: result.sum / result.weight,
-            weight: result.weight
-                        };*/
+                    return ret3;
+
 
                 }
             }).ToArray();
@@ -55,7 +63,7 @@ namespace Dendrite.Dagre
             var node = g.node(v);
             var bl = node != null ? node.borderLeft : null;
             var br = node != null ? node.borderRight : null;
-            var subgraphs = new List<object>();
+            dynamic subgraphs = new Dictionary<string, object>();
 
             if (bl != null)
             {
@@ -65,12 +73,12 @@ namespace Dendrite.Dagre
                 });*/
             }
 
-            var barycenters = barycenter(g, movable);
+            dynamic barycenters = barycenter(g, movable);
             foreach (dynamic entry in barycenters)
             {
-                if (g.children(entry.v).Length != 0)
+                if (g.children(entry["v"]).Length != 0)
                 {
-                    var subgraphResult = sortSubGraphModule.sortSubraph(g, entry.v, cg, biasRight);
+                    var subgraphResult = sortSubGraphModule.sortSubraph(g, entry["v"], cg, biasRight);
                     subgraphs[entry["v"]] = subgraphResult;
                     if (subgraphResult.ContainsKey("barycenter"))
                     {
@@ -80,25 +88,140 @@ namespace Dendrite.Dagre
             }
 
 
-            var entries = resolveConflictsModule.resolveConflicts(barycenters, cg);
+            dynamic entries = resolveConflictsModule.resolveConflicts(barycenters, cg);
             // expand subgraphs
-            foreach (var entry in entries)
+            foreach (dynamic entry in entries)
             {
-                //entry.vs = entry.vs.Select((v) => subgraphs[v] ? subgraphs[v].vs : v);
+                dynamic v1 = (entry["vs"]);
+                List<object> rett = new List<object>();
+                foreach (var item in v1)
+                {
+                    if (subgraphs.ContainsKey(item))
+                    {
+                        rett.Add(subgraphs[item]["vs"]);
+                    }
+                    else
+                    {
+                        rett.Add(item);
+                    }
+
+                }
+                entry["vs"] = rett.ToArray();
+                /*entry["vs"] = v1.Select((v2) =>
+                 {
+
+                    //subgraphs[v1] != null ? subgraphs[v1]["vs"] : v1
+                    return null;
+
+                 });*/
                 /* if (Array.isArray(entry.vs) && entry.vs.length !== 1 || Array.isArray(entry.vs[0]))
                  {
                      entry.vs = entry.vs.flat();
                  }*/
             }
 
-
-            return new object();
+            dynamic result = sort(entries, biasRight);
+            if (bl != null)
+            {
+                //result.vs = [bl, result.vs, br].flat();
+                if (g.predecessors(bl).length)
+                {
+                    var blPred = g.node(g.predecessors(bl)[0]);
+                    var brPred = g.node(g.predecessors(br)[0]);
+                    if (!(result.ContainsKey("barycenter")))
+                    {
+                        result.barycenter = 0;
+                        result.weight = 0;
+                    }
+                    result.barycenter = (result.barycenter * result.weight + blPred.order + brPred.order) / (result.weight + 2);
+                    result.weight += 2;
+                }
+            }
+            return result;
         }
+        public static dynamic consumeUnsortable(dynamic vs, dynamic unsortable, dynamic index)
+        {
+            dynamic last = null;
+            while (unsortable.Count != 0 && (last = unsortable[unsortable.Count - 1])["i"] <= index)
+            {
+                unsortable.RemoveAt(unsortable.Count - 1);
+                vs.Add(last["vs"]);
+                index++;
+            }
+            return index;
+        }
+        public static dynamic compareWithBias(dynamic bias)
+        {
+            Func<dynamic, dynamic, dynamic> ret = (entryV, entryW) =>
+             {
+                 if (entryV.barycenter < entryW.barycenter)
+                 {
+                     return -1;
+                 }
+                 else if (entryV.barycenter > entryW.barycenter)
+                 {
+                     return 1;
+                 }
+                 return !bias ? entryV.i - entryW.i : entryW.i - entryV.i;
+             };
+            return ret;
+
+        }
+        public static object sort(dynamic entries, dynamic biasRight)
+        {
+            // partition
+            JavaScriptLikeObject parts = new JavaScriptLikeObject();
+            parts.Add("lhs", new List<object>());
+            parts.Add("rhs", new List<object>());
+            foreach (var value in entries)
+            {
+                if (value.ContainsKey("barycenter"))
+                {
+                    ((dynamic)parts["lhs"]).Add(value);
+                }
+                else
+                {
+                    ((dynamic)parts["rhs"]).Add(value);
+                }
+            }
+            dynamic sortable = parts["lhs"];
 
 
+            dynamic unsortable = parts["rhs"];
+            //unsortable.Sort((a, b) => -a.i + b.i);
+            dynamic vs = new List<object>();
+            dynamic sum = 0;
+            dynamic weight = 0;
+            int vsIndex = 0;
+            //sortable.sort(compareWithBias(!!biasRight));
+            vsIndex = consumeUnsortable(vs, unsortable, vsIndex);
+            foreach (dynamic entry in sortable)
+            {
+                vsIndex += entry["vs"].Length;
+                vs.Add(entry["vs"]);
+                sum += entry["barycenter"] * entry["weight"];
+                weight += (dynamic)entry["weight"];
+                vsIndex = consumeUnsortable(vs, unsortable, vsIndex);
+            }
+            JavaScriptLikeObject result = new JavaScriptLikeObject();
+            List<object> rr = new List<object>();
+            foreach (var i1 in vs)
+            {
+                foreach (var i2 in i1)
+                {
+                    rr.Add(i2);
+                }
+            }
+            //result.Add("vs", vs.flat());
+            result.Add("vs", rr);
 
-
-
+            if (weight != null)
+            {
+                result["barycenter"] = sum / weight;
+                result["weight"] = weight;
+            }
+            return result;
+        }
         /*
          * 
 function sortSubgraph(g, v, cg, biasRight) {

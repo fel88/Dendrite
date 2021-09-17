@@ -67,7 +67,7 @@ namespace Dendrite.Dagre
         public void makeSpaceForEdgeLabels(DagreGraph g)
         {
             var graph = g.graph();
-            graph.ranksep /= 2;
+            graph["ranksep"] /= 2;
             foreach (var e in g.edgesRaw())
             {
                 dynamic edge = g.edgeRaw(e);
@@ -75,7 +75,7 @@ namespace Dendrite.Dagre
                 edge["minlen"] = aa;
                 if (edge["labelpos"].ToLower() != "c")
                 {
-                    if (graph.rankdir == "TB" || graph.rankdir == "BT")
+                    if (graph["rankdir"] == "TB" || graph["rankdir"] == "BT")
                     {
                         edge["width"] += edge["labeloffset"];
                     }
@@ -541,15 +541,21 @@ namespace Dendrite.Dagre
 
         public static void positionY(DagreGraph g)
         {
-            var layering = util.buildLayerMatrix(g);
-            var rankSep = g.graph().ranksep;
+            dynamic layering = util.buildLayerMatrix(g);
+            var rankSep = g.graph()["ranksep"];
             double prevY = 0;
             foreach (var layer in layering)
             {
-                var maxHeight = layer.Select(v => g.node(v).height).Max().Value;
+                List<dynamic> oo = new List<dynamic>();
+                foreach (var item in layer)
+                {
+                    oo.Add(g.node(item.Value)["height"]);
+                }
+                //var maxHeight = (layer as IEnumerable<object>).Select(v => g.node(v)["height"]).Max().Value;
+                var maxHeight = oo.Max();
                 foreach (var v in layer)
                 {
-                    g.node(v).y = prevY + maxHeight / 2;
+                    g.node(v.Value)["y"]= prevY + maxHeight / 2;
                 }
 
                 prevY += maxHeight + rankSep;
@@ -589,21 +595,32 @@ namespace Dendrite.Dagre
 
         }
 
-        private void insertSelfEdges(DagreGraph g)
+        public void insertSelfEdges(DagreGraph g)
         {
-            var layers = util.buildLayerMatrix(g);
+            dynamic layers = util.buildLayerMatrix(g);
             foreach (var layer in layers)
             {
                 var orderShift = 0;
-                for (int i = 0; i < layer.Length; i++)
+                for (int i = 0; i < layer.Count; i++)
                 {
-                    var v = layer[i];
+                    var v = layer[""+i];
                     var node = g.node(v);
-                    throw new NotImplementedException();
-                    //node.order = i + orderShift;
-                    foreach (var selfEdge in node.selfEdges)
-                    {
 
+                    node["order"] = i + orderShift;
+                    if (node.ContainsKey("selfEdges"))
+                    {
+                        foreach (var selfEdge in node["selfEdges"])
+                        {
+                            JavaScriptLikeObject attrs = new JavaScriptLikeObject();
+                            attrs.Add("width", selfEdge["label"]["width"]);
+                            attrs.Add("height", selfEdge["label"]["height"]);
+                            attrs.Add("rank", node["rank"]);
+                            attrs.Add("order", i + (++orderShift));
+                            attrs.Add("e", selfEdge["e"]);
+                            attrs.Add("label", selfEdge["label"]);
+                            util.addDummyNode(g, "selfedge", attrs, "_se");
+                        }
+                        node.Remove("selfEdges");
                     }
                 }
             }

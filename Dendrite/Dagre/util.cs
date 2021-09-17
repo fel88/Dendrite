@@ -146,33 +146,34 @@ namespace Dendrite.Dagre
 * Given a DAG with each node assigned "rank" and "order" properties, this
 * function will produce a matrix with the ids of each node.
 */
-        public static string[][] buildLayerMatrix(DagreGraph g)
+        public static object buildLayerMatrix(DagreGraph g)
         {
-            var range = Enumerable.Range(0, maxRank(g) + 1);
-            List<List<string>> layering = new List<List<string>>();
-            foreach (var item in Enumerable.Range(0, maxRank(g) + 1))
+            var rank = maxRank(g);
+            var range = Enumerable.Range(0, rank + 1);
+            List<object> layering = new List<object>();
+            foreach (var item in Enumerable.Range(0, rank + 1))
             {
-                layering.Add(new List<string>());
+                layering.Add(new JavaScriptLikeObject());
             }
             //var layering = _.map(_.range(maxRank(g) + 1), function() { return []; });
 
             foreach (var v in g.nodes())
             {
                 var node = g.node(v);
-                var rank = node.rank;
-                if (rank != null)
+                var rank1 = node["rank"];
+                if (rank1 != null)
                 {
-                    while (layering[rank.Value].Count < node.order)
+                    /*while (layering[rank].Count < node["order"])
                     {
-                        layering[rank.Value].Add(null);
-                    }
-                    layering[rank.Value][node.order.Value] = v;
+                        layering[rank].Add(null);
+                    }*/
+                    layering[rank1]["" + node["order"]] = v;
                 }
             }
 
 
 
-            return layering.Select(z => z.ToArray()).ToArray();
+            return layering;
         }
 
         internal static object addBorderNode(DagreGraph g, string v)
