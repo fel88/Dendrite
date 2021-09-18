@@ -11,7 +11,7 @@ namespace Dendrite.Dagre
 
         public ICollection<string> Keys => dic.Keys;
 
-        public ICollection<object> Values => throw new System.NotImplementedException();
+        public ICollection<object> Values => dic.Values;
 
         public int Count => dic.Count;
 
@@ -83,7 +83,7 @@ namespace Dendrite.Dagre
         }
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
+        {            
             throw new System.NotImplementedException();
         }
 

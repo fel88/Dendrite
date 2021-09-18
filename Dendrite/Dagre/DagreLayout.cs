@@ -413,20 +413,21 @@ namespace Dendrite.Dagre
         }
         public static void translateGraph(DagreGraph g)
         {
-            double minX = double.MaxValue;
+            double minX = double.PositiveInfinity;
             double maxX = 0;
-            double minY = double.MaxValue;
+            double minY = double.PositiveInfinity;
             double maxY = 0;
             var graphLabel = g.graph();
-            var marginX = graphLabel.marginx ?? 0;
-            var marginY = graphLabel.marginy ?? 0;
+            var marginX = graphLabel["marginx"] ?? 0;
+            var marginY = graphLabel["marginy"] ?? 0;
 
-            Action<DagreBase> getExtremes = (attrs) =>
+            Action<DagreBase> getExtremes = (_attrs) =>
               {
-                  var x = attrs.x.Value;
-                  var y = attrs.y.Value;
-                  var w = attrs.width.Value;
-                  var h = attrs.height.Value;
+                  dynamic attrs = _attrs;
+                  var x = attrs["x"];
+                  var y = attrs["y"];
+                  var w = attrs["width"];
+                  var h = attrs["height"];
                   minX = Math.Min(minX, x - w / 2);
                   maxX = Math.Max(maxX, x + w / 2);
                   minY = Math.Min(minY, y - h / 2);
@@ -483,64 +484,59 @@ namespace Dendrite.Dagre
             foreach (var e in g.edges())
             {
                 var edge = g.edge(e);
-                if (edge.x != null)
+                if (edge.ContainsKey("x"))
                 {
-                    if (edge.labelpos == "l" || edge.labelpos == "r")
+                    if (edge["labelpos"] == "l" || edge["labelpos"] == "r")
                     {
-                        edge.width -= edge.labeloffset;
+                        edge["width"] -= edge["labeloffset"];
                     }
-                    switch (edge.labelpos)
+                    switch (edge["labelpos"])
                     {
-                        case "l": edge.x -= edge.width / 2 + edge.labeloffset; break;
-                        case "r": edge.x += edge.width / 2 + edge.labeloffset; break;
+                        case "l": edge["x"] -= (float)edge["width"] / 2f + (float)edge["labeloffset"]; break;
+                        case "r": edge["x"] += (float)edge["width"] / 2f + (float)edge["labeloffset"]; break;
                     }
                 }
             }
 
+        }
+        public static object makePoint(object x, object y)
+        {
+            JavaScriptLikeObject j = new JavaScriptLikeObject();
+            j.Add("x", x);
+            j.Add("y", y);
+            return j;
         }
         public static void positionSelfEdges(DagreGraph g)
         {
             foreach (var v in g.nodes())
             {
                 var node = g.node(v);
-                if (node.dummy == "selfedge")
+                if (node.ContainsKey("dummy") && node["dummy"] == "selfedge")
                 {
-                    var selfNode = g.node(node.e.v);
-                    var x = (selfNode.x + selfNode.width / 2).Value;
-                    var y = selfNode.y.Value;
-                    var dx = (node.x - x).Value;
-                    var dy = (selfNode.height / 2).Value;
-                    g.setEdge(node.e, node.label);
+                    var selfNode = g.node(node["e"]["v"]);
+                    var x = (selfNode["x"] + selfNode["width"] / 2);
+                    var y = selfNode["y"];
+                    var dx = (node["x"] - x);
+                    var dy = (selfNode["height"] / 2);
+                    g.setEdge(node["e"], node["label"]);
                     g.removeNode(v);
-                    node.label.points = new dPoint[]{
-                    new dPoint(){ x= x + 2 * dx / 3, y= y - dy },
-        new dPoint(){ x= x + 5 * dx / 6, y= y - dy },
-        new dPoint(){ x= x + dx    , y= y },
-        new dPoint(){ x= x + 5 * dx / 6, y= y + dy },
-        new dPoint(){ x= x + 2 * dx / 3, y= y + dy }
-                    }.ToList();
-                    node.label.x = node.x;
-                    node.label.y = node.y;
+                    node["label"]["points"] = new List<object>{
+                    makePoint(  x + 2 * dx / 3, y - dy ),
+         makePoint( x + 5 * dx / 6,  y - dy ),
+         makePoint( x + dx    ,  y ),
+         makePoint( x + 5 * dx / 6,  y + dy ),
+         makePoint( x + 2 * dx / 3,  y + dy)
+                    };
+                    node["label"]["x"] = node["x"];
+                    node["label"]["y"] = node["y"];
                 }
             }
-
         }
 
         public static void position(DagreGraph g)
         {
             g = util.asNonCompoundGraph(g);
 
-            positionY(g);
-            foreach (var item in bk.positionX(g))
-            {
-                g.node(item.Item2).x = item.Item1;
-            }
-        }
-
-
-
-        public static void positionY(DagreGraph g)
-        {
             dynamic layering = util.buildLayerMatrix(g);
             var rankSep = g.graph()["ranksep"];
             double prevY = 0;
@@ -555,13 +551,18 @@ namespace Dendrite.Dagre
                 var maxHeight = oo.Max();
                 foreach (var v in layer)
                 {
-                    g.node(v.Value)["y"]= prevY + maxHeight / 2;
+                    g.node(v.Value)["y"] = prevY + maxHeight / 2f;
                 }
 
                 prevY += maxHeight + rankSep;
             }
-
+            foreach (var item in bk.entries(bk.positionX(g)))
+            {
+                g.node(item[0])["x"] = item[1];
+            }
         }
+
+
 
 
         public static void removeBorderNodes(DagreGraph g)
@@ -571,28 +572,25 @@ namespace Dendrite.Dagre
                 if (g.children(v).Length > 0)
                 {
                     var node = g.node(v);
-                    var t = g.node(node.borderTop);
-                    //var b = g.node(node.borderLeft);
-                    throw new NotImplementedException();
-                    //var l = g.node(_.last(node.borderLeft));
-                    //var r = g.node(_.last(node.borderRight));
-                    /*
+                    var t = g.node(node["borderTop"]);
+                    var b = g.node(node["borderBottom"]);
+                    var l = g.node(node["borderLeft"][node["borderLeft"].Count - 1]);
+                    var r = g.node(node["borderRight"][node["borderRight"].Count - 1]);
                     node.width = Math.Abs(r.x - l.x);
                     node.height = Math.Abs(b.y - t.y);
                     node.x = l.x + node.width / 2;
-                    node.y = t.y + node.height / 2;*/
+                    node.y = t.y + node.height / 2;
                 }
             }
 
             foreach (var v in g.nodes())
             {
-                if (g.node(v).dummy == "border")
+                var nd = g.node(v);
+                if (nd.ContainsKey("dummy") && nd["dummy"] == "border")
                 {
                     g.removeNode(v);
                 }
             }
-
-
         }
 
         public void insertSelfEdges(DagreGraph g)
@@ -603,7 +601,7 @@ namespace Dendrite.Dagre
                 var orderShift = 0;
                 for (int i = 0; i < layer.Count; i++)
                 {
-                    var v = layer[""+i];
+                    var v = layer["" + i];
                     var node = g.node(v);
 
                     node["order"] = i + orderShift;

@@ -141,7 +141,11 @@ namespace Dendrite.Dagre
                         }
                         else
                         {
-                            if (val1 != val2) throw new DagreException();
+                            if (val1 is decimal || val2 is decimal)
+                            {
+                                if ((float)val1 != (float)val2) throw new DagreException();
+                            }
+                            else if (val1 != val2) throw new DagreException();
                         }
                     }
                 }
@@ -154,15 +158,43 @@ namespace Dendrite.Dagre
             {
                 var key1 = _edgeLabels.Keys.ToArray()[i];
                 if (!gr._edgeLabels.ContainsKey(key1)) throw new DagreException();
+            }
+            for (int i = 0; i < _edgeLabels.Keys.Count; i++)
+            {
+                var key1 = _edgeLabels.Keys.ToArray()[i];
+                if (!gr._edgeLabels.ContainsKey(key1)) throw new DagreException();
 
-                //if (_edgeLabels.Keys.ToArray()[i] != gr._edgeLabels.Keys.ToArray()[i]) throw new DagreException();
-                dynamic edge1 = _edgeLabels[_edgeLabels.Keys.ToArray()[i]];
-                dynamic edge2 = gr._edgeLabels[gr._edgeLabels.Keys.ToArray()[i]];
+                dynamic edge1 = _edgeLabels[key1];
+                dynamic edge2 = gr._edgeLabels[key1];
                 if (edge1.Keys.Count != edge2.Keys.Count) throw new DagreException();
                 foreach (var key in edge1.Keys)
                 {
                     dynamic val1 = edge1[key];
                     dynamic val2 = edge2[key];
+
+                    if (val1 is IEnumerable<object> || val2 is IEnumerable<object>)
+                    {
+                        int index = 0;
+                        foreach (var item in val1)
+                        {
+                            var second = val2[index++];
+                            if (item is IDictionary<string, object>)
+                            {
+                                foreach (var zitem in item)
+                                {
+                                    var key2 = zitem.Key;
+                                    if (!second.ContainsKey(key2)) throw new DagreException("wrong");
+                                    if (zitem.Value != second[key2]) throw new DagreException("wrong");
+                                }
+                            }
+
+                        }
+                    }
+                    else if (val2 is decimal || val1 is decimal)
+                    {
+                        if ((float)val1 != (float)val2) throw new DagreException();
+                    }
+                    else
                     if (val1 != val2) throw new DagreException();
                 }
 
@@ -195,7 +227,7 @@ namespace Dendrite.Dagre
             JavaScriptSerializer jss = new JavaScriptSerializer();
             var des = jss.Deserialize<dynamic>(v) as Array;
             List<DagreGraph> ret1 = new List<DagreGraph>();
-            
+
             foreach (dynamic item in des)
             {
                 var gg = DagreGraph.FromJson(item);
@@ -277,9 +309,11 @@ namespace Dendrite.Dagre
                                 lb.Add("nestingRoot", (string)dic["nestingRoot"]);
 
                             if (dic.ContainsKey("rankdir"))
-                                lb.Add("rankdir", (string)dic["rankdir"]); 
+                                lb.Add("rankdir", (string)dic["rankdir"]);
                             if (dic.ContainsKey("root"))
                                 lb.Add("root", dic["root"]);
+                            if (dic.ContainsKey("dummyChains"))
+                                lb.Add("dummyChains", dic["dummyChains"]);
                             break;
                         }
                     case "_edgeObjs":
@@ -853,7 +887,8 @@ namespace Dendrite.Dagre
                     }
                     _children.Remove(v);
                 }
-                foreach (var e in _in[v].Keys)
+                var keys2 = _in[v].Keys.ToArray();
+                foreach (var e in keys2)
                 {
                     this.removeEdge(new object[] { this._edgeObjs[e] });
                 }
@@ -1145,7 +1180,26 @@ namespace Dendrite.Dagre
 
                 var v1 = obj1[key];
                 var v2 = obj2[key];
-                if (v1 != v2) throw new DagreException("wrong");
+                if (v1 is Array)
+                {
+                    for (int ii = 0; ii < v1.Length; ii++)
+                    {
+                        if (v1[ii] != v2[ii]) throw new DagreException("wrong");
+                    }
+                }
+                else if (v1 is IDictionary<string, object>)
+                {
+                    var keys = v1.Keys;
+                    foreach (var item in keys)
+                    {
+                        if (!v2.ContainsKey(item)) throw new DagreException("wrong");
+                        var val1 = v1[item];
+                        var val2 = v2[item];
+                        if (val1 != val2) throw new DagreException("wrong");
+
+                    }
+                }
+                else if (v1 != v2) throw new DagreException("wrong");
             }
             //if (obj1["ranker"] != obj2["ranker"]) return false;
             //if (obj1["nestingRoot"] != obj2["nestingRoot"]) return false;

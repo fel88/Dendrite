@@ -14,7 +14,7 @@ namespace Dendrite
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             MainForm = new Mdi();            
-            //DagreTester.Test2();
+            //DagreTester.Test4();
             Application.Run(MainForm);
         }       
 

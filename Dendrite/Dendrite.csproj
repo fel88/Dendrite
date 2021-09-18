@@ -605,6 +605,18 @@
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\beforePosition.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterPosition.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeDenormalize.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterFixupEdgeLabels.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeTranslateGraph.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -335,7 +335,45 @@ namespace Dendrite
             DagreLayout.positionSelfEdges(dg);
             DagreLayout.removeBorderNodes(dg);
 
+
+            normalize.undo(dg);
+
+            DagreLayout.fixupEdgeLabelCoords(dg);
+            coordinateSystem.undo(dg);
+            DagreLayout.translateGraph(dg);
+            DagreLayout.assignNodeIntersects(dg);
+            DagreLayout.reversePointsForReversedEdges(dg);
+            acyclic.undo(dg);
+
         }
+
+        public static void Test4()
+        {
+            var dg = DagreGraph.FromJson(ReadResourceTxt("beforePosition.txt"));
+            util.uniqueCounter = 98;
+            DagreLayout.position(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterPosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.positionSelfEdges(dg);
+
+            DagreLayout.removeBorderNodes(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.undo(dg);
+
+            DagreLayout.fixupEdgeLabelCoords(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterFixupEdgeLabels.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            coordinateSystem.undo(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("beforeTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.translateGraph(dg);
+            DagreLayout.assignNodeIntersects(dg);
+            DagreLayout.reversePointsForReversedEdges(dg);
+            acyclic.undo(dg);
+
+        }
+
         public static void Test2()
         {
             var dl = new DagreLayout();
@@ -384,6 +422,7 @@ namespace Dendrite
             DagreLayout.position(dg);
 
             DagreLayout.positionSelfEdges(dg);
+
             DagreLayout.removeBorderNodes(dg);
 
         }

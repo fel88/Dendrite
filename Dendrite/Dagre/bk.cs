@@ -6,78 +6,529 @@ namespace Dendrite.Dagre
 {
     public class bk
     {
+
         /*
- * This module provides coordinate assignment based on Brandes and Köpf, "Fast
- * and Simple Horizontal Coordinate Assignment."
- */
-
-        public static Tuple<double, string>[] positionX(DagreGraph g)
+               * Try to align nodes into vertical 'blocks' where possible. This algorithm
+               * attempts to align a node with one of its median neighbors. If the edge
+               * connecting a neighbor is a type-1 conflict then we ignore that possibility.
+               * If a previous node has already formed a block with a node after the node
+               * we're trying to form a block with, we also ignore that possibility - our
+               * blocks would be split in that scenario.
+               */
+        public static dynamic verticalAlignment(DagreGraph g, dynamic layering, dynamic conflicts, dynamic neighborFnName)
         {
-            var layering = util.buildLayerMatrix(g);
 
-            var conflicts = findType1Conflicts(g, layering).Union(
-                findType2Conflicts(g, layering)
-                );
 
-            /*
-             var layering = util.buildLayerMatrix(g);
-  var conflicts = _.merge(
-    findType1Conflicts(g, layering),
-    findType2Conflicts(g, layering));
+            dynamic root = new JavaScriptLikeObject();
+            dynamic align = new JavaScriptLikeObject();
+            dynamic pos = new JavaScriptLikeObject();
+            // We cache the position here based on the layering because the graph and
+            // layering may be out of sync. The layering matrix is manipulated to
+            // generate different extreme alignments.
+            foreach (var layer in layering)
+            {
+                int order = 0;
+                foreach (dynamic v in layer)
+                {
+                    var str1 = (string)v;
+                    root[str1] = str1;
+                    align[str1] = str1;
+                    pos[str1] = order;
+                    order++;
+                }
+            }
 
-  var xss = {};
-  var adjustedLayering;
-  _.forEach(["u", "d"], function(vert) {
-    adjustedLayering = vert === "u" ? layering : _.values(layering).reverse();
-    _.forEach(["l", "r"], function(horiz) {
-      if (horiz === "r") {
-        adjustedLayering = _.map(adjustedLayering, function(inner) {
-          return _.values(inner).reverse();
-        });
-      }
-
-      var neighborFn = (vert === "u" ? g.predecessors : g.successors).bind(g);
-      var align = verticalAlignment(g, adjustedLayering, conflicts, neighborFn);
-      var xs = horizontalCompaction(g, adjustedLayering,
-        align.root, align.align, horiz === "r");
-      if (horiz === "r") {
-        xs = _.mapValues(xs, function(x) { return -x; });
-      }
-      xss[vert + horiz] = xs;
-    });
-  });
-
-  var smallestWidth = findSmallestWidthAlignment(g, xss);
-  alignCoordinates(xss, smallestWidth);
-  return balance(xss, g.graph().align);*/
-            return null;
+            foreach (var layer in layering)
+            {
+                var prevIdx = -1;
+                foreach (var v in layer)
+                {
+                    dynamic ws = null;
+                    if (neighborFnName == "predecessors")
+                    {
+                        ws = g.predecessors(v);
+                    }
+                    else
+                    {
+                        ws = g.successors(v);
+                    }
+                    if (ws.Length != 0)
+                    {
+                        //ws = ws.sort((a, b) => pos[a] - pos[b]);
+                        double mp = (ws.Length - 1) / 2.0;
+                        for (int i = (int)Math.Floor(mp), il = (int)Math.Ceiling(mp); i <= il; ++i)
+                        {
+                            var w = ws[i];
+                            if (align[v] == v && prevIdx < pos[w] && !hasConflict(conflicts, v, w))
+                            {
+                                align[w] = v;
+                                align[v] = root[v] = root[w];
+                                prevIdx = pos[w];
+                            }
+                        }
+                    }
+                }
+            }
+            JavaScriptLikeObject ret = new JavaScriptLikeObject();
+            ret.Add("root", root);
+            ret.Add("align", align);
+            return ret;
         }
 
 
-
-
-        public static void addConflict(Dictionary<string, HashSet<string>> conflicts, string v, string w)
+        public static dynamic entries(dynamic oo)
         {
-            if (int.Parse(v) > int.Parse(w))
+            dynamic ret = new List<object>();
+            foreach (var item in oo)
+            {
+                ret.Add(new object[] { item.Key, item.Value });
+            }
+            return ret;
+        }
+        public static dynamic keys(dynamic oo)
+        {
+            dynamic ret = new List<object>();
+            foreach (var item in oo)
+            {
+                ret.Add(item.Key);
+                    
+            }
+            return ret;
+        }
+        public static dynamic buildBlockGraph(DagreGraph g, dynamic layering, dynamic root, dynamic reverseSep)
+        {
+            Func<dynamic, dynamic, dynamic, dynamic> sep = (nodeSep, edgeSep, _reverseSep) =>
+            {
+                Func<dynamic, dynamic, dynamic, dynamic> ret = (dynamic _g, dynamic v, dynamic w) =>
+                {
+                    dynamic vLabel = g.node(v);
+                    dynamic wLabel = g.node(w);
+                    dynamic sum = 0;
+                    dynamic delta = null;
+                    sum += vLabel["width"] / 2;
+                    if (vLabel.ContainsKey("labelpos"))
+                    {
+                        switch (vLabel["labelpos"].ToLowerCase())
+                        {
+                            case "l": delta = -vLabel["width"] / 2; break;
+                            case "r": delta = vLabel["width"] / 2; break;
+                        }
+                    }
+                    if (delta != null && delta != 0)
+                    {
+                        sum += reverseSep ? delta : -delta;
+                    }
+                    delta = 0;
+                    sum += (vLabel.ContainsKey("dummy") ? edgeSep : nodeSep) / 2;
+                    sum += (wLabel.ContainsKey("dummy") ? edgeSep : nodeSep) / 2;
+                    sum += wLabel["width"] / 2;
+                    if (wLabel.ContainsKey("labelpos"))
+                    {
+                        switch (wLabel["labelpos"].ToLowerCase())
+                        {
+                            case "l": delta = wLabel["width"] / 2; break;
+                            case "r": delta = -wLabel["width"] / 2; break;
+                        }
+                    }
+                    if (delta != null && delta != 0)
+                    {
+                        sum += reverseSep ? delta : -delta;
+                    }
+                    delta = 0;
+                    return sum;
+                };
+                return ret;
+            };
+            var blockGraph = new DagreGraph(false);
+            var graphLabel = g.graph();
+            var sepFn = sep(graphLabel["nodesep"], graphLabel["edgesep"], reverseSep);
+
+            foreach (var layer in layering)
+            {
+                dynamic u = null;
+                foreach (var v in layer)
+                {
+                    var vRoot = root[v];
+                    blockGraph.setNodeRaw(vRoot);
+                    if (u != null)
+                    {
+                        var uRoot = root[u];
+                        var prevMax = blockGraph.edge(uRoot, vRoot);
+                        blockGraph.setEdgeRaw(new object[] {
+                            uRoot,
+                            vRoot,
+                            Math.Max(sepFn(g, v, u), (prevMax != null ? prevMax : 0))});
+                    }
+                    u = v;
+                }
+            }
+
+            return blockGraph;
+
+
+        }
+
+        public static dynamic horizontalCompaction(DagreGraph g, dynamic layering, dynamic root, dynamic align, bool reverseSep)
+        {
+            // This portion of the algorithm differs from BK due to a number of problems.
+            // Instead of their algorithm we construct a new block graph and do two
+            // sweeps. The first sweep places blocks with the smallest possible
+            // coordinates. The second sweep removes unused space by moving blocks to the
+            // greatest coordinates without violating separation.
+            dynamic xs = new JavaScriptLikeObject();
+            DagreGraph blockG = buildBlockGraph(g, layering, root, reverseSep) as DagreGraph;
+            var borderType = reverseSep ? "borderLeft" : "borderRight";
+            Action<dynamic, dynamic> iterate = (setXsFunc, nextNodesFunc) =>
+            {
+                dynamic stack = blockG.nodes().ToList();
+                dynamic elem = stack[stack.Count - 1];
+                stack.RemoveAt(stack.Count - 1);
+                dynamic visited = new JavaScriptLikeObject();
+                while (elem != null)
+                {
+                    if (visited.ContainsKey(elem))
+                    {
+                        setXsFunc(elem);
+                    }
+                    else
+                    {
+                        visited[elem] = true;
+                        stack.Add(elem);
+                        dynamic temp1 = null;
+                        if (nextNodesFunc == "predecessors")
+                            temp1 = blockG.predecessors(elem);
+                        if (nextNodesFunc == "successors")
+                            temp1 = blockG.successors(elem);
+
+                        foreach (var item in temp1)
+                        {
+                            stack.Add(item);
+                        }
+                        //stack = stack.concat(temp1);
+                    }
+                    if (stack.Count == 0) break;
+                    elem = stack[stack.Count - 1];
+                    stack.RemoveAt(stack.Count - 1);
+                }
+            };
+            //// First pass, assign smallest coordinates
+            Action<dynamic> pass1 = (elem) =>
+            {
+                dynamic temp1 = blockG.inEdges(elem) as Array;
+                dynamic acc = 0;
+
+                for (int i = 1; i < temp1.Length; i++)
+                {
+                    dynamic e = temp1[i];
+                    acc = Math.Max(acc, xs[e["v"]] + blockG.edge(e));
+                }
+                //xs[elem] = temp1.reduce((acc, e) => Math.Max(acc, xs[e.v] + blockG.edge(e)), 0);
+                xs[elem] = acc;
+            };
+            //// Second pass, assign greatest coordinates
+            Action<dynamic> pass2 = (elem) =>
+            {
+                var temp1 = blockG.outEdges(elem) as object[];
+
+                dynamic acc = int.MaxValue;
+                dynamic len = temp1.Length;
+                for (int i = 1; i < temp1.Length; i++)
+                {
+                    var e = temp1[i];
+                    //acc = Math.Min(acc, xs[e["w"]] - blockG.edge(e);
+                }
+                dynamic min = acc;
+                dynamic node = g.node(elem);
+                object nb = null;
+                if (node.ContainsKey("borderType"))
+                {
+                    nb = node["borderType"];
+                }
+                if (min != int.MaxValue && nb != borderType)
+                {
+                    xs[elem] = Math.Max(xs[elem], min);
+                }
+            };
+            //iterate(pass1, blockG.predecessors.bind(blockG));
+            //iterate(pass2, blockG.successors.bind(blockG));
+            iterate(pass1, "predecessors");
+            iterate(pass2, "successors");
+            // Assign x coordinates to all nodes
+            foreach (var v in values(align))
+            {
+                xs[v] = xs[root[v]];
+            }
+            return xs;
+        }
+
+        public static dynamic values(dynamic v)
+        {
+            if (v is Array) return v;
+            List<object> ret = new List<object>();
+            foreach (var item in v)
+            {
+                if (item is Array)
+                {
+                    List<object> ff = new List<object>();
+                    foreach (var zz in item)
+                    {
+                        ff.Add(zz);
+                    }
+                    ret.Add(ff.ToArray());
+
+                }
+                else
+                    ret.Add(item.Value);
+            }
+            return ret;
+        }
+
+        // Returns the alignment that has the smallest width of the given alignments.
+        public static dynamic findSmallestWidthAlignment(DagreGraph g, dynamic xss)
+        {
+            float minKey = float.PositiveInfinity;
+            dynamic minValue = null;
+            foreach (var xs in values(xss))
+            {
+                var max = float.NegativeInfinity;
+                var min = float.PositiveInfinity;
+                foreach (var entry in entries(xs))
+                {
+                    dynamic v = entry[0];
+                    dynamic x = entry[1];
+                    dynamic halfWidth = (float)((dynamic)g.node(v)["width"]) / 2f;
+                    max = Math.Max(x + halfWidth, max);
+                    min = Math.Min(x - halfWidth, min);
+                }
+                dynamic key = max - min;
+                if (key < minKey)
+                {
+                    minKey = key;
+                    minValue = xs;
+                }
+            }
+            return minValue;
+        }
+
+        public static dynamic balance(dynamic xss, dynamic align)
+        {
+            dynamic value = new JavaScriptLikeObject();
+            if (align!=null)
+            {
+                dynamic xs = xss[align.toLowerCase()];
+                foreach (dynamic v in keys(xss["ul"]))
+                {
+                    value[v] = xs[v];
+                }
+            }
+            else
+            {
+                foreach (dynamic v in keys(xss["ul"]))
+                {
+                    dynamic xs = new[] { xss["ul"][v], xss["ur"][v], xss["dl"][v], xss["dr"][v] };
+                    //xs=xs.sort((a, b) => a - b);
+                    value[v] = (xs[1] + xs[2]) / 2;
+                }
+            }
+            return value;
+        }
+
+        /*
+               * Align the coordinates of each of the layout alignments such that
+               * left-biased alignments have their minimum coordinate at the same point as
+               * the minimum coordinate of the smallest width alignment and right-biased
+               * alignments have their maximum coordinate at the same point as the maximum
+               * coordinate of the smallest width alignment.
+               */
+        public static void alignCoordinates(dynamic xss, dynamic alignTo)
+        {
+            Func<dynamic, dynamic> range = (values) =>
+            {
+                dynamic min = int.MaxValue;
+                dynamic max = int.MinValue;
+                foreach (dynamic value in values)
+                {
+                    if (value < min)
+                    {
+                        min = value;
+                    }
+                    if (value > max)
+                    {
+                        max = value;
+                    }
+                }
+                return new[] { min, max };
+            };
+
+            dynamic alignToRange = range(values(alignTo));
+            foreach (dynamic vert in new[] { "u", "d" })
+            {
+                foreach (dynamic horiz in new[] { "l", "r" })
+                {
+                    dynamic alignment = vert + horiz;
+                    dynamic xs = xss[alignment];
+                    dynamic delta;
+                    if (xs != alignTo)
+                    {
+                        dynamic vsValsRange = range(values(xs));
+                        delta = horiz == "l" ? alignToRange[0] - vsValsRange[0] : alignToRange[1] - vsValsRange[1];
+                        if (delta != 0)
+                        {
+                            dynamic list = new JavaScriptLikeObject();
+                            foreach (dynamic key in keys(xs))
+                            {
+                                list[key] = xs[key] + delta;
+                            }
+                            xss[alignment] = list; //_.mapValues(xs, function(x) { return x + delta; });
+                        }
+                    }
+                }
+            }
+        }
+        /*
+        * This module provides coordinate assignment based on Brandes and Köpf, "Fast
+        * and Simple Horizontal Coordinate Assignment."
+        */
+
+        public static dynamic positionX(DagreGraph g)
+        {
+            dynamic layering = util.buildLayerMatrix(g);
+            ////// Dic-> Array
+            List<object> toArr = new List<object>();
+            foreach (dynamic item in layering)
+            {
+                var d = item as IDictionary<string, object>;
+                List<object> arr2 = new List<object>();
+                foreach (var zitem in item.Values)
+                {
+                    arr2.Add(zitem);
+                }
+
+                toArr.Add(arr2.ToArray());
+            }
+            layering = toArr;
+            //////
+
+            dynamic conflicts1 = findType1Conflicts(g, layering);
+            dynamic conflicts2 = findType2Conflicts(g, layering);
+            dynamic conflicts = new JavaScriptLikeObject();
+            foreach (var item in conflicts1)
+            {
+                conflicts.Add(item);
+            }
+            foreach (var item in conflicts2)
+            {
+                conflicts.Add(item);
+            }
+
+            JavaScriptLikeObject xss = new JavaScriptLikeObject();
+            foreach (var vert in new[] { "u", "d" })
+            {
+                dynamic adjustedLayering = null;
+                if (vert == "u")
+                {
+                    adjustedLayering = layering;
+                }
+                else
+                {
+                    adjustedLayering = values(layering);
+                    adjustedLayering.Reverse();
+                }
+
+                foreach (var horiz in new[] { "l", "r" })
+                {
+                    if (horiz == "r")
+                    {
+                        //adjustedLayering = adjustedLayering.Select((inner) => values(inner).reverse());
+                        List<object[]> rett = new List<object[]>();
+                        foreach (var item in adjustedLayering)
+                        {
+                            List<object> ret1 = new List<object>();
+                            foreach (var ree in values(item))
+                            {
+                                ret1.Add(ree);
+                            }
+                            ret1.Reverse();
+                            rett.Add(ret1.ToArray());
+                        }
+                        adjustedLayering = rett.ToArray();
+                    }
+                    var neighborFn = (vert == "u" ? "predecessors" : "successors");
+                    var align = verticalAlignment(g, adjustedLayering, conflicts, neighborFn);
+                    var xs = horizontalCompaction(g, adjustedLayering, align["root"], align["align"], horiz == "r");
+                    if (horiz == "r")
+                    {
+                        foreach (var entry in entries(xs))
+                        {
+                            xs[entry[0]] = -entry[1];
+                        }
+                    }
+                    xss[vert + horiz] = xs;
+                }
+            }
+
+
+            dynamic smallestWidth = findSmallestWidthAlignment(g, xss);
+
+            alignCoordinates(xss, smallestWidth);
+            dynamic _align = null;
+            if (g.graph().ContainsKey("align"))
+            {
+                _align = g.graph()["align"];
+            }
+            return balance(xss, _align);
+        }
+        public static bool hasConflict(dynamic conflicts, dynamic v, dynamic w)
+        {
+            if (string.CompareOrdinal(v, w) == 1)
             {
                 var tmp = v;
                 v = w;
                 w = tmp;
             }
+
+            return conflicts.ContainsKey(v) && conflicts[v].Contains(w);
+        }
+        public static void addConflict(dynamic conflicts, dynamic v, dynamic w)
+        {
+            if (string.CompareOrdinal(v, w) == 1)
+            {
+                var tmp = v;
+                v = w;
+                w = tmp;
+            }
+            dynamic conflictsV = null;
+            if (conflicts.ContainsKey(v) && conflicts[v] == null)
+            {
+                conflicts[v] = new JavaScriptLikeObject();
+
+            }
             if (!conflicts.ContainsKey(v))
             {
-                conflicts.Add(v, new HashSet<string>());
+                conflicts.Add(v, new JavaScriptLikeObject());
+
             }
-            conflicts[v].Add(w);
+            conflictsV = conflicts[v];
+            conflictsV[w] = true;
+        }
 
-
+        public static dynamic slice(dynamic input, int start, int len)
+        {
+            int cnt = 0;
+            List<object> ret = new List<object>();
+            for (int i = start; i < input.Length; i++)
+            {
+                ret.Add(input[i]);
+                cnt++;
+                if (cnt == len) break;
+            }
+            return ret;
         }
         public static string findOtherInnerSegmentNode(DagreGraph g, string v)
         {
-            if (g.nodeRaw(v).dummy != null)
+            if (g.nodeRaw(v).ContainsKey("dummy"))
             {
-                return g.predecessors(v).FirstOrDefault(u => g.nodeRaw(u).dummy != null);
-
+                return g.predecessors(v).FirstOrDefault(u => g.nodeRaw(u).ContainsKey("dummy"));
             }
             return null;
         }
@@ -98,7 +549,9 @@ namespace Dendrite.Dagre
          * This algorithm (safely) assumes that a dummy node will only be incident on a
          * single node in the layers being scanned.
          */
-        public static object[] findType1Conflicts(DagreGraph g, dynamic layering)
+
+
+        public static object findType1Conflicts(DagreGraph g, dynamic layering)
         {
             Dictionary<string, HashSet<string>> conflicts = new Dictionary<string, HashSet<string>>();
 
@@ -108,22 +561,22 @@ namespace Dendrite.Dagre
                    // segment.
                    int?
 
-                 k0 = 0;
+        k0 = 0;
                    // Tracks the last node in this layer scanned for crossings with a type-1
                    // segment.
                    var scanPos = 0;
                    var prevLayerLength = prevLayer.Length;
-                   var lastNode = layer.Last();
+                   var lastNode = layer[layer.Length - 1];
 
                    foreach (var v in layer)
                    {
                        var w = findOtherInnerSegmentNode(g, v);
-                       var k1 = w != null ? g.node(w).order : prevLayerLength;
+                       var k1 = w != null ? g.node(w)["order"] : prevLayerLength;
 
                        int i = 0;
                        if (w != null || v == lastNode)
                        {
-                           foreach (var scanNode in layer.Skip(scanPos).Take(i + 1))
+                           foreach (var scanNode in slice(layer, scanPos, i + 1))
                            {
                                foreach (var u in g.predecessors(scanNode))
                                {
@@ -145,53 +598,73 @@ namespace Dendrite.Dagre
                    return layer;
                };
 
-            string[] prev = null;
-            foreach (var item in layering)
+            if (layering.Count > 0)
             {
-                visitLayer(prev, item);
-                prev = item;
-
+                /*List<object> toArr = new List<object>();
+                foreach (dynamic item in layering)
+                {
+                    var d = item as IDictionary<string, object>;
+                    List<object> arr2 = new List<object>();
+                    foreach (var zitem in item.Values)
+                    {
+                        arr2.Add(zitem);
+                    }
+                    //var fr = (item.Values as IEnumerable<object>).First();
+                    toArr.Add(arr2.ToArray());
+                }*/
+                dynamic prev = layering[0];
+                bool first = true;
+                foreach (var item in layering)
+                {
+                    if (first) { first = false; continue; }
+                    prev = visitLayer(prev, item);
+                    //prev = item;
+                }
             }
-            return null;
+            return conflicts;
             //return conflicts.ToArray();
         }
 
 
-        public static object[] findType2Conflicts(DagreGraph g, dynamic layering)
+        public static object findType2Conflicts(DagreGraph g, dynamic layering)
         {
-            //var conflicts = { };
-            /*
-                        function scan(south, southPos, southEnd, prevNorthBorder, nextNorthBorder)
-                        {
-                            var v;
-                            _.forEach(_.range(southPos, southEnd), function(i) {
-                                v = south[i];
-                                if (g.node(v).dummy)
-                                {
-                                    _.forEach(g.predecessors(v), function(u) {
-                                        var uNode = g.node(u);
-                                        if (uNode.dummy &&
-                                            (uNode.order < prevNorthBorder || uNode.order > nextNorthBorder))
-                                        {
-                                            addConflict(conflicts, u, v);
-                                        }
-                                    });
-                    }
-                });
-              }
+
+            Dictionary<string, HashSet<string>> conflicts = new Dictionary<string, HashSet<string>>();
+            Action<dynamic, dynamic, dynamic, dynamic, dynamic> scan = (south, southPos, southEnd, prevNorthBorder, nextNorthBorder) =>
+              {
+                  dynamic v = null;
+                  for (var i = southPos; i < southEnd; i++)
+                  {
+                      v = south[i];
+                      if (g.node(v).ContainsKey("dummy"))
+                      {
+                          foreach (var u in g.predecessors(v))
+                          {
+                              var uNode = g.node(u);
+                              if (uNode.ContainsKey("dummy") && (uNode["order"] < prevNorthBorder || uNode["order"] > nextNorthBorder))
+                              {
+                                  addConflict(conflicts, u, v);
+                              }
+                          }
+                      }
+                  }
 
 
-            function visitLayer(north, south)
+              };
+
+            Func<dynamic, dynamic, dynamic> visitLayer = (north, south) =>
             {
-                var prevNorthPos = -1,
-                  nextNorthPos,
-                  southPos = 0;
-
-                _.forEach(south, function(v, southLookahead) {
-                    if (g.node(v).dummy === "border")
+                var prevNorthPos = -1;
+                dynamic nextNorthPos = null;
+                dynamic southPos = 0;
+                object southLookahead = null;
+                foreach (var v in south)
+                {
+                    var nd = g.node(v);
+                    if (nd.ContainsKey("dummy") && nd["dummy"] == "border")
                     {
                         var predecessors = g.predecessors(v);
-                        if (predecessors.length)
+                        if (predecessors.Length != 0)
                         {
                             nextNorthPos = g.node(predecessors[0]).order;
                             scan(south, southPos, southLookahead, prevNorthPos, nextNorthPos);
@@ -199,15 +672,37 @@ namespace Dendrite.Dagre
                             prevNorthPos = nextNorthPos;
                         }
                     }
-                    scan(south, southPos, south.length, nextNorthPos, north.length);
-                });
+                    scan(south, southPos, south.Length, nextNorthPos, north.Length);
+                }
 
-            return south;
-        }
 
-        _.reduce(layering, visitLayer);
-  return conflicts;*/
-            return null;
+                return south;
+            };
+
+            if (layering.Count > 0)
+            {
+                /*List<object> toArr = new List<object>();
+                foreach (dynamic item in layering)
+                {
+                    var d = item as IDictionary<string, object>;
+                    List<object> arr2 = new List<object>();
+                    foreach (var zitem in item.Values)
+                    {
+                        arr2.Add(zitem);
+                    }
+
+                    toArr.Add(arr2.ToArray());
+                }*/
+                dynamic prev = layering[0];
+                bool first = true;
+                foreach (var item in layering)
+                {
+                    if (first) { first = false; continue; }
+                    prev = visitLayer(prev, item);
+                }
+            }
+            return conflicts;
+            //return conflicts.ToArray();
         }
     }
 }
