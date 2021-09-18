@@ -1,4 +1,4 @@
-﻿namespace Dendrite.Dagre
+﻿namespace Dagre
 {
     public class coordinateSystem
     {

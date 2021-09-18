@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class nestingGraph
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class normalize
     {
@@ -49,6 +49,10 @@ namespace Dendrite.Dagre
                     {
                         w = g.successors(v)[0];
                         g.removeNode(v);
+                        if (!origLabel.ContainsKey("points"))
+                        {
+                            origLabel["points"] = new List<object>();
+                        }
                         if (origLabel["points"] is Array ar1)
                         {
                             List<object> temp1 = new List<object>();

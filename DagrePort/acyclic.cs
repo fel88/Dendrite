@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
 
     public class acyclic
@@ -15,13 +15,13 @@ namespace Dendrite.Dagre
             foreach (dynamic e in g.edges())
             {
                 var label = g.edge(e);
-                if (label.reversed != null)
+                if (label.ContainsKey("reversed"))
                 {
                     g.removeEdge(e);
 
-                    var forwardName = label.forwardName;
-                    label.reversed = null;
-                    label.forwardName = null;
+                    var forwardName = label["forwardName"];
+                    label["reversed"] = null;
+                    label["forwardName"] = null;
 
 
                     g.setEdgeRaw(new object[] { e["w"], e["v"], label, forwardName });

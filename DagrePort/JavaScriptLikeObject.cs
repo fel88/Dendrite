@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class JavaScriptLikeObject : IDictionary<string, object>
     {

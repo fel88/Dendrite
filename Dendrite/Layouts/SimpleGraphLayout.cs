@@ -43,7 +43,7 @@ namespace Dendrite.Layouts
         {
 
             var topo = topoSort(model);
-          //  List<GraphNode> topo = new List<GraphNode>();
+            //  List<GraphNode> topo = new List<GraphNode>();
             List<GraphNode> visited = new List<GraphNode>();
 
             foreach (var item in model.Nodes)
@@ -55,10 +55,10 @@ namespace Dendrite.Layouts
             }
 
             //topo.Reverse();
-            
 
 
-            int yy = 100;
+
+            float yy = 100;
             int line = 0;
             /*   var inps = Graph.Where(z => z.Parent == null).ToArray();
                GraphNode crnt = inps[0];
@@ -101,7 +101,7 @@ namespace Dendrite.Layouts
             foreach (var item in topo)
             {
                 int shift = 0;
-                int xx = 100;
+                float xx = 100;
                 if (item.Parent != null)
                 {
                     shift += item.Parent.Childs.IndexOf(item) * 350;
@@ -113,9 +113,15 @@ namespace Dendrite.Layouts
                     var info = (item.Parent.DrawTag as GraphNodeDrawInfo);
                     xx = info.Rect.Left + shift;
                     yy = info.Rect.Bottom + 50;
+
                 }
-                item.DrawTag = new GraphNodeDrawInfo() { Text = item.Name, Rect = new Rectangle(xx, yy, 300, 100) };
-                yy += 150;
+
+                var tag = item.DrawTag as GraphNodeDrawInfo;
+                tag.X = xx;
+                tag.Y = yy;
+                tag.Width = 300;
+                tag.Height = 100;
+                yy += 10 + tag.Height;
             }
         }
 

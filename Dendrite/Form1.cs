@@ -304,11 +304,11 @@ namespace Dendrite
             //pictureBox1.Focus();
         }
         public void DrawRoundedRectangle(Graphics g,
-                                 Rectangle r, int d, Pen pen)
+                                 RectangleF r, int d, Pen pen)
         {
             g.DrawPath(pen, GetRoundedRectangle(r, d));
         }
-        public GraphicsPath GetRoundedRectangle(Rectangle r, int d)
+        public GraphicsPath GetRoundedRectangle(RectangleF r, int d)
         {
             if (d == 0) { d = 1; }
             GraphicsPath gp = new GraphicsPath();
@@ -324,14 +324,37 @@ namespace Dendrite
         }
 
         public void FillRoundedRectangle(Graphics g,
-                                Rectangle r, int d, Brush myBrush)
+                                RectangleF r, int d, Brush myBrush)
         {
             g.FillPath(myBrush, GetRoundedRectangle(r, d));
         }
         GraphNode hovered = null;
         Font f = new Font("Arial", 18);
         Font f2 = new Font("Arial", 14);
+        Brush textBrush = Brushes.Black;
+        private void drawEdges()
+        {            
+            foreach (var item in Model.Nodes)
+            {
 
+                var dtag = item.DrawTag as GraphNodeDrawInfo;
+                if (dtag == null) continue;
+                foreach (var citem in item.Childs)
+                {
+                    var dtag2 = citem.DrawTag as GraphNodeDrawInfo;
+                    if (dtag2 == null) continue;
+                    var size = 6 * ctx.zoom;
+                    AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);
+                    Pen pen1 = new Pen(Color.Black);
+                    pen1.CustomEndCap = bigArrow;
+
+                    ctx.Graphics.DrawLine(pen1,
+                        ctx.Transform(dtag.Rect.Location.X + dtag.Rect.Size.Width / 2, dtag.Rect.Location.Y + dtag.Rect.Height / 2),
+                        ctx.Transform(dtag2.Rect.Location.X + dtag2.Rect.Size.Width / 2, dtag2.Rect.Location.Y + dtag2.Rect.Height / 2)
+                        );
+                }
+            }            
+        }
         void Redraw()
         {
             if (ParentForm != null)
@@ -344,6 +367,7 @@ namespace Dendrite
                 if (exit) return;
 
             }
+            textBrush = Brushes.Black;
             lock (DrawingContext.lock1)
             {
                 ctx.Update();
@@ -356,127 +380,14 @@ namespace Dendrite
                 ///axis
                 //ctx.Graphics.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
                 //ctx.Graphics.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
-                Brush textBrush = Brushes.Black;
+                
 
                 if (Model != null)
                 {
-                    foreach (var item in Model.Nodes)
-                    {
-
-                        var dtag = item.DrawTag as GraphNodeDrawInfo;
-                        if (dtag == null) continue;
-                        foreach (var citem in item.Childs)
-                        {
-                            var dtag2 = citem.DrawTag as GraphNodeDrawInfo;
-                            if (dtag2 == null) continue;
-
-                            ctx.Graphics.DrawLine(Pens.Black,
-                                ctx.Transform(dtag.Rect.Location.X + dtag.Rect.Size.Width / 2, dtag.Rect.Location.Y + dtag.Rect.Height / 2),
-                                ctx.Transform(dtag2.Rect.Location.X + dtag2.Rect.Size.Width / 2, dtag2.Rect.Location.Y + dtag2.Rect.Height / 2)
-                                );
-
-                        }
-
-                        if (item.Shape != null)
-                        {
-                            ctx.Graphics.ResetTransform();
-                            var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Bottom + 10);
-                            ctx.Graphics.TranslateTransform(sh.X, sh.Y);
-                            ctx.Graphics.ScaleTransform(ctx.zoom, ctx.zoom);
-
-                            var s1 = string.Join("x", item.Shape);
-
-
-                            ctx.Graphics.DrawString(s1, f2, textBrush, +dtag.Rect.Width / 2 + 10, 0);
-                            ctx.Graphics.ResetTransform();
-                        }
-                    }
-
-
-                    foreach (var item in Model.Nodes)
-                    {
-
-                        var dtag = item.DrawTag as GraphNodeDrawInfo;
-                        if (dtag == null) continue;
-                        var rr = ctx.Transform(dtag.Rect);
-                        var rr2 = ctx.Transform(new Rectangle(dtag.Rect.Left, dtag.Rect.Top, dtag.Rect.Width, dtag.Rect.Height));
-
-                        textBrush = Brushes.Black;
-
-
-                        if (item == hovered)
-                        {
-                            FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightYellow);
-                        }
-                        else if (item.Parents.Contains(hovered))
-                        {
-                            FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightPink);
-                        }
-                        else if (item.Childs.Contains(hovered))
-                        {
-                            FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightBlue);
-                        }
-                        else
-                        if (item == selected)
-                        {
-                            FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightGreen);
-                        }
-                        else
-                        {
-                            Brush brush = Brushes.LightGray;
-
-                            switch (item.LayerType)
-                            {
-                                case LayerType.Conv:
-                                    brush = StaticColors.ConvBrush;
-                                    textBrush = Brushes.White;
-                                    break;
-                                case LayerType.Batch:
-                                    brush = StaticColors.BatchNormBrush;
-                                    textBrush = Brushes.White;
-                                    break;
-                                case LayerType.Relu:
-                                    brush = StaticColors.ReluBrush;
-                                    textBrush = Brushes.White;
-                                    break;
-                                case LayerType.MathOperation:
-                                    brush = StaticColors.AddBrush;
-                                    textBrush = Brushes.White;
-                                    break;
-                                case LayerType.Concat:
-                                    brush = StaticColors.ConcatBrush;
-                                    textBrush = Brushes.White;
-                                    break;
-                            }
-                            FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), brush);
-                        }
-                        DrawRoundedRectangle(ctx.Graphics, rr, (int)(40 * ctx.zoom), Pens.Black);
-
-
-                        ctx.Graphics.ResetTransform();
-                        var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Top + 10);
-                        ctx.Graphics.TranslateTransform(sh.X, sh.Y);
-                        ctx.Graphics.ScaleTransform(ctx.zoom, ctx.zoom);
-                        //ctx.Graphics.DrawString($"{item.Name}: ({item.OpType})", f, Brushes.Black, 0, 0);
-                        var ms = ctx.Graphics.MeasureString(item.Name, f);
-                        ctx.Graphics.DrawString(item.Name, f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
-                        var ms2 = ctx.Graphics.MeasureString(item.OpType, f);
-                        ctx.Graphics.DrawString(item.OpType, f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 30);
-                        if (item.Parents.Contains(hovered))
-                        {
-                            ctx.Graphics.DrawString("child", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
-                        }
-                        if (item.Childs.Contains(hovered))
-                        {
-                            ctx.Graphics.DrawString("parent", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
-                        }
-
-
-                        ctx.Graphics.ResetTransform();
-                    }
-
+                    drawEdges();
+                    drawNodes();
+                    drawLabels();
                 }
-
 
             }
             ctx.Box.Invoke((Action)(() =>
@@ -486,6 +397,201 @@ namespace Dendrite
                 }));
         }
 
+        private void drawNodes()
+        {
+
+            foreach (var item in Model.Nodes)
+            {
+
+                var dtag = item.DrawTag as GraphNodeDrawInfo;
+                if (dtag == null) continue;
+                var rr = ctx.Transform(dtag.Rect);
+                var rr2 = ctx.Transform(new RectangleF(dtag.Rect.Left, dtag.Rect.Top, dtag.Rect.Width, dtag.Rect.Height));
+
+                textBrush = Brushes.Black;
+
+                int cornerRadius = (int)(15 * ctx.zoom);
+                Brush brush = Brushes.LightGray;
+                textBrush = Brushes.White;
+                switch (item.LayerType)
+                {
+                    case LayerType.Conv:
+                        brush = StaticColors.ConvBrush;
+                        break;
+                    case LayerType.Batch:
+                        brush = StaticColors.BatchNormBrush;
+                        break;
+                    case LayerType.Softmax:
+                    case LayerType.Relu:
+                        brush = StaticColors.ReluBrush;
+                        break;
+                    case LayerType.MathOperation:
+                        brush = StaticColors.MathBrush;
+                        break;
+                    case LayerType.Transpose:
+                    case LayerType.Pool:
+                        brush = StaticColors.PoolBrush;
+                        break;
+                    case LayerType.Input:
+                    case LayerType.Output:
+                        brush = StaticColors.EndpointBrush;
+                        textBrush = Brushes.Black;
+                        break;
+                    case LayerType.Pad:
+                    case LayerType.Concat:
+                        brush = StaticColors.ConcatBrush;
+                        break;
+                }
+                if (item == hovered)
+                {
+                    textBrush = Brushes.Black;
+                    if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
+                    {
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+
+                    }
+                    else
+                    {
+                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightYellow);
+
+                    }
+                }
+                else if (CurrentLayout.FlashHoveredRelatives && item.Parents.Contains(hovered))
+                {
+                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightPink);
+                }
+                else if (CurrentLayout.FlashHoveredRelatives && item.Childs.Contains(hovered))
+                {
+                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightBlue);
+                }
+                else
+                if (item == selected)
+                {
+                    textBrush = Brushes.Black;
+
+                    if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
+                    {
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
+                        ctx.Graphics.FillPath(Brushes.LightGreen, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                    }
+                    else
+                    {
+                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightGreen);
+                    }
+                }
+                else
+                {
+                    if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
+                    {
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
+
+                        ctx.Graphics.FillPath(brush, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+
+                    }
+                    else
+                    {
+                        ctx.Graphics.FillPath(brush, Helpers.RoundedRect(rr2, cornerRadius));
+
+                        //FillRoundedRectangle(ctx.Graphics, rr2, cornerRadius, brush);
+                    }
+                }
+                ctx.Graphics.DrawPath(Pens.Black, Helpers.RoundedRect(rr2, cornerRadius));
+
+                //DrawRoundedRectangle(ctx.Graphics, rr, (int)(40 * ctx.zoom), Pens.Black);
+
+
+                ctx.Graphics.ResetTransform();
+                var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Top + 10);
+                ctx.Graphics.TranslateTransform(sh.X, sh.Y);
+                ctx.Graphics.ScaleTransform(ctx.zoom, ctx.zoom);
+                //ctx.Graphics.DrawString($"{item.Name}: ({item.OpType})", f, Brushes.Black, 0, 0);
+                if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
+                {
+                    var ms = ctx.Graphics.MeasureString($"{item.Name}:{item.OpType}", f);
+                    ctx.Graphics.DrawString($"{item.Name}:{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                }
+                else
+                {
+                    var ms = ctx.Graphics.MeasureString($"{item.OpType}", f);
+                    ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                }
+                if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Conv)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("W:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                    }
+                }
+                if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.MathOperation)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+
+                }
+                var ms2 = ctx.Graphics.MeasureString(item.OpType, f);
+                //ctx.Graphics.DrawString(item.OpType, f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 30);
+                if (CurrentLayout.FlashHoveredRelatives)
+                {
+                    if (item.Parents.Contains(hovered))
+                    {
+                        ctx.Graphics.DrawString("child", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                    }
+                    if (item.Childs.Contains(hovered))
+                    {
+                        ctx.Graphics.DrawString("parent", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                    }
+                }
+
+
+                ctx.Graphics.ResetTransform();
+            }
+        }
+        private void drawLabels()
+        {
+            #region draw labels
+            foreach (var item in Model.Nodes)
+            {
+
+                var dtag = item.DrawTag as GraphNodeDrawInfo;
+                if (dtag == null) continue;
+
+
+                if (item.Shape != null)
+                {
+                    ctx.Graphics.ResetTransform();
+                    var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Bottom + 10);
+                    ctx.Graphics.TranslateTransform(sh.X, sh.Y);
+                    ctx.Graphics.ScaleTransform(ctx.zoom, ctx.zoom);
+
+                    var s1 = string.Join("x", item.Shape);
+
+
+                    ctx.Graphics.DrawString(s1, f2, textBrush, +dtag.Rect.Width / 2 + 10, 0);
+                    ctx.Graphics.ResetTransform();
+                }
+            }
+            #endregion
+        }
+        public bool ShowFullNames { get; set; } = false;
         Thread drawThread;
         public void StartDrawThread()
         {
@@ -544,19 +650,33 @@ namespace Dendrite
             //var cnt2 = res2.Graph.Output[0].Name;
             //nodes.InsertRange(0, res2.Graph.Input.Select(z => outs[z.Name]));
 
-
+            updateNodesSizes();
             CurrentLayout.Layout(Model);
             //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
             if (ParentForm != null)
             {
                 ParentForm.Text = Path.GetFileName(path);
             }
+
             fitAll();
             return true;
         }
 
+        void updateNodesSizes()
+        {
+            foreach (var item in Model.Nodes)
+            {
+                GraphNodeDrawInfo dd = new GraphNodeDrawInfo() { X = 0, Y = 0, Width = 300, Height = 100 };
+                item.DrawTag = dd;
+                if (item.LayerType == LayerType.Conv || item.LayerType == LayerType.MathOperation)
+                {
+                    item.DrawHeader = true;
+                }
+            }
+        }
+
         public GraphLayout CurrentLayout;
-        
+
 
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
@@ -882,6 +1002,11 @@ namespace Dendrite
         {
             ctx.StopDrag();
             edit();
+        }
+
+        private void fullNamesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowFullNames = fullNamesToolStripMenuItem.Checked;
         }
     }
 }

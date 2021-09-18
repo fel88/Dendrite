@@ -14,6 +14,10 @@ namespace Dendrite
             }
         }
 
+        public bool DrawHeader = false;
+        public float HeaderHeight = 40;
+
+
         public static object lock1 = new object();
         public static long NewId = 0;
         public long Id;
@@ -34,8 +38,24 @@ namespace Dendrite
             {
                 LayerType = LayerType.Relu;
             }
+            if (OpType.ToLower().Contains("pad"))
+            {
+                LayerType = LayerType.Pad;
+            }
+            if (OpType.ToLower().Contains("transpose"))
+            {
+                LayerType = LayerType.Transpose;
+            }
+            if (OpType.ToLower().Contains("softmax"))
+            {
+                LayerType = LayerType.Softmax;
+            }
+            if (OpType.ToLower().Contains("pool"))
+            {
+                LayerType = LayerType.Pool;
+            }
 
-            string[] maths = new[] { "add", "cast", "shape", "div", "slice" };
+            string[] maths = new[] { "add", "matmul", "cast", "shape", "div", "slice" };
             if (maths.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.MathOperation;
@@ -66,6 +86,6 @@ namespace Dendrite
 
     public enum LayerType
     {
-        Unknown, Conv, Batch, Relu, Input, Output, MathOperation, Concat
+        Unknown, Conv, Batch, Relu, Input, Output, MathOperation, Concat, Pool, Pad, Softmax, Transpose
     }
 }

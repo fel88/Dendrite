@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
-    class util
+    public class util
     {
 
         /*
@@ -195,33 +195,34 @@ namespace Dendrite.Dagre
          * Finds where a line starting at point ({x, y}) would intersect a rectangle
          * ({x, y, width, height}) if it were pointing at the rectangle's center.
          */
-        internal static dPoint intersectRect(DagreNode rect, dPoint point)
+        internal static dynamic intersectRect(dynamic rect, dynamic point)
         {
-            var x = rect.x;
-            var y = rect.y;
+            var x = rect["x"];
+            var y = rect["y"];
 
             // Rectangle intersection algorithm from:
             // http://math.stackexchange.com/questions/108113/find-edge-between-two-boxes
-            var dx = point.x - x;
-            var dy = point.y - y;
-            var w = rect.width / 2;
-            var h = rect.height / 2;
-
+            var dx = point["x"] - x;
+            var dy = point["y"] - y;
+            dynamic w = rect["width"];
+            dynamic h = rect["height"];
+            w = (float)w / 2f;
+            h = (float)h / 2f;
             if (dx == null && dy == null)
             {
                 throw new DagreException("Not possible to find intersection inside of the rectangle");
             }
 
             double sx, sy;
-            if (Math.Abs(dy.Value) * w > Math.Abs(dx.Value) * h)
+            if (Math.Abs(dy) * w > Math.Abs(dx) * h)
             {
                 // Intersection is top or bottom of rect.
                 if (dy < 0)
                 {
                     h = -h;
                 }
-                sx = h.Value * dx.Value / dy.Value;
-                sy = h.Value;
+                sx = h * dx / (float)dy;
+                sy = h;
             }
             else
             {
@@ -230,11 +231,11 @@ namespace Dendrite.Dagre
                 {
                     w = -w;
                 }
-                sx = w.Value;
-                sy = w.Value * dy.Value / dx.Value;
+                sx = w;
+                sy = w * dy / (float)dx;
             }
 
-            return new dPoint { x = x + sx, y = (y + sy) };
+            return DagreLayout.makePoint(x + sx, y + sy);
         }
 
 

@@ -241,11 +241,7 @@
     <Compile Include="Caffe2Proto.cs" />
     <Compile Include="ComboBoxItem.cs" />
     <Compile Include="DagreTester.cs" />
-    <Compile Include="Dagre\JavaScriptLikeObject.cs" />
     <Compile Include="Layouts\DagreGraphLayout.cs" />
-    <Compile Include="Dagre\bk.cs" />
-    <Compile Include="Dagre\coordinateSystem.cs" />
-    <Compile Include="Dagre\networkSimplexModule.cs" />
     <Compile Include="Edit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -393,17 +389,6 @@
       <DependentUpon>TextEnterDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="TorchProto.cs" />
-    <Compile Include="Dagre\acyclic.cs" />
-    <Compile Include="Dagre\addBorderSegments.cs" />
-    <Compile Include="Dagre\DagreGraph.cs" />
-    <Compile Include="Dagre\DagreLayout.cs" />
-    <Compile Include="Dagre\nestingGraph.cs" />
-    <Compile Include="Dagre\normalize.cs" />
-    <Compile Include="Dagre\order.cs" />
-    <Compile Include="Dagre\parentDummyChains.cs" />
-    <Compile Include="Dagre\resolveConflictsModule.cs" />
-    <Compile Include="Dagre\sortSubGraphModule.cs" />
-    <Compile Include="Dagre\util.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="ExpandControl.cs">
       <SubType>UserControl</SubType>
@@ -616,6 +601,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\beforeTranslateGraph.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterTranslateGraph.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterAcyclicUndo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DagrePort\DagrePort.csproj">
+      <Project>{B404BA6F-6334-46FB-B51A-AD235FFF3D85}</Project>
+      <Name>DagrePort</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

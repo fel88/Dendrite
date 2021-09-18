@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class order
     {
@@ -43,24 +43,24 @@ namespace Dendrite.Dagre
                 upLayerGraphs.Add(buildLayerGraph(g, rank - i - 1, "outEdges"));
             }
 
-            var ret1 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("downLayerGraphs1"));
-            var ret2 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("upLayerGraphs1"));
+            //var ret1 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("downLayerGraphs1"));
+            //var ret2 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("upLayerGraphs1"));
 
-            for (int i = 0; i < ret1.Length; i++)
+           /* for (int i = 0; i < ret1.Length; i++)
             {
                 ret1[i].Compare(((dynamic)downLayerGraphs[i]));
             }
             for (int i = 0; i < ret2.Length; i++)
             {
                 ret2[i].Compare(((dynamic)upLayerGraphs[i]));
-            }
+            }*/
 
 
             dynamic layering = initOrder(g) as object[][];
             assignOrder(g, layering);
 
-            var or = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterAssignOrder"));
-            or.Compare(g);
+            //var or = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterAssignOrder"));
+           // or.Compare(g);
             int bestCC = int.MaxValue;
             object[] best = null;
 

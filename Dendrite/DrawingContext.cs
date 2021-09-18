@@ -142,6 +142,11 @@ namespace Dendrite
             var t1 = Transform(new PointF(rect.Left, rect.Top));
             return new Rectangle((int)t1.X, (int)t1.Y, (int)(rect.Width * zoom), (int)(rect.Height * zoom));
         }
+        public RectangleF Transform(RectangleF rect)
+        {
+            var t1 = Transform(new PointF(rect.Left, rect.Top));
+            return new RectangleF(t1.X, t1.Y, (rect.Width * zoom), (rect.Height * zoom));
+        }
 
         public void FitToPoints(PointF[] points, int gap = 0)
         {

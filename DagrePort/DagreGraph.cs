@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Script.Serialization;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class DagreGraph
     {
@@ -592,7 +592,7 @@ namespace Dendrite.Dagre
             return this;
         }
 
-        internal object setEdgeRaw(object[] args)
+        public object setEdgeRaw(object[] args)
         {
             object value = null;
             dynamic arg0 = args[0];

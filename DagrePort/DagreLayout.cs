@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class DagreLayout
     {
@@ -380,9 +380,9 @@ namespace Dendrite.Dagre
             foreach (var e in g.edges())
             {
                 var edge = g.edge(e);
-                if (edge.reversed != null)
+                if (edge.ContainsKey("reversed"))
                 {
-                    edge.points.Reverse();
+                    edge["points"].Reverse();
                 }
             }
         }
@@ -392,22 +392,22 @@ namespace Dendrite.Dagre
             foreach (var e in g.edges())
             {
                 var edge = g.edge(e);
-                var nodeV = g.node(e.v);
-                var nodeW = g.node(e.w);
-                dPoint p1, p2;
-                if (edge.points == null)
+                var nodeV = g.node(e["v"]);
+                var nodeW = g.node(e["w"]);
+                dynamic p1, p2;
+                if (!edge.ContainsKey("points"))
                 {
-                    edge.points = new List<dPoint>();
-                    p1 = new dPoint { x = nodeW.x, y = nodeW.y };
-                    p2 = new dPoint { x = nodeV.x, y = nodeV.y };
+                    edge["points"] = new List<object>();
+                    p1 = DagreLayout.makePoint(nodeW["x"], nodeW["y"]);
+                    p2 = DagreLayout.makePoint(nodeV["x"], nodeV["y"]);
                 }
                 else
                 {
-                    p1 = edge.points[0];
-                    p2 = edge.points[edge.points.Count - 1];
+                    p1 = edge["points"][0];
+                    p2 = edge["points"][edge["points"].Count - 1];
                 }
-                edge.points.Insert(0, util.intersectRect(nodeV, p1));
-                edge.points.Add(util.intersectRect(nodeW, p2));
+                edge["points"].Insert(0, util.intersectRect(nodeV, p1));
+                edge["points"].Add(util.intersectRect(nodeW, p2));
             }
 
         }
@@ -418,20 +418,26 @@ namespace Dendrite.Dagre
             double minY = double.PositiveInfinity;
             double maxY = 0;
             var graphLabel = g.graph();
-            var marginX = graphLabel["marginx"] ?? 0;
-            var marginY = graphLabel["marginy"] ?? 0;
+            dynamic marginX = 0;
+            if (graphLabel.ContainsKey("marginx")){
+                marginX = graphLabel["marginx"];
+            }
+            dynamic marginY = 0;
+            if (graphLabel.ContainsKey("marginy")){
+                marginY = graphLabel["marginy"];
+            }
 
-            Action<DagreBase> getExtremes = (_attrs) =>
+            Action<dynamic> getExtremes = (_attrs) =>
               {
                   dynamic attrs = _attrs;
-                  var x = attrs["x"];
-                  var y = attrs["y"];
-                  var w = attrs["width"];
-                  var h = attrs["height"];
-                  minX = Math.Min(minX, x - w / 2);
-                  maxX = Math.Max(maxX, x + w / 2);
-                  minY = Math.Min(minY, y - h / 2);
-                  maxY = Math.Max(maxY, y + h / 2);
+                  dynamic x = attrs["x"];
+                  dynamic y = attrs["y"];
+                  dynamic w = attrs["width"];
+                  dynamic h = attrs["height"];
+                  minX = Math.Min(minX, (float)x - (float)w / 2f);
+                  maxX = Math.Max(maxX, (float)x + (float)w / 2f);
+                  minY = Math.Min(minY, (float)y - (float)h / 2f);
+                  maxY = Math.Max(maxY, (float)y + (float)h / 2f);
               };
 
             foreach (var v in g.nodes())
@@ -442,7 +448,7 @@ namespace Dendrite.Dagre
             foreach (var e in g.edges())
             {
                 var edge = g.edge(e);
-                if (edge.x != null)
+                if (edge.ContainsKey("x"))
                 {
                     getExtremes(edge);
                 }
@@ -456,28 +462,28 @@ namespace Dendrite.Dagre
             foreach (var v in g.nodes())
             {
                 var node = g.node(v);
-                node.x -= minX;
-                node.y -= minY;
+                node["x"] -= minX;
+                node["y"] -= minY;
             }
 
             foreach (var e in g.edges())
             {
                 var edge = g.edge(e);
-                foreach (var p in edge.points)
+                foreach (var p in edge["points"])
                 {
-                    p.x -= minX;
-                    p.y -= minY;
+                    p["x"] -= minX;
+                    p["y"] -= minY;
                 }
 
-                if (edge.x != null) { edge.x -= minX; }
-                if (edge.y != null) { edge.y -= minY; }
+                if (edge.ContainsKey("x")) { edge["x"] -= minX; }
+                if (edge.ContainsKey("н")) { edge["y"] -= minY; }
             }
 
 
 
 
-            graphLabel.width = maxX - minX + marginX;
-            graphLabel.height = maxY - minY + marginY;
+            graphLabel["width"] = maxX - minX + marginX;
+            graphLabel["height"] = maxY - minY + marginY;
         }
         public static void fixupEdgeLabelCoords(DagreGraph g)
         {

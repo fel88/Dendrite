@@ -217,7 +217,7 @@ namespace Dendrite
 
             foreach (var item in res2.Graph.Output)
             {
-                var gn = new GraphNode() { Name = item.Name };
+                var gn = new GraphNode() { Name = item.Name, LayerType = LayerType.Output };
                 gn.Tag = item;
                 nodes.Add(gn);
                 var pp = outs[gn.Name];

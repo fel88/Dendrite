@@ -40,7 +40,13 @@ namespace Dendrite.Layouts
                 for (int j = 0; j < s1; j++)
                 {
                     if (cntr >= topo.Count) break;
-                    topo[cntr].DrawTag = new GraphNodeDrawInfo() { Text = topo[cntr].Name, Rect = new Rectangle(i * 350, j * 150, 300, 100) };
+                    //topo[cntr].DrawTag = new GraphNodeDrawInfo() { Text = topo[cntr].Name, Rect = new Rectangle(i * 350, j * 150, 300, 100) };
+                    
+                    var tag = (topo[cntr].DrawTag as GraphNodeDrawInfo);
+                    tag.X = i * 350;
+                    tag.Y = j * 150;
+                    tag.Width = 300;
+                    tag.Height = 100;
                     cntr++;
                 }
                 if (cntr >= topo.Count) break;

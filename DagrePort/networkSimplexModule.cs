@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class networkSimplexModule
     {
@@ -230,21 +230,21 @@ namespace Dendrite.Dagre
         public static void networkSimplex(DagreGraph g)
         {
             g = util.simplify(g);
-            var test1 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankSimplify"));
-            if (!g.Compare(test1)) throw new DagreException();
+            //var test1 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankSimplify"));
+            //if (!g.Compare(test1)) throw new DagreException();
 
             initRank(g);
-            var test2 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankLongestPath"));
-            if (!g.Compare(test2)) throw new DagreException();
+           // var test2 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankLongestPath"));
+            //if (!g.Compare(test2)) throw new DagreException();
 
             var t = feasibleTree(g);
-            var test3 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeInitLowLimValues"));
-            if (!t.Compare(test3)) throw new DagreException();
+            //var test3 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeInitLowLimValues"));
+            //if (!t.Compare(test3)) throw new DagreException();
             initLowLimValues(t);
-            var test4 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.tree"));
-            var test5 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.g"));
-            if (!t.Compare(test4)) throw new DagreException();
-            if (!g.Compare(test5)) throw new DagreException();
+            //var test4 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.tree"));
+            //var test5 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.g"));
+            //if (!t.Compare(test4)) throw new DagreException();
+            //if (!g.Compare(test5)) throw new DagreException();
             initCutValues(t, g);
 
             object e = null, f = null;

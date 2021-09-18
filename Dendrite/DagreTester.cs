@@ -1,5 +1,4 @@
-﻿using Dendrite.Dagre;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System;
+using Dagre;
 
 namespace Dendrite
 {
@@ -145,9 +145,8 @@ namespace Dendrite
             }
 
         }
-        public static void Test3()
+        public static Bitmap DrawGraph(DagreGraph dg)
         {
-            DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("outputLayoutGraph1.txt"));
             Bitmap bmp = new Bitmap(1000, 3000);
             Graphics gr = Graphics.FromImage(bmp);
             gr.Clear(Color.White);
@@ -155,7 +154,10 @@ namespace Dendrite
             var convColor = new SolidBrush(Color.FromArgb(51, 85, 136));
             var reluColor = new SolidBrush(Color.FromArgb(112, 41, 33));
             var poolColor = new SolidBrush(Color.FromArgb(51, 85, 51));
+            var mathColor = Brushes.Black;
             var concatColor = new SolidBrush(Color.FromArgb(89, 66, 59));
+            
+            var inputColor = new SolidBrush(Color.FromArgb(238, 238, 238));
             foreach (dynamic d in dg._edgeLabels)
             {
                 dynamic pnts = d.Value["points"];
@@ -191,91 +193,197 @@ namespace Dendrite
                 var ww = (float)d.Value["width"];
                 var hh = (float)d.Value["height"];
                 var cornerRadius = 8;
-                if (hh > 50)
+                if (d.Value.ContainsKey("source"))
                 {
-                    using (GraphicsPath path = RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
+                    GraphNode source = d.Value["source"];
+                    Brush br = convColor;
+                    Brush fr = Brushes.White;
+                    bool withHeader = false;
+                    if (source.LayerType == LayerType.Concat)
                     {
-                        gr.DrawPath(Pens.Black, path);
-
+                        br = concatColor;
                     }
-                    using (GraphicsPath path = HalfRoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, 22), cornerRadius))
+                    if (source.LayerType == LayerType.Conv)
                     {
-                        gr.FillPath(convColor, path);
-                        gr.DrawPath(Pens.Black, path);
+                        withHeader = true;
+                        br = convColor;
                     }
+                    if (source.LayerType == LayerType.Pool)
+                    {
+                        br = poolColor;
+                    }
+                    if (source.LayerType == LayerType.MathOperation)
+                    {
+                        withHeader = true;
+                        br = mathColor;
+                    }
+                    if (source.LayerType == LayerType.Softmax)
+                    {
+                        br = reluColor;
+                    }
+                    if (source.LayerType == LayerType.Transpose)
+                    {
+                        br = poolColor;
+                    }
+                    if (source.LayerType == LayerType.Pad)
+                    {
+                        br = concatColor;
+                    }
+                    if (source.LayerType == LayerType.Relu)
+                    {
+                        br = reluColor;
+                    }
+                    if (source.LayerType == LayerType.Output || source.LayerType == LayerType.Input)
+                    {
+                        br = inputColor;
+                        fr = Brushes.Black;
+                    }
+                    if (withHeader)
+                    {
+                        using (GraphicsPath path = Helpers.RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
+                        {
+                            gr.DrawPath(Pens.Black, path);
 
+                        }
+                        using (GraphicsPath path = Helpers.HalfRoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, 22), cornerRadius))
+                        {
+                            gr.FillPath(br, path);
+                            gr.DrawPath(Pens.Black, path);
+                        }
+                    }
+                    else
+                    {
+                        using (GraphicsPath path = Helpers.RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
+                        {
+                            gr.FillPath(br, path);
+                            gr.DrawPath(Pens.Black, path);
+                        }
+                    }
+                    int gap = 5;
+                    gr.DrawString(source.Name, SystemFonts.DefaultFont, fr, new RectangleF(xx - ww / 2 + gap, yy - hh / 2 + gap, ww - gap * 2, hh - gap * 2));
                 }
                 else
                 {
-                    using (GraphicsPath path = RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
+                    if (hh > 50)
                     {
-                        gr.FillPath(poolColor, path);
-                        gr.DrawPath(Pens.Black, path);
+                        using (GraphicsPath path = Helpers.RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
+                        {
+                            gr.DrawPath(Pens.Black, path);
+
+                        }
+                        using (GraphicsPath path = Helpers.HalfRoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, 22), cornerRadius))
+                        {
+                            gr.FillPath(convColor, path);
+                            gr.DrawPath(Pens.Black, path);
+                        }
+
                     }
+                    else
+                    {
+                        using (GraphicsPath path = Helpers.RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
+                        {
+                            gr.FillPath(poolColor, path);
+                            gr.DrawPath(Pens.Black, path);
+                        }
+
+                    }
+                }
+
+            }
+            return bmp;
+        }
+
+        public static void Test3()
+        {
+            DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("outputLayoutGraph1.txt"));
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
+        }
+
+       
+
+        public static void Test5()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "onnx|*.onnx";
+
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            DagreGraph dg1 = DagreGraph.FromJson(ReadResourceTxt("json.txt"));
+
+            DagreLayout dl = new DagreLayout();
+            var p = new OnnxModelProvider();
+            var g = p.LoadFromFile(ofd.FileName);
+            DagreGraph dg = new DagreGraph(true);
+            var list1 = g.Nodes.ToList();
+            foreach (var gg in list1)
+            {
+                var ind = list1.IndexOf(gg);
+                dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
+                var nd = dg.node(ind + "");
+                nd["width"] = 100;
+                nd["height"] = 50;
+                nd["source"] = gg;
+                if (gg.LayerType == LayerType.Relu)
+                {
+                    nd["width"] = 50;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Input || gg.LayerType == LayerType.Output )
+                {
+                    nd["width"] = 40;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Pad)
+                {
+                    nd["width"] = 40;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Transpose)
+                {
+                    nd["width"] = 70;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Softmax)
+                {
+                    nd["width"] = 70;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Pool)
+                {
+                    nd["width"] = 70;
+                    nd["height"] = 25;
 
                 }
 
             }
+            foreach (var gg in list1)
+            {
+                var ind = list1.IndexOf(gg);
+
+                foreach (var item in gg.Childs)
+                {
+                    JavaScriptLikeObject jj = new JavaScriptLikeObject();
+                    jj.Add("minlen", 1);
+                    jj.Add("weight", 1);
+                    jj.Add("width", 0);
+                    jj.Add("height", 0);
+                    jj.Add("labeloffset", 10);
+                    jj.Add("labelpos", "r");
+                    dg.setEdgeRaw(new object[] { ind + "", list1.IndexOf(item) + "", jj });
+                }
+            }
+            dg.graph()["ranksep"] = 20;
+            dg.graph()["edgesep"] = 20;
+            dg.graph()["nodesep"] = 25;
+            dg.graph()["rankdir"] = "tb";
+            dl.runLayout(dg);
+            var bmp = DrawGraph(dg);
             Clipboard.SetImage(bmp);
-        }
-        public static GraphicsPath RoundedRect(RectangleF bounds, int radius)
-        {
-            int diameter = radius * 2;
-            Size size = new Size(diameter, diameter);
-            RectangleF arc = new RectangleF(bounds.Location, size);
-            GraphicsPath path = new GraphicsPath();
-
-            if (radius == 0)
-            {
-                path.AddRectangle(bounds);
-                return path;
-            }
-
-            // top left arc  
-            path.AddArc(arc, 180, 90);
-
-            // top right arc  
-            arc.X = bounds.Right - diameter;
-            path.AddArc(arc, 270, 90);
-
-            // bottom right arc  
-            arc.Y = bounds.Bottom - diameter;
-            path.AddArc(arc, 0, 90);
-
-            // bottom left arc 
-            arc.X = bounds.Left;
-            path.AddArc(arc, 90, 90);
-
-            path.CloseFigure();
-            return path;
-        }
-        public static GraphicsPath HalfRoundedRect(RectangleF bounds, int radius)
-        {
-            int diameter = radius * 2;
-            Size size = new Size(diameter, diameter);
-            RectangleF arc = new RectangleF(bounds.Location, size);
-            GraphicsPath path = new GraphicsPath();
-
-            if (radius == 0)
-            {
-                path.AddRectangle(bounds);
-                return path;
-            }
-
-            // top left arc  
-            path.AddArc(arc, 180, 90);
-
-            // top right arc  
-            arc.X = bounds.Right - diameter;
-            path.AddArc(arc, 270, 90);
-
-            // bottom   
-            arc.Y = bounds.Bottom - diameter;
-            path.AddLine(bounds.Right, bounds.Bottom, bounds.Left, bounds.Bottom);
-
-
-            path.CloseFigure();
-            return path;
         }
         public static void Test1()
         {
@@ -332,9 +440,12 @@ namespace Dendrite
 
             coordinateSystem.adjust(dg);
             DagreLayout.position(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterPosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
             DagreLayout.positionSelfEdges(dg);
             DagreLayout.removeBorderNodes(dg);
 
+            if (!DagreGraph.FromJson(ReadResourceTxt("beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.undo(dg);
 
@@ -344,7 +455,10 @@ namespace Dendrite
             DagreLayout.assignNodeIntersects(dg);
             DagreLayout.reversePointsForReversedEdges(dg);
             acyclic.undo(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterAcyclicUndo.txt")).Compare(dg)) throw new DagreException("wrong");
 
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
         }
 
         public static void Test4()
@@ -368,9 +482,15 @@ namespace Dendrite
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
 
             DagreLayout.translateGraph(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
             DagreLayout.assignNodeIntersects(dg);
             DagreLayout.reversePointsForReversedEdges(dg);
             acyclic.undo(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterAcyclicUndo.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
 
         }
 

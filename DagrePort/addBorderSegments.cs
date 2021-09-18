@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Dendrite.Dagre
+namespace Dagre
 {
     public class addBorderSegments
     {
