@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Dagre
 {
@@ -54,6 +55,12 @@ namespace Dagre
                     }
                     if (ws.Length != 0)
                     {
+                        var temp1 = (ws as string[]);
+                        if (temp1.Length > 1)
+                        {
+
+                        }
+                        Array.Sort(temp1, (a, b) => (int)((pos)[a]) - (int)(pos[b]));
                         //ws = ws.sort((a, b) => pos[a] - pos[b]);
                         double mp = (ws.Length - 1) / 2.0;
                         for (int i = (int)Math.Floor(mp), il = (int)Math.Ceiling(mp); i <= il; ++i)
@@ -91,7 +98,7 @@ namespace Dagre
             foreach (var item in oo)
             {
                 ret.Add(item.Key);
-                    
+
             }
             return ret;
         }
@@ -105,13 +112,13 @@ namespace Dagre
                     dynamic wLabel = g.node(w);
                     dynamic sum = 0;
                     dynamic delta = null;
-                    sum += vLabel["width"] / 2;
+                    sum += (float)vLabel["width"] / 2f;
                     if (vLabel.ContainsKey("labelpos"))
                     {
                         switch (vLabel["labelpos"].ToLowerCase())
                         {
-                            case "l": delta = -vLabel["width"] / 2; break;
-                            case "r": delta = vLabel["width"] / 2; break;
+                            case "l": delta = -(float)vLabel["width"] / 2f; break;
+                            case "r": delta = (float)vLabel["width"] / 2f; break;
                         }
                     }
                     if (delta != null && delta != 0)
@@ -119,15 +126,15 @@ namespace Dagre
                         sum += reverseSep ? delta : -delta;
                     }
                     delta = 0;
-                    sum += (vLabel.ContainsKey("dummy") ? edgeSep : nodeSep) / 2;
-                    sum += (wLabel.ContainsKey("dummy") ? edgeSep : nodeSep) / 2;
-                    sum += wLabel["width"] / 2;
+                    sum += (vLabel.ContainsKey("dummy") ? edgeSep : nodeSep) / 2f;
+                    sum += (wLabel.ContainsKey("dummy") ? edgeSep : nodeSep) / 2f;
+                    sum += (float)wLabel["width"] / 2f;
                     if (wLabel.ContainsKey("labelpos"))
                     {
                         switch (wLabel["labelpos"].ToLowerCase())
                         {
-                            case "l": delta = wLabel["width"] / 2; break;
-                            case "r": delta = -wLabel["width"] / 2; break;
+                            case "l": delta = (float)wLabel["width"] / 2f; break;
+                            case "r": delta = -(float)wLabel["width"] / 2f; break;
                         }
                     }
                     if (delta != null && delta != 0)
@@ -153,7 +160,7 @@ namespace Dagre
                     if (u != null)
                     {
                         var uRoot = root[u];
-                        var prevMax = blockGraph.edge(uRoot, vRoot);
+                        var prevMax = blockGraph.edgeRaw(new object[] { uRoot, vRoot });
                         blockGraph.setEdgeRaw(new object[] {
                             uRoot,
                             vRoot,
@@ -167,6 +174,7 @@ namespace Dagre
 
 
         }
+     
 
         public static dynamic horizontalCompaction(DagreGraph g, dynamic layering, dynamic root, dynamic align, bool reverseSep)
         {
@@ -176,7 +184,12 @@ namespace Dagre
             // coordinates. The second sweep removes unused space by moving blocks to the
             // greatest coordinates without violating separation.
             dynamic xs = new JavaScriptLikeObject();
+            //if (!DagreGraph.FromJson(util.ReadResourceTxt("beforeHorizontalCompaction.txt")).Compare(g)) throw new DagreException("wrong");
+
+            
             DagreGraph blockG = buildBlockGraph(g, layering, root, reverseSep) as DagreGraph;
+           // if (!DagreGraph.FromJson(util.ReadResourceTxt("blockGtemp1.txt")).Compare(blockG)) throw new DagreException("wrong");
+
             var borderType = reverseSep ? "borderLeft" : "borderRight";
             Action<dynamic, dynamic> iterate = (setXsFunc, nextNodesFunc) =>
             {
@@ -217,7 +230,7 @@ namespace Dagre
                 dynamic temp1 = blockG.inEdges(elem) as Array;
                 dynamic acc = 0;
 
-                for (int i = 1; i < temp1.Length; i++)
+                for (int i = 0; i < temp1.Length; i++)
                 {
                     dynamic e = temp1[i];
                     acc = Math.Max(acc, xs[e["v"]] + blockG.edge(e));
@@ -230,21 +243,21 @@ namespace Dagre
             {
                 var temp1 = blockG.outEdges(elem) as object[];
 
-                dynamic acc = int.MaxValue;
+                dynamic acc = float.PositiveInfinity;
                 dynamic len = temp1.Length;
-                for (int i = 1; i < temp1.Length; i++)
+                for (int i = 0; i < temp1.Length; i++)
                 {
-                    var e = temp1[i];
-                    //acc = Math.Min(acc, xs[e["w"]] - blockG.edge(e);
+                    dynamic e = temp1[i];
+                    acc = Math.Min(acc, xs[e["w"]] - blockG.edge(e));
                 }
                 dynamic min = acc;
                 dynamic node = g.node(elem);
-                object nb = null;
+                string nb = null;
                 if (node.ContainsKey("borderType"))
                 {
                     nb = node["borderType"];
                 }
-                if (min != int.MaxValue && nb != borderType)
+                if (min != float.PositiveInfinity && nb != borderType)
                 {
                     xs[elem] = Math.Max(xs[elem], min);
                 }
@@ -313,7 +326,7 @@ namespace Dagre
         public static dynamic balance(dynamic xss, dynamic align)
         {
             dynamic value = new JavaScriptLikeObject();
-            if (align!=null)
+            if (align != null)
             {
                 dynamic xs = xss[align.toLowerCase()];
                 foreach (dynamic v in keys(xss["ul"]))

@@ -333,7 +333,7 @@ namespace Dendrite
         Font f2 = new Font("Arial", 14);
         Brush textBrush = Brushes.Black;
         private void drawEdges()
-        {            
+        {
             foreach (var item in Model.Nodes)
             {
 
@@ -353,7 +353,7 @@ namespace Dendrite
                         ctx.Transform(dtag2.Rect.Location.X + dtag2.Rect.Size.Width / 2, dtag2.Rect.Location.Y + dtag2.Rect.Height / 2)
                         );
                 }
-            }            
+            }
         }
         void Redraw()
         {
@@ -380,7 +380,7 @@ namespace Dendrite
                 ///axis
                 //ctx.Graphics.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
                 //ctx.Graphics.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
-                
+
 
                 if (Model != null)
                 {
@@ -417,6 +417,9 @@ namespace Dendrite
                 {
                     case LayerType.Conv:
                         brush = StaticColors.ConvBrush;
+                        break;
+                    case LayerType.Dropout:
+                        brush = StaticColors.DropoutBrush;
                         break;
                     case LayerType.Batch:
                         brush = StaticColors.BatchNormBrush;
@@ -852,6 +855,7 @@ namespace Dendrite
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "ONNX files (*.onnx)|*.onnx|All files (*.*)|*.*";
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
             LoadModel(ofd.FileName);

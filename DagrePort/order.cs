@@ -46,21 +46,21 @@ namespace Dagre
             //var ret1 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("downLayerGraphs1"));
             //var ret2 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("upLayerGraphs1"));
 
-           /* for (int i = 0; i < ret1.Length; i++)
-            {
-                ret1[i].Compare(((dynamic)downLayerGraphs[i]));
-            }
-            for (int i = 0; i < ret2.Length; i++)
-            {
-                ret2[i].Compare(((dynamic)upLayerGraphs[i]));
-            }*/
+            /* for (int i = 0; i < ret1.Length; i++)
+             {
+                 ret1[i].Compare(((dynamic)downLayerGraphs[i]));
+             }
+             for (int i = 0; i < ret2.Length; i++)
+             {
+                 ret2[i].Compare(((dynamic)upLayerGraphs[i]));
+             }*/
 
 
             dynamic layering = initOrder(g) as object[][];
             assignOrder(g, layering);
 
             //var or = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterAssignOrder"));
-           // or.Compare(g);
+            // or.Compare(g);
             int bestCC = int.MaxValue;
             object[] best = null;
 
@@ -416,7 +416,7 @@ namespace Dagre
                 dynamic weightSum = 0;
                 while (index > 0)
                 {
-                    if (index % 2)
+                    if (index % 2 != 0)
                     {
                         weightSum += tree[index + 1];
                     }

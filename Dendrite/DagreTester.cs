@@ -156,7 +156,7 @@ namespace Dendrite
             var poolColor = new SolidBrush(Color.FromArgb(51, 85, 51));
             var mathColor = Brushes.Black;
             var concatColor = new SolidBrush(Color.FromArgb(89, 66, 59));
-            
+
             var inputColor = new SolidBrush(Color.FromArgb(238, 238, 238));
             foreach (dynamic d in dg._edgeLabels)
             {
@@ -300,7 +300,7 @@ namespace Dendrite
             Clipboard.SetImage(bmp);
         }
 
-       
+
 
         public static void Test5()
         {
@@ -308,15 +308,18 @@ namespace Dendrite
             ofd.Filter = "onnx|*.onnx";
 
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            DagreGraph dg1 = DagreGraph.FromJson(ReadResourceTxt("json.txt"));
+            DagreGraph dg1 = DagreGraph.FromJson(ReadResourceTxt("beforeRunLayoutSqueeze.txt"));
 
             DagreLayout dl = new DagreLayout();
             var p = new OnnxModelProvider();
             var g = p.LoadFromFile(ofd.FileName);
+            g.Nodes = g.Nodes.Where(z => z.Childs.Any() || z.Parent != null || z.Parents.Any()).ToArray();
             DagreGraph dg = new DagreGraph(true);
             var list1 = g.Nodes.ToList();
             foreach (var gg in list1)
             {
+                //if (gg.Childs.Count == 0 && gg.Parent == null) continue;
+
                 var ind = list1.IndexOf(gg);
                 dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
                 var nd = dg.node(ind + "");
@@ -329,7 +332,7 @@ namespace Dendrite
                     nd["height"] = 25;
 
                 }
-                if (gg.LayerType == LayerType.Input || gg.LayerType == LayerType.Output )
+                if (gg.LayerType == LayerType.Input || gg.LayerType == LayerType.Output)
                 {
                     nd["width"] = 40;
                     nd["height"] = 25;
@@ -374,13 +377,16 @@ namespace Dendrite
                     jj.Add("height", 0);
                     jj.Add("labeloffset", 10);
                     jj.Add("labelpos", "r");
-                    dg.setEdgeRaw(new object[] { ind + "", list1.IndexOf(item) + "", jj });
+                    var ind2 = list1.IndexOf(item);
+                    dg.setEdgeRaw(new object[] { ind + "", ind2 + "", jj });
                 }
             }
             dg.graph()["ranksep"] = 20;
             dg.graph()["edgesep"] = 20;
             dg.graph()["nodesep"] = 25;
             dg.graph()["rankdir"] = "tb";
+            dg._isMultigraph = true;
+            //dg.Compare(dg1);
             dl.runLayout(dg);
             var bmp = DrawGraph(dg);
             Clipboard.SetImage(bmp);
@@ -460,7 +466,160 @@ namespace Dendrite
             var bmp = DrawGraph(dg);
             Clipboard.SetImage(bmp);
         }
+        public static void Test6()
+        {
+            var dl = new DagreLayout();
+            DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("beforeRunLayoutSqueeze.txt"));
 
+            dl.makeSpaceForEdgeLabels(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterMakeSpaceForEdgeLabelsSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+            dl.removeSelfEdges(dg);
+            acyclic.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            nestingGraph.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeAsNoneCompoundGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var ncg = util.asNonCompoundGraph(dg);
+
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
+            dl.rank(ncg);
+
+
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterRankSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.injectEdgeLabelProxies(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRemoveEmptyRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.removeEmptyRanks(dg);
+            nestingGraph.cleanup(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterCleanup.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            util.normalizeRanks(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.assignRankMinMax(dg);
+
+            dl.removeEdgeLabelProxies(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.run(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            parentDummyChains._parentDummyChains(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterParentDummies.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            addBorderSegments._addBorderSegments(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterAddBorderSegments.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            order._order(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterOrderSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.insertSelfEdges(dg);
+
+            coordinateSystem.adjust(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("beforePositionSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.position(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterPositionSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.positionSelfEdges(dg);
+            DagreLayout.removeBorderNodes(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.undo(dg);
+
+            DagreLayout.fixupEdgeLabelCoords(dg);
+            coordinateSystem.undo(dg);
+            DagreLayout.translateGraph(dg);
+            DagreLayout.assignNodeIntersects(dg);
+            DagreLayout.reversePointsForReversedEdges(dg);
+            acyclic.undo(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterAcyclicUndo.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
+        }
+        public static void Test7()
+        {
+            var dl = new DagreLayout();
+            DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("beforeRunLayout1x1.txt"));
+
+            dl.makeSpaceForEdgeLabels(dg);
+            
+            dl.removeSelfEdges(dg);
+            acyclic.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            nestingGraph.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeAsNoneCompoundGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var ncg = util.asNonCompoundGraph(dg);
+
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("beforeRank1x1.txt")).Compare(ncg)) throw new DagreException("wrong");
+            dl.rank(ncg);
+
+
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterRankSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.injectEdgeLabelProxies(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRemoveEmptyRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.removeEmptyRanks(dg);
+            nestingGraph.cleanup(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterCleanup.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            util.normalizeRanks(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.assignRankMinMax(dg);
+
+            dl.removeEdgeLabelProxies(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.run(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            parentDummyChains._parentDummyChains(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterParentDummies.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            addBorderSegments._addBorderSegments(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterAddBorderSegments.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            order._order(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterOrderSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.insertSelfEdges(dg);
+
+            coordinateSystem.adjust(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("beforePositionSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.position(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("afterPositionSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.positionSelfEdges(dg);
+            DagreLayout.removeBorderNodes(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.undo(dg);
+
+            DagreLayout.fixupEdgeLabelCoords(dg);
+            coordinateSystem.undo(dg);
+            DagreLayout.translateGraph(dg);
+            DagreLayout.assignNodeIntersects(dg);
+            DagreLayout.reversePointsForReversedEdges(dg);
+            acyclic.undo(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterAcyclicUndo.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
+        }
         public static void Test4()
         {
             var dg = DagreGraph.FromJson(ReadResourceTxt("beforePosition.txt"));

@@ -614,6 +614,52 @@
       <Name>DagrePort</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeRunLayoutSqueeze.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterMakeSpaceForEdgeLabelsSqueeze.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterRankSqueeze.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterNormalizeSqueeze.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterOrderSqueeze.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterPositionSqueeze.txt" />
+    <EmbeddedResource Include="JsonsDebug\beforePositionSqueeze.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\blockGtemp1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeHorizontalCompaction.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeRunLayout1x1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeRank1x1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterRankSimplify1x1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterRankLongestPath1x1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterFeasibleTree1x1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\beforeLeaveEdge1x1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\afterInitLowLim1x1.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

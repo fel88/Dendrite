@@ -121,6 +121,7 @@ namespace Dendrite
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "ONNX files (*.onnx)|*.onnx|All files (*.*)|*.*";
             if (ofd.ShowDialog() != DialogResult.OK) return;
             LoadModel(ofd.FileName);
         }

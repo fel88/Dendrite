@@ -54,6 +54,10 @@ namespace Dendrite
             {
                 LayerType = LayerType.Pool;
             }
+            if (OpType.ToLower().Contains("dropout"))
+            {
+                LayerType = LayerType.Dropout;
+            }
 
             string[] maths = new[] { "add", "matmul", "cast", "shape", "div", "slice" };
             if (maths.Any(z => OpType.ToLower().Contains(z)))
@@ -86,6 +90,6 @@ namespace Dendrite
 
     public enum LayerType
     {
-        Unknown, Conv, Batch, Relu, Input, Output, MathOperation, Concat, Pool, Pad, Softmax, Transpose
+        Unknown, Conv, Batch, Relu, Input, Output, MathOperation, Concat, Pool, Pad, Softmax, Transpose, Dropout
     }
 }

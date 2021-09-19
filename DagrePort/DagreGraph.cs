@@ -91,6 +91,48 @@ namespace Dagre
                 var key1 = _children.Keys.ToArray()[i];
                 if (!gr._children.ContainsKey(key1)) throw new DagreException();
             }
+            for (int i = 0; i < _successors.Keys.Count; i++)
+            {
+                var key1 = _successors.Keys.ToArray()[i];
+                if (!gr._successors.ContainsKey(key1)) throw new DagreException();
+                dynamic node1 = _successors[key1];
+                dynamic node2 = gr._successors[key1];
+                if (node1.Keys.Count != node2.Keys.Count) throw new DagreException();
+                foreach (var key in node1.Keys)
+                {
+                    dynamic val1 = node1[key];
+                    dynamic val2 = node2[key];
+                    if (val1 is IDictionary<string, object>)
+                    {
+
+                    }
+                    else
+                    {
+                        if (val1 != val2) throw new DagreException();
+                    }
+                }
+            }
+            for (int i = 0; i < _predecessors.Keys.Count; i++)
+            {
+                var key1 = _predecessors.Keys.ToArray()[i];
+                if (!gr._predecessors.ContainsKey(key1)) throw new DagreException();
+                dynamic node1 = _predecessors[key1];
+                dynamic node2 = gr._predecessors[key1];
+                if (node1.Keys.Count != node2.Keys.Count) throw new DagreException();
+                foreach (var key in node1.Keys)
+                {
+                    dynamic val1 = node1[key];
+                    dynamic val2 = node2[key];
+                    if (val1 is IDictionary<string, object>)
+                    {
+
+                    }
+                    else
+                    {
+                        if (val1 != val2) throw new DagreException();
+                    }
+                }
+            }
             for (int i = 0; i < _children.Keys.Count; i++)
             {
                 var key1 = _children.Keys.ToArray()[i];
@@ -166,36 +208,44 @@ namespace Dagre
 
                 dynamic edge1 = _edgeLabels[key1];
                 dynamic edge2 = gr._edgeLabels[key1];
-                if (edge1.Keys.Count != edge2.Keys.Count) throw new DagreException();
-                foreach (var key in edge1.Keys)
+                if (edge1 is IDictionary<string, object>)
                 {
-                    dynamic val1 = edge1[key];
-                    dynamic val2 = edge2[key];
-
-                    if (val1 is IEnumerable<object> || val2 is IEnumerable<object>)
+                    if (edge1.Keys.Count != edge2.Keys.Count) throw new DagreException();
+                    foreach (var key in edge1.Keys)
                     {
-                        int index = 0;
-                        foreach (var item in val1)
+                        dynamic val1 = edge1[key];
+                        dynamic val2 = edge2[key];
+
+                        if (val1 is IEnumerable<object> || val2 is IEnumerable<object>)
                         {
-                            var second = val2[index++];
-                            if (item is IDictionary<string, object>)
+                            int index = 0;
+                            foreach (var item in val1)
                             {
-                                foreach (var zitem in item)
+                                var second = val2[index++];
+                                if (item is IDictionary<string, object>)
                                 {
-                                    var key2 = zitem.Key;
-                                    if (!second.ContainsKey(key2)) throw new DagreException("wrong");
-                                    if (zitem.Value != second[key2]) throw new DagreException("wrong");
+                                    foreach (var zitem in item)
+                                    {
+                                        var key2 = zitem.Key;
+                                        if (!second.ContainsKey(key2)) throw new DagreException("wrong");
+                                        if (zitem.Value != second[key2]) throw new DagreException("wrong");
+                                    }
                                 }
-                            }
 
+                            }
                         }
+                        else if (val2 is decimal || val1 is decimal)
+                        {
+                            if ((float)val1 != (float)val2) throw new DagreException();
+                        }
+                        else
+                        if (val1 != val2) throw new DagreException();
                     }
-                    else if (val2 is decimal || val1 is decimal)
-                    {
-                        if ((float)val1 != (float)val2) throw new DagreException();
-                    }
-                    else
-                    if (val1 != val2) throw new DagreException();
+                }
+                else
+                {
+                    if (edge1 != edge2) throw new DagreException();
+
                 }
 
             }
@@ -292,28 +342,31 @@ namespace Dagre
                         }
                     case "_label":
                         {
-                            var dic = item.Value as Dictionary<string, object>;
-                            dynamic lb = _label;
-                            if (dic.ContainsKey("ranksep"))
-                                lb.Add("ranksep", (int)dic["ranksep"]);
-                            if (dic.ContainsKey("edgesep"))
-                                lb.Add("edgesep", (int)dic["edgesep"]);
-                            if (dic.ContainsKey("nodesep"))
-                                lb.Add("nodesep", (int)dic["nodesep"]);
+                            if (item.Value != null)
+                            {
+                                var dic = item.Value as Dictionary<string, object>;
+                                dynamic lb = _label;
+                                if (dic.ContainsKey("ranksep"))
+                                    lb.Add("ranksep", (int)dic["ranksep"]);
+                                if (dic.ContainsKey("edgesep"))
+                                    lb.Add("edgesep", (int)dic["edgesep"]);
+                                if (dic.ContainsKey("nodesep"))
+                                    lb.Add("nodesep", (int)dic["nodesep"]);
 
 
-                            if (dic.ContainsKey("nodeRankFactor"))
-                                lb.Add("nodeRankFactor", (int)dic["nodeRankFactor"]);
+                                if (dic.ContainsKey("nodeRankFactor"))
+                                    lb.Add("nodeRankFactor", (int)dic["nodeRankFactor"]);
 
-                            if (dic.ContainsKey("nestingRoot"))
-                                lb.Add("nestingRoot", (string)dic["nestingRoot"]);
+                                if (dic.ContainsKey("nestingRoot"))
+                                    lb.Add("nestingRoot", (string)dic["nestingRoot"]);
 
-                            if (dic.ContainsKey("rankdir"))
-                                lb.Add("rankdir", (string)dic["rankdir"]);
-                            if (dic.ContainsKey("root"))
-                                lb.Add("root", dic["root"]);
-                            if (dic.ContainsKey("dummyChains"))
-                                lb.Add("dummyChains", dic["dummyChains"]);
+                                if (dic.ContainsKey("rankdir"))
+                                    lb.Add("rankdir", (string)dic["rankdir"]);
+                                if (dic.ContainsKey("root"))
+                                    lb.Add("root", dic["root"]);
+                                if (dic.ContainsKey("dummyChains"))
+                                    lb.Add("dummyChains", dic["dummyChains"]);
+                            }
                             break;
                         }
                     case "_edgeObjs":
@@ -365,7 +418,7 @@ namespace Dagre
 
                             foreach (var edg in dic)
                             {
-                                _edgeLabels.Add(edg.Key, edg.Value as Dictionary<string, object>);
+                                _edgeLabels.Add(edg.Key, edg.Value);
                             }
                             break;
                         }
@@ -524,7 +577,10 @@ namespace Dagre
             var preds = predecessors(v);
             if (preds != null)
             {
-                return preds.Union(successors(v)).OrderBy(z => z).ToArray();
+                var ret=preds.Union(successors(v)).OrderBy(z => z).ToArray();
+                Array.Sort(ret, (x, y) => string.CompareOrdinal(x, y));
+                ret = ret.Reverse().ToArray();
+                return ret;
             }
             return null;
         }

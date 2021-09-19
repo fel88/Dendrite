@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dagre;
+using System;
 using System.Windows.Forms;
 
 namespace Dendrite
@@ -14,7 +15,8 @@ namespace Dendrite
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             MainForm = new Mdi();            
-            //DagreTester.Test5();
+            //DagreTester.Test7();
+            util.DebugCompareEnabled = false;
             Application.Run(MainForm);
         }       
 

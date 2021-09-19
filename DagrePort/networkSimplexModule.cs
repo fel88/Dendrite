@@ -41,10 +41,7 @@ namespace Dagre
          * structure of the overall algorithm.
          */
 
-        public static void initRank(DagreGraph g)
-        {
-            longestPath(g);
-        }
+        
 
         public static void initLowLimValues(DagreGraph tree, string root = null)
         {
@@ -230,28 +227,46 @@ namespace Dagre
         public static void networkSimplex(DagreGraph g)
         {
             g = util.simplify(g);
-            //var test1 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankSimplify"));
-            //if (!g.Compare(test1)) throw new DagreException();
+            if (util.DebugCompareEnabled)
+            {
+                var test1 = DagreGraph.FromJson(util.ReadResourceTxt("afterRankSimplify1x1"));
+                if (!g.Compare(test1)) throw new DagreException();
+            }
 
-            initRank(g);
-           // var test2 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterRankLongestPath"));
-            //if (!g.Compare(test2)) throw new DagreException();
-
-            var t = feasibleTree(g);
-            //var test3 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeInitLowLimValues"));
-            //if (!t.Compare(test3)) throw new DagreException();
-            initLowLimValues(t);
+            longestPath(g);
+            if (util.DebugCompareEnabled)
+            {
+                var test2 = DagreGraph.FromJson(util.ReadResourceTxt("afterRankLongestPath1x1"));
+                if (!g.Compare(test2)) throw new DagreException();
+            }
+            var tree = feasibleTree(g);
+            if (util.DebugCompareEnabled)
+            {
+                var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterFeasibleTree1x1"));
+                if (!tree.Compare(test3)) throw new DagreException();
+            }
+            initLowLimValues(tree);
+            if (util.DebugCompareEnabled)
+            {
+               var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterInitLowLim1x1"));
+                if (!tree.Compare(test3)) throw new DagreException();
+            }
+            
             //var test4 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.tree"));
             //var test5 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.g"));
             //if (!t.Compare(test4)) throw new DagreException();
             //if (!g.Compare(test5)) throw new DagreException();
-            initCutValues(t, g);
-
-            object e = null, f = null;
-            while ((e = leaveEdge(t)) != null)
+            initCutValues(tree, g);
+            if (util.DebugCompareEnabled)
             {
-                f = enterEdge(t, g, e as DagreEdgeIndex);
-                exchangeEdges(t, g, e as DagreEdgeIndex, f as DagreEdgeIndex);
+                var test33 = DagreGraph.FromJson(util.ReadResourceTxt("beforeLeaveEdge1x1"));
+                if (!tree.Compare(test33)) throw new DagreException();
+            }            
+            object e = null, f = null;
+            while ((e = leaveEdge(tree)) != null)
+            {
+                f = enterEdge(tree, g, e as DagreEdgeIndex);
+                exchangeEdges(tree, g, e as DagreEdgeIndex, f as DagreEdgeIndex);
             }
         }
 

@@ -29,6 +29,8 @@ namespace Dendrite.Layouts
                         dd.Width = 150;
                         dd.Height = 50;
                         break;                    
+                    case LayerType.Dropout:                  
+                    case LayerType.Concat:                  
                     case LayerType.Relu:                  
                     case LayerType.Pad:
                         dd.Width = 120;
@@ -50,52 +52,18 @@ namespace Dendrite.Layouts
             updateNodesSizes(model);
 
             DagreLayout dl = new DagreLayout();
+            model.Nodes = model.Nodes.Where(z => z.Childs.Any() || z.Parent != null || z.Parents.Any()).ToArray();
 
             var list1 = model.Nodes.ToList();
+
             foreach (var gg in list1)
-            {
+            {                
                 var ind = list1.IndexOf(gg);
                 dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
                 var nd = dg.node(ind + "");
-                nd["width"] = 100;
-                nd["height"] = 50;
+                
                 nd["source"] = gg;
-                /*if (gg.LayerType == LayerType.Relu)
-                {
-                    nd["width"] = 50;
-                    nd["height"] = 25;
-
-                }
-                if (gg.LayerType == LayerType.Input || gg.LayerType == LayerType.Output)
-                {
-                    nd["width"] = 40;
-                    nd["height"] = 25;
-
-                }
-                if (gg.LayerType == LayerType.Pad)
-                {
-                    nd["width"] = 40;
-                    nd["height"] = 25;
-
-                }
-                if (gg.LayerType == LayerType.Transpose)
-                {
-                    nd["width"] = 70;
-                    nd["height"] = 25;
-
-                }
-                if (gg.LayerType == LayerType.Softmax)
-                {
-                    nd["width"] = 70;
-                    nd["height"] = 25;
-
-                }
-                if (gg.LayerType == LayerType.Pool)
-                {
-                    nd["width"] = 70;
-                    nd["height"] = 25;
-
-                }*/
+                
                 var tag = (gg.DrawTag as GraphNodeDrawInfo);
                 nd["width"] = tag.Rect.Width;
                 nd["height"] = tag.Rect.Height;

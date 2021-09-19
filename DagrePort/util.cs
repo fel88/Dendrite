@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +10,19 @@ namespace Dagre
 {
     public class util
     {
+        public static bool DebugCompareEnabled = true;
 
+        public static string ReadResourceTxt(string resourceName)
+        {
+            var assembly = Assembly.GetEntryAssembly();
+            var fr1 = assembly.GetManifestResourceNames().First(z => z.Contains(resourceName));
+
+            using (Stream stream = assembly.GetManifestResourceStream(fr1))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
         /*
          * Adjusts the ranks for all nodes in the graph such that all nodes v have
          * rank(v) >= 0 and at least one node w has rank(w) = 0.
