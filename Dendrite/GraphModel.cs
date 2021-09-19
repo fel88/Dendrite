@@ -1,4 +1,6 @@
-﻿namespace Dendrite
+﻿using System;
+
+namespace Dendrite
 {
     public class GraphModel
     {
@@ -11,5 +13,6 @@
 
         public ModelProvider Provider;
         public GraphNode[] Nodes;
+        public EdgeNode[] Edges;
     }
 }

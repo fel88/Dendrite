@@ -334,26 +334,32 @@ namespace Dendrite
         Brush textBrush = Brushes.Black;
         private void drawEdges()
         {
-            foreach (var item in Model.Nodes)
-            {
-
-                var dtag = item.DrawTag as GraphNodeDrawInfo;
-                if (dtag == null) continue;
-                foreach (var citem in item.Childs)
+            if (Model.Edges != null)
+                foreach (var item in Model.Edges)
                 {
-                    var dtag2 = citem.DrawTag as GraphNodeDrawInfo;
-                    if (dtag2 == null) continue;
-                    var size = 6 * ctx.zoom;
-                    AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);
-                    Pen pen1 = new Pen(Color.Black);
-                    pen1.CustomEndCap = bigArrow;
-
-                    ctx.Graphics.DrawLine(pen1,
-                        ctx.Transform(dtag.Rect.Location.X + dtag.Rect.Size.Width / 2, dtag.Rect.Location.Y + dtag.Rect.Height / 2),
-                        ctx.Transform(dtag2.Rect.Location.X + dtag2.Rect.Size.Width / 2, dtag2.Rect.Location.Y + dtag2.Rect.Height / 2)
-                        );
+                    item.Draw(ctx);
                 }
-            }
+            else
+                foreach (var item in Model.Nodes)
+                {
+
+                    var dtag = item.DrawTag as GraphNodeDrawInfo;
+                    if (dtag == null) continue;
+                    foreach (var citem in item.Childs)
+                    {
+                        var dtag2 = citem.DrawTag as GraphNodeDrawInfo;
+                        if (dtag2 == null) continue;
+                        var size = 6 * ctx.zoom;
+                        AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);
+                        Pen pen1 = new Pen(Color.Black);
+                        pen1.CustomEndCap = bigArrow;
+
+                        ctx.Graphics.DrawLine(pen1,
+                            ctx.Transform(dtag.Rect.Location.X + dtag.Rect.Size.Width / 2, dtag.Rect.Location.Y + dtag.Rect.Height / 2),
+                            ctx.Transform(dtag2.Rect.Location.X + dtag2.Rect.Size.Width / 2, dtag2.Rect.Location.Y + dtag2.Rect.Height / 2)
+                            );
+                    }
+                }
         }
         void Redraw()
         {
@@ -424,6 +430,7 @@ namespace Dendrite
                     case LayerType.Batch:
                         brush = StaticColors.BatchNormBrush;
                         break;
+                    case LayerType.Log:
                     case LayerType.Softmax:
                     case LayerType.Relu:
                         brush = StaticColors.ReluBrush;
@@ -570,6 +577,8 @@ namespace Dendrite
         }
         private void drawLabels()
         {
+
+
             #region draw labels
             foreach (var item in Model.Nodes)
             {
@@ -671,7 +680,7 @@ namespace Dendrite
             {
                 GraphNodeDrawInfo dd = new GraphNodeDrawInfo() { X = 0, Y = 0, Width = 300, Height = 100 };
                 item.DrawTag = dd;
-                if (item.LayerType == LayerType.Conv || item.LayerType == LayerType.MathOperation)
+                if (item.LayerType == LayerType.Conv || (item.LayerType == LayerType.MathOperation && item.Parents.Count < 2))
                 {
                     item.DrawHeader = true;
                 }

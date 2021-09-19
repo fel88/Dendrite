@@ -44,7 +44,7 @@ namespace Dendrite
 
         public float sx, sy;
         public float zoom = 1;
-        public Graphics gr;
+        //public Graphics gr;
         public Bitmap bmp;
         public bool InvertY = false;
         public virtual PointF Transform(PointF p1)

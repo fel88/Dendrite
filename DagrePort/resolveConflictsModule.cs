@@ -80,7 +80,7 @@ namespace Dagre
                 tmp.Add("i", i);
 
                 mappedEntries.Add(entry["v"], tmp);
-                if (entry["barycenter"] != null)
+                if (entry.ContainsKey("barycenter"))
                 {
                     tmp["barycenter"] = entry["barycenter"];
                     tmp["weight"] = entry["weight"];
@@ -144,7 +144,7 @@ namespace Dagre
                 dynamic _obj = obj;
                 foreach (var key in attrs)
                 {
-                    if (_obj[key] != null)
+                    if (_obj.ContainsKey(key))
                     {
                         value[key] = _obj[key];
                     }

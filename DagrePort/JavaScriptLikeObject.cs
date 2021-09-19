@@ -67,7 +67,7 @@ namespace Dagre
 
         public void Add(KeyValuePair<string, object> item)
         {
-            throw new System.NotImplementedException();
+            dic.Add(item.Key,item.Value);
         }
 
         public void Clear()

@@ -10,8 +10,15 @@ namespace Dagre
 {
     public class util
     {
-        public static bool DebugCompareEnabled = true;
+        public static bool DebugCompareEnabled = false;
+        public static string DebugResourcesPrefix = "";
 
+        public static bool HasResource(string resourceName)
+        {
+            var assembly = Assembly.GetEntryAssembly();
+            var fr1 = assembly.GetManifestResourceNames().FirstOrDefault(z => z.Contains(resourceName));
+            return fr1 != null;
+        }
         public static string ReadResourceTxt(string resourceName)
         {
             var assembly = Assembly.GetEntryAssembly();
@@ -171,7 +178,9 @@ namespace Dagre
             }
             //var layering = _.map(_.range(maxRank(g) + 1), function() { return []; });
 
-            foreach (var v in g.nodes())
+            var nd = g.nodes();
+            Array.Sort(nd, (x, y) => string.CompareOrdinal(x, y));
+            foreach (var v in nd)
             {
                 var node = g.node(v);
                 var rank1 = node["rank"];

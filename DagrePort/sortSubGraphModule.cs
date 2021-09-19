@@ -61,8 +61,8 @@ namespace Dagre
         {
             var movable = g.children(v);
             var node = g.node(v);
-            var bl = node != null ? node.borderLeft : null;
-            var br = node != null ? node.borderRight : null;
+            var bl = node != null ? node["borderLeft"] : null;
+            var br = node != null ? node["borderRight"] : null;
             dynamic subgraphs = new Dictionary<string, object>();
 
             if (bl != null)
@@ -137,6 +137,9 @@ namespace Dagre
                     result.weight += 2;
                 }
             }
+            var ar1 = (result["vs"] as List<object>);
+            ar1.Sort((x, y) => string.CompareOrdinal((string)x, (string)y));
+            result["vs"] = ar1;
             return result;
         }
         public static dynamic consumeUnsortable(dynamic vs, dynamic unsortable, dynamic index)
@@ -184,15 +187,29 @@ namespace Dagre
                     ((dynamic)parts["rhs"]).Add(value);
                 }
             }
-            dynamic sortable = parts["lhs"];
+            List<object> sortable = (dynamic)parts["lhs"];
+            List<object> unsortable = (dynamic)(parts["rhs"]);
 
-
-            dynamic unsortable = parts["rhs"];
-            //unsortable.Sort((a, b) => -a.i + b.i);
+            unsortable.Sort((a, b) => -((dynamic)a)["i"] + ((dynamic)b)["i"]);
             dynamic vs = new List<object>();
             dynamic sum = 0;
             dynamic weight = 0;
             int vsIndex = 0;
+            sortable.Sort((entryV, entryW) => {
+                dynamic v = ((dynamic)entryV)["barycenter"];
+                dynamic w = ((dynamic)entryW)["barycenter"];
+                if (v < w)
+                {
+                    return -1;
+                }
+                else if (v > w)
+                {
+                    return 1;
+                }
+                return !biasRight ? (((dynamic)entryV)["i"] - ((dynamic)entryW)["i"] ): (((dynamic)entryW)["i"] - ((dynamic)entryV)["i"]);
+            });
+            
+
             //sortable.sort(compareWithBias(!!biasRight));
             vsIndex = consumeUnsortable(vs, unsortable, vsIndex);
             foreach (dynamic entry in sortable)
@@ -217,7 +234,7 @@ namespace Dagre
 
             if (weight != null)
             {
-                result["barycenter"] = sum / weight;
+                result["barycenter"] = sum / (float)weight;
                 result["weight"] = weight;
             }
             return result;

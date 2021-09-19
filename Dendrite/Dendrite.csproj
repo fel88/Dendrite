@@ -240,7 +240,9 @@
     <Compile Include="AttributeInfoDataType.cs" />
     <Compile Include="Caffe2Proto.cs" />
     <Compile Include="ComboBoxItem.cs" />
+    <Compile Include="Curve.cs" />
     <Compile Include="DagreTester.cs" />
+    <Compile Include="EdgeNode.cs" />
     <Compile Include="Layouts\DagreGraphLayout.cs" />
     <Compile Include="Edit.cs">
       <SubType>Form</SubType>
@@ -659,6 +661,50 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\afterInitLowLim1x1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\start.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\beforeOrder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\downLayerGraphs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\upLayerGraphs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\afterOrder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\afterAssignOrder1.txt" />
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\layering1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\beforeAssignOrder2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\afterSweep1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\afterFixupEdgeLabels.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\afterPosition.txt" />
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\beforePosition.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\beforeDenormalize.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\afterDenormalize.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\beforeTranslateGraph.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Mnist-1\afterTranslateGraph.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

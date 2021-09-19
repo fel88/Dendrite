@@ -41,7 +41,7 @@ namespace Dagre
          * structure of the overall algorithm.
          */
 
-        
+
 
         public static void initLowLimValues(DagreGraph tree, string root = null)
         {
@@ -121,7 +121,10 @@ namespace Dagre
         {
             var childLab = t.nodeRaw(child);
             var parent = childLab["parent"];
-            t.edgeRaw(new object[] { child, parent })["cutvalue"] = calcCutValue(t, g, child);
+            var edge = t.edgeRaw(new object[] { child, parent });
+            //TODO!!! check tha edge can be null
+            if (edge != null)
+                edge["cutvalue"] = calcCutValue(t, g, child);
         }
 
         /*
@@ -177,7 +180,7 @@ namespace Dagre
             return tree.hasEdgeRaw(new object[] { u, v });
         }
 
-        public static DagreEdgeIndex enterEdge(DagreGraph t, DagreGraph g, dynamic edge)
+        public static dynamic enterEdge(DagreGraph t, DagreGraph g, dynamic edge)
         {
             var v = edge["v"];
             var w = edge["w"];
@@ -208,7 +211,7 @@ namespace Dagre
             {
                 return flip == isDescendant(t, t.nodeRaw(ee["v"]), tailLabel) &&
                        flip != isDescendant(t, t.nodeRaw(ee["w"]), tailLabel);
-            });
+            }).ToArray();
 
             //return _.minBy(candidates, function(edge) { return slack(g, edge); });
 
@@ -229,29 +232,41 @@ namespace Dagre
             g = util.simplify(g);
             if (util.DebugCompareEnabled)
             {
-                var test1 = DagreGraph.FromJson(util.ReadResourceTxt("afterRankSimplify1x1"));
-                if (!g.Compare(test1)) throw new DagreException();
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                {
+                    var test1 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterRankSimplify1x1"));
+                    if (!g.Compare(test1)) throw new DagreException();
+                }
             }
 
             longestPath(g);
             if (util.DebugCompareEnabled)
             {
-                var test2 = DagreGraph.FromJson(util.ReadResourceTxt("afterRankLongestPath1x1"));
-                if (!g.Compare(test2)) throw new DagreException();
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                {
+                    var test2 = DagreGraph.FromJson(util.ReadResourceTxt("afterRankLongestPath1x1"));
+                    if (!g.Compare(test2)) throw new DagreException();
+                }
             }
             var tree = feasibleTree(g);
             if (util.DebugCompareEnabled)
             {
-                var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterFeasibleTree1x1"));
-                if (!tree.Compare(test3)) throw new DagreException();
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                {
+                    var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterFeasibleTree1x1"));
+                    if (!tree.Compare(test3)) throw new DagreException();
+                }
             }
             initLowLimValues(tree);
             if (util.DebugCompareEnabled)
             {
-               var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterInitLowLim1x1"));
-                if (!tree.Compare(test3)) throw new DagreException();
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                {
+                    var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterInitLowLim1x1"));
+                    if (!tree.Compare(test3)) throw new DagreException();
+                }
             }
-            
+
             //var test4 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.tree"));
             //var test5 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.g"));
             //if (!t.Compare(test4)) throw new DagreException();
@@ -259,21 +274,24 @@ namespace Dagre
             initCutValues(tree, g);
             if (util.DebugCompareEnabled)
             {
-                var test33 = DagreGraph.FromJson(util.ReadResourceTxt("beforeLeaveEdge1x1"));
-                if (!tree.Compare(test33)) throw new DagreException();
-            }            
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                {
+                    var test33 = DagreGraph.FromJson(util.ReadResourceTxt("beforeLeaveEdge1x1"));
+                    if (!tree.Compare(test33)) throw new DagreException();
+                }
+            }
             object e = null, f = null;
             while ((e = leaveEdge(tree)) != null)
             {
-                f = enterEdge(tree, g, e as DagreEdgeIndex);
-                exchangeEdges(tree, g, e as DagreEdgeIndex, f as DagreEdgeIndex);
+                f = enterEdge(tree, g, e);
+                exchangeEdges(tree, g, e, f);
             }
         }
 
         public static void exchangeEdges(DagreGraph t, dynamic g, dynamic e, dynamic f)
         {
-            var v = e.v;
-            var w = e.w;
+            var v = e["v"];
+            var w = e["w"];
             t.removeEdge(new[] { v, w });
             t.setEdgeRaw(new object[] { f["v"], f["w"], null });
             initLowLimValues(t);
@@ -287,13 +305,17 @@ namespace Dagre
 
         public static void updateRanks(DagreGraph t, DagreGraph g)
         {
-            var root = t.nodes().FirstOrDefault(v => { return g.node(v).parent != null; });
+            var root = t.nodes().FirstOrDefault(v => { return !g.node(v).ContainsKey("parent") ; });
             var vs = preorder(t, new string[] { root });
             //vs = vs.slice(1);
             vs = vs.Take(1).ToArray();
             foreach (var v in vs)
             {
-                var parent = t.node(v).parent as string;
+                dynamic parent = null;
+                //TODO!!! check that parent can be null
+                if (t.node(v).ContainsKey("parent")){
+                    parent = t.node(v)["parent"];
+                }
                 var edge = g.edge(v, parent);
                 var flipped = false;
 
@@ -303,9 +325,8 @@ namespace Dagre
                     flipped = true;
                 }
 
-                g.node(v).rank = g.node(parent).rank + (flipped ? edge.minlen : -edge.minlen);
+                g.node(v)["rank"] = g.node(parent)["rank"] + (flipped ? edge["minlen"] : -edge["minlen"]);
             }
-
         }
 
         /*
@@ -430,7 +451,7 @@ namespace Dagre
             while (tightTree(t, g) < size)
             {
                 edge = findMinSlackEdge(t, g);
-                delta = t.hasNode(edge.v) ? slack(g, edge) : -slack(g, edge);
+                delta = t.hasNode(edge["v"]) ? slack(g, edge) : -slack(g, edge);
                 shiftRanks(t, g, delta);
             }
 
@@ -490,11 +511,11 @@ namespace Dagre
          * Finds the edge with the smallest slack that is incident on tree and returns
          * it.
          */
-        public static DagreEdgeIndex findMinSlackEdge(DagreGraph t, DagreGraph g)
+        public static dynamic findMinSlackEdge(DagreGraph t, DagreGraph g)
         {
             return g.edges().Where(e =>
             {
-                return t.hasNode(e.v) != t.hasNode(e.w);
+                return t.hasNode(e["v"]) != t.hasNode(e["w"]);
             }).OrderBy(e => slack(g, e)).First();
         }
 
@@ -502,7 +523,7 @@ namespace Dagre
         {
             foreach (var v in t.nodes())
             {
-                g.node(v).rank += delta;
+                g.node(v)["rank"] += delta;
             }
 
         }

@@ -1,10 +1,11 @@
 ﻿using Onnx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Dendrite
 {
-    public class GraphNode: ITag
+    public class GraphNode : ITag
     {
         public GraphNode()
         {
@@ -50,6 +51,10 @@ namespace Dendrite
             {
                 LayerType = LayerType.Softmax;
             }
+            if (OpType.ToLower().Contains("log"))
+            {
+                LayerType = LayerType.Log;
+            }
             if (OpType.ToLower().Contains("pool"))
             {
                 LayerType = LayerType.Pool;
@@ -58,8 +63,12 @@ namespace Dendrite
             {
                 LayerType = LayerType.Dropout;
             }
+            if (OpType.ToLower().Contains("constant"))
+            {
+                LayerType = LayerType.Constant;
+            }
 
-            string[] maths = new[] { "add", "matmul", "cast", "shape", "div", "slice" };
+            string[] maths = new[] { "add", "matmul", "mul", "cast", "shape", "div", "slice" };
             if (maths.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.MathOperation;
@@ -70,7 +79,7 @@ namespace Dendrite
             {
                 LayerType = LayerType.Concat;
             }
-            
+
         }
 
         public string Name;
@@ -86,10 +95,12 @@ namespace Dendrite
         public object DrawTag { get; set; }
         public string Input { get; internal set; }
         public long[] Shape;
+
+        
     }
 
     public enum LayerType
     {
-        Unknown, Conv, Batch, Relu, Input, Output, MathOperation, Concat, Pool, Pad, Softmax, Transpose, Dropout
+        Unknown, Conv, Batch, Relu, Input, Output, MathOperation, Concat, Pool, Pad, Softmax, Transpose, Dropout, Log, Constant
     }
 }

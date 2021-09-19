@@ -524,7 +524,7 @@ namespace Dagre
                     var y = selfNode["y"];
                     var dx = (node["x"] - x);
                     var dy = (selfNode["height"] / 2);
-                    g.setEdge(node["e"], node["label"]);
+                    g.setEdgeRaw(new object[] { node["e"], node["label"] });
                     g.removeNode(v);
                     node["label"]["points"] = new List<object>{
                     makePoint(  x + 2 * dx / 3, y - dy ),
@@ -551,7 +551,7 @@ namespace Dagre
                 List<dynamic> oo = new List<dynamic>();
                 foreach (var item in layer)
                 {
-                    oo.Add(g.node(item.Value)["height"]);
+                    oo.Add((float)(g.node(item.Value)["height"]));
                 }
                 //var maxHeight = (layer as IEnumerable<object>).Select(v => g.node(v)["height"]).Max().Value;
                 var maxHeight = oo.Max();

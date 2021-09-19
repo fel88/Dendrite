@@ -24,127 +24,7 @@ namespace Dendrite
             }
         }
 
-        public class moveContext
-        {
-            float _x0;
-            float _x1;
-            float _y0;
-            float _y1;
-            public GraphicsPath Path;
 
-            public void bezierCurveTo(PointF cp1, PointF cp2, PointF cp3)
-            {
-                Path.AddBezier(new PointF(_x1, _y1), cp1, cp2, cp3);
-                _x1 = cp3.X;
-                _y1 = cp3.Y;
-            }
-            public void moveTo(float x, float y)
-            {
-                this._x0 = x;
-                this._x1 = x;
-                this._y0 = y;
-                this._y1 = y;
-            }
-
-            internal void lineTo(float x, float y)
-            {
-                Path.AddLine(new PointF(_x1, _y1), new PointF(x, y));
-                _x1 = x;
-                _y1 = y;
-
-            }
-        }
-        public class Curve
-        {
-            moveContext context = new moveContext();
-            public GraphicsPath Path = new GraphicsPath();
-            float _x0;
-            float _x1;
-            float _y0;
-            float _y1;
-
-
-            int _point;
-            int _line;
-            public void LineStart()
-            {
-                context.Path = Path;
-                this._x0 = float.NaN;
-                this._x1 = float.NaN;
-                this._y0 = float.NaN;
-                this._y1 = float.NaN;
-                this._point = 0;
-
-            }
-
-            void curve(float x, float y)
-            {
-                PointF p0 = new PointF(_x0, _y0);
-                PointF p1 = new PointF(_x1, _y1);
-
-                PointF cp1 = new PointF((2 * p0.X + p1.X) / 3, (2 * p0.Y + p1.Y) / 3);
-                PointF cp2 = new PointF((p0.X + 2 * p1.X) / 3, (p0.Y + 2 * p1.Y) / 3);
-                PointF cp3 = new PointF((p0.X + 4 * p1.X + x) / 6, (p0.Y + 4 * p1.Y + y) / 6);
-
-                context.bezierCurveTo(cp1, cp2, cp3);
-            }
-            public void lineEnd()
-            {
-                switch (this._point)
-                {
-                    case 3:
-                        this.curve(this._x1, this._y1);
-                        context.lineTo(this._x1, this._y1);
-
-
-                        break;
-                    case 2:
-                        context.lineTo(this._x1, this._y1);
-                        break;
-                }
-                if (this._line != 0 || (this._line != 0 && this._point == 1))
-                {
-                    //Path.CloseFigure();
-                    //this._context.closePath();
-                }
-                this._line = 1 - this._line;
-            }
-            public void point(float x, float y)
-            {
-                x = +x;
-                y = +y;
-                switch (this._point)
-                {
-                    case 0:
-                        this._point = 1;
-                        if (this._line != 0)
-                        {
-                            context.lineTo(x, y);
-                        }
-                        else
-                        {
-                            context.moveTo(x, y);
-                        }
-                        break;
-                    case 1:
-                        this._point = 2;
-                        break;
-                    case 2:
-                        this._point = 3;
-                        context.lineTo((5 * this._x0 + this._x1) / 6, (5 * this._y0 + this._y1) / 6);
-                        this.curve(x, y);
-                        break;
-                    default:
-                        this.curve(x, y);
-                        break;
-                }
-                this._x0 = this._x1;
-                this._x1 = x;
-                this._y0 = this._y1;
-                this._y1 = y;
-            }
-
-        }
         public static Bitmap DrawGraph(DagreGraph dg)
         {
             Bitmap bmp = new Bitmap(1000, 3000);
@@ -170,19 +50,8 @@ namespace Dendrite
                 Pen pen1 = new Pen(Color.Black);
                 pen1.CustomEndCap = bigArrow;
                 //gr.DrawLines(pen1, rr.ToArray());
-                var curve = new Curve();
-                for (var i = 0; i < rr.Count; i++)
-                {
-                    if (i == 0)
-                    {
-                        curve.LineStart();
-                    }
-                    curve.point(rr[i].X, rr[i].Y);
-                    if (i == rr.Count - 1)
-                    {
-                        curve.lineEnd();
-                    }
-                }
+                var curve = new Curve(rr.ToArray());
+                
                 gr.DrawPath(pen1, curve.Path);
 
             }
@@ -543,13 +412,199 @@ namespace Dendrite
             var bmp = DrawGraph(dg);
             Clipboard.SetImage(bmp);
         }
+        public static void LoadTestMnist1()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "onnx|*.onnx";
+
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            DagreGraph dg1 = DagreGraph.FromJson(ReadResourceTxt("Mnist_1.start.txt"));
+
+            DagreLayout dl = new DagreLayout();
+            var p = new OnnxModelProvider();
+            var g = p.LoadFromFile(ofd.FileName);
+            g.Nodes = g.Nodes.Where(z => z.LayerType != LayerType.Constant && (z.Childs.Any() || z.Parent != null || z.Parents.Any())).ToArray();
+
+            DagreGraph dg = new DagreGraph(true);
+            var list1 = g.Nodes.ToList();
+            foreach (var gg in list1)
+            {
+                //if (gg.Childs.Count == 0 && gg.Parent == null) continue;
+
+                var ind = list1.IndexOf(gg);
+                dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
+                var nd = dg.node(ind + "");
+                nd["width"] = 100;
+                nd["height"] = 50;
+                nd["source"] = gg;
+                if (gg.LayerType == LayerType.Relu)
+                {
+                    nd["width"] = 50;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Input || gg.LayerType == LayerType.Output)
+                {
+                    nd["width"] = 40;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Pad)
+                {
+                    nd["width"] = 40;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Transpose)
+                {
+                    nd["width"] = 70;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Softmax)
+                {
+                    nd["width"] = 70;
+                    nd["height"] = 25;
+
+                }
+                if (gg.LayerType == LayerType.Pool)
+                {
+                    nd["width"] = 70;
+                    nd["height"] = 25;
+
+                }
+
+            }
+            foreach (var gg in list1)
+            {
+                var ind = list1.IndexOf(gg);
+
+                foreach (var item in gg.Childs)
+                {
+                    JavaScriptLikeObject jj = new JavaScriptLikeObject();
+                    jj.Add("minlen", 1);
+                    jj.Add("weight", 1);
+                    jj.Add("width", 0);
+                    jj.Add("height", 0);
+                    jj.Add("labeloffset", 10);
+                    jj.Add("labelpos", "r");
+                    var ind2 = list1.IndexOf(item);
+                    if (ind2 == -1) continue;
+                    dg.setEdgeRaw(new object[] { ind + "", ind2 + "", jj });
+                }
+            }
+            dg.graph()["ranksep"] = 20;
+            dg.graph()["edgesep"] = 20;
+            dg.graph()["nodesep"] = 25;
+            dg.graph()["rankdir"] = "tb";
+            //dg._isMultigraph = true;
+            //dg.Compare(dg1);
+            var edge1 = dg.edge(dg.edges()[0]);
+            var edge2 = dg1.edge(dg1.edges()[0]);
+            foreach (var item in dg1.edges())
+            {
+                var edge = dg1.edge(item);
+                edge["width"] = 0;
+                edge["height"] = 0;
+            }
+            dl.runLayout(dg1);
+            var bmp = DrawGraph(dg1);
+            Clipboard.SetImage(bmp);
+            dg = dg1;
+        }
+        public static void Test8()
+        {
+            var dl = new DagreLayout();
+            DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("Mnist_1.start.txt"));
+            util.DebugCompareEnabled = true;
+            util.DebugResourcesPrefix = "Mnist_1.";
+            dl.makeSpaceForEdgeLabels(dg);
+
+            dl.removeSelfEdges(dg);
+            acyclic.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            nestingGraph.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeAsNoneCompoundGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var ncg = util.asNonCompoundGraph(dg);
+
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRank1x1.txt")).Compare(ncg)) throw new DagreException("wrong");
+            dl.rank(ncg);
+
+
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterRankSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.injectEdgeLabelProxies(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRemoveEmptyRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.removeEmptyRanks(dg);
+            nestingGraph.cleanup(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterCleanup.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            util.normalizeRanks(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.assignRankMinMax(dg);
+
+            dl.removeEdgeLabelProxies(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.run(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            parentDummyChains._parentDummyChains(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterParentDummies.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            addBorderSegments._addBorderSegments(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+            order._order(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.insertSelfEdges(dg);
+
+            coordinateSystem.adjust(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.position(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterPosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.positionSelfEdges(dg);
+            DagreLayout.removeBorderNodes(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.undo(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.fixupEdgeLabelCoords(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterFixupEdgeLabels.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            coordinateSystem.undo(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.translateGraph(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.assignNodeIntersects(dg);
+            DagreLayout.reversePointsForReversedEdges(dg);
+            acyclic.undo(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterAcyclicUndo.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
+        }
         public static void Test7()
         {
             var dl = new DagreLayout();
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("beforeRunLayout1x1.txt"));
 
             dl.makeSpaceForEdgeLabels(dg);
-            
+
             dl.removeSelfEdges(dg);
             acyclic.run(dg);
 

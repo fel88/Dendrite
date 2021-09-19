@@ -115,7 +115,7 @@ namespace Dagre
                     sum += (float)vLabel["width"] / 2f;
                     if (vLabel.ContainsKey("labelpos"))
                     {
-                        switch (vLabel["labelpos"].ToLowerCase())
+                        switch (vLabel["labelpos"].ToLower())
                         {
                             case "l": delta = -(float)vLabel["width"] / 2f; break;
                             case "r": delta = (float)vLabel["width"] / 2f; break;
@@ -131,7 +131,7 @@ namespace Dagre
                     sum += (float)wLabel["width"] / 2f;
                     if (wLabel.ContainsKey("labelpos"))
                     {
-                        switch (wLabel["labelpos"].ToLowerCase())
+                        switch (wLabel["labelpos"].ToLower())
                         {
                             case "l": delta = (float)wLabel["width"] / 2f; break;
                             case "r": delta = -(float)wLabel["width"] / 2f; break;
@@ -500,7 +500,7 @@ namespace Dagre
                 w = tmp;
             }
 
-            return conflicts.ContainsKey(v) && conflicts[v].Contains(w);
+            return conflicts.ContainsKey(v) && conflicts[v].ContainsKey(w);
         }
         public static void addConflict(dynamic conflicts, dynamic v, dynamic w)
         {
@@ -518,7 +518,7 @@ namespace Dagre
             }
             if (!conflicts.ContainsKey(v))
             {
-                conflicts.Add(v, new JavaScriptLikeObject());
+                conflicts.Add((string)v, new JavaScriptLikeObject());
 
             }
             conflictsV = conflicts[v];
@@ -566,7 +566,7 @@ namespace Dagre
 
         public static object findType1Conflicts(DagreGraph g, dynamic layering)
         {
-            Dictionary<string, HashSet<string>> conflicts = new Dictionary<string, HashSet<string>>();
+            Dictionary<string, object> conflicts = new Dictionary<string, object>();
 
             Func<dynamic, dynamic, dynamic> visitLayer = (prevLayer, layer) =>
                {
@@ -642,7 +642,7 @@ namespace Dagre
         public static object findType2Conflicts(DagreGraph g, dynamic layering)
         {
 
-            Dictionary<string, HashSet<string>> conflicts = new Dictionary<string, HashSet<string>>();
+            Dictionary<string, object> conflicts = new Dictionary<string, object>();
             Action<dynamic, dynamic, dynamic, dynamic, dynamic> scan = (south, southPos, southEnd, prevNorthBorder, nextNorthBorder) =>
               {
                   dynamic v = null;

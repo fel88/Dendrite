@@ -33,8 +33,8 @@ namespace Dagre
 
         public static void _order(DagreGraph g)
         {
-            List<object> downLayerGraphs = new List<object>();
-            List<object> upLayerGraphs = new List<object>();
+            List<DagreGraph> downLayerGraphs = new List<DagreGraph>();
+            List<DagreGraph> upLayerGraphs = new List<DagreGraph>();
             var rank = util.maxRank(g);
 
             for (int i = 0; i < rank; i++)
@@ -43,31 +43,54 @@ namespace Dagre
                 upLayerGraphs.Add(buildLayerGraph(g, rank - i - 1, "outEdges"));
             }
 
-            //var ret1 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("downLayerGraphs1"));
-            //var ret2 = DagreGraph.FromJsonArray(DagreTester.ReadResourceTxt("upLayerGraphs1"));
+            if (util.DebugCompareEnabled)
+            {
+                var ret1 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.downLayerGraphs"));
+                var ret2 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.upLayerGraphs"));
 
-            /* for (int i = 0; i < ret1.Length; i++)
-             {
-                 ret1[i].Compare(((dynamic)downLayerGraphs[i]));
-             }
-             for (int i = 0; i < ret2.Length; i++)
-             {
-                 ret2[i].Compare(((dynamic)upLayerGraphs[i]));
-             }*/
-
+                 for (int i = 0; i < ret1.Length; i++)
+                 {
+                     ret1[i].Compare(((dynamic)downLayerGraphs[i]));
+                 }
+                 for (int i = 0; i < ret2.Length; i++)
+                 {
+                     ret2[i].Compare(((dynamic)upLayerGraphs[i]));
+                 }
+            }
 
             dynamic layering = initOrder(g) as object[][];
             assignOrder(g, layering);
+            if (util.DebugCompareEnabled)
+            {
+                var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.afterAssignOrder1"));
+                ret1.Compare(g);    
+            }
 
             //var or = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterAssignOrder"));
             // or.Compare(g);
-            int bestCC = int.MaxValue;
+            dynamic bestCC = float.PositiveInfinity;
             object[] best = null;
 
+            var t1 = g.node("0");
+            foreach (var item in upLayerGraphs)
+            {
+                var t2 = item.node("0");
+                if (t1 == t2)
+                {
+
+                }
+            }
             for (int i = 0, lastBest = 0; lastBest < 4; ++i, ++lastBest)
             {
                 sweepLayerGraphs((i % 2 != 0) ? downLayerGraphs.ToArray() : upLayerGraphs.ToArray(), i % 4 >= 2);
-
+                if (util.DebugCompareEnabled)
+                {
+                    if (util.HasResource("Mnist_1.afterSweep" + (i + 1)))
+                    {
+                        var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.afterSweep" + (i + 1)));
+                        ret1.Compare(g);
+                    }
+                }
                 layering = util.buildLayerMatrix(g);
                 var cc = crossCount(g, layering);
                 if (cc < bestCC)
@@ -93,7 +116,11 @@ namespace Dagre
                     // bestCC = cc;
                 }
             }
-
+            if (util.DebugCompareEnabled)
+            {
+                var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.beforeAssignOrder2"));
+                ret1.Compare(g);
+            }
             assignOrder(g, best);
 
         }
@@ -109,13 +136,18 @@ namespace Dagre
                 var length = vs.Count;
                 for (var i = 0; i < length; i++)
                 {
-                    (lg as DagreGraph).node(vs[i])["order"] = i;
+                    var vv = vs[i];
+                    if (vv == "0")
+                    {
+
+                    }
+                    (lg as DagreGraph).node(vv)["order"] = i;
                 }
                 addSubgraphConstraints(lg, cg, sorted["vs"]);
             }
 
         }
-        public static void addSubgraphConstraints(dynamic g, dynamic cg, dynamic vs)
+        public static void addSubgraphConstraints(dynamic g, DagreGraph cg, dynamic vs)
         {
             dynamic prev = new JavaScriptLikeObject();
             object rootPrev = null;
@@ -139,7 +171,7 @@ namespace Dagre
                     }
                     if (prevChild != null && prevChild != child)
                     {
-                        cg.setEdge(prevChild, child);
+                        cg.setEdgeRaw(new object[] { prevChild, child });
                         return;
                     }
                     child = parent;
@@ -334,7 +366,6 @@ namespace Dagre
                 return layers.Select(z => z.ToArray()).ToArray();
             }
             return new JavaScriptLikeObject();
-
         }
 
         #endregion

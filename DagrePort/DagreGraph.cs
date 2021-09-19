@@ -228,6 +228,11 @@ namespace Dagre
                                     {
                                         var key2 = zitem.Key;
                                         if (!second.ContainsKey(key2)) throw new DagreException("wrong");
+                                        if (zitem.Value is float || zitem.Value is decimal)
+                                        {
+                                            if ((float)zitem.Value != (float)second[key2]) throw new DagreException("wrong");
+                                        }
+                                        else
                                         if (zitem.Value != second[key2]) throw new DagreException("wrong");
                                     }
                                 }
@@ -564,11 +569,11 @@ namespace Dagre
             return edge(v.v, v.w, v.name);
 
         }
-        public DagreLabel edge(string v, string w, string name = null)
+        public dynamic edge(string v, string w, string name = null)
         {
             var e = edgeArgsToId(_isDirected, v, w, name);
             if (_edgeLabels.ContainsKey(e as string)) return null;
-            return _edgeLabels[e as string] as DagreLabel;
+            return _edgeLabels[e as string] ;
             //return _edges[v];
         }
 
@@ -577,7 +582,7 @@ namespace Dagre
             var preds = predecessors(v);
             if (preds != null)
             {
-                var ret=preds.Union(successors(v)).OrderBy(z => z).ToArray();
+                var ret = preds.Union(successors(v)).OrderBy(z => z).ToArray();
                 Array.Sort(ret, (x, y) => string.CompareOrdinal(x, y));
                 ret = ret.Reverse().ToArray();
                 return ret;
@@ -869,7 +874,7 @@ namespace Dagre
         }
         */
 
-        internal dynamic edge(object e)
+        public dynamic edge(object e)
         {
             return edgeRaw(e);
         }
@@ -1100,10 +1105,6 @@ namespace Dagre
 
         }
 
-        internal DagreGraph setEdge(DagreEdgeIndex e, object label)
-        {
-            throw new NotImplementedException();
-        }
 
 
         public Dictionary<string, object> _children = new Dictionary<string, object>();
