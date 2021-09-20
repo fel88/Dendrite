@@ -503,6 +503,7 @@
     <EmbeddedResource Include="TextEnterDialog.resx">
       <DependentUpon>TextEnterDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="JsonsDebug\Espnet\beforeRankInitCutValues.tree.txt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -533,12 +534,8 @@
     <EmbeddedResource Include="JsonsDebug\afterMakeSpaceForEdgeLabels.txt" />
     <EmbeddedResource Include="JsonsDebug\beforeAsNoneCompoundGraph.txt" />
     <EmbeddedResource Include="JsonsDebug\beforeNestingRun.txt" />
-    <EmbeddedResource Include="JsonsDebug\json.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="JsonsDebug\runLayoutInput.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="JsonsDebug\json.txt" />
+    <EmbeddedResource Include="JsonsDebug\runLayoutInput.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\beforeRank.txt" />
@@ -642,25 +639,25 @@
     <EmbeddedResource Include="JsonsDebug\beforeHorizontalCompaction.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsonsDebug\beforeRunLayout1x1.txt" />
+    <EmbeddedResource Include="JsonsDebug\1x1\beforeRunLayout.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsonsDebug\beforeRank1x1.txt" />
+    <EmbeddedResource Include="JsonsDebug\1x1\beforeRank.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsonsDebug\afterRankSimplify1x1.txt" />
+    <EmbeddedResource Include="JsonsDebug\1x1\afterRankSimplify.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsonsDebug\afterRankLongestPath1x1.txt" />
+    <EmbeddedResource Include="JsonsDebug\1x1\afterRankLongestPath.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsonsDebug\afterFeasibleTree1x1.txt" />
+    <EmbeddedResource Include="JsonsDebug\1x1\afterFeasibleTree.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsonsDebug\beforeLeaveEdge1x1.txt" />
+    <EmbeddedResource Include="JsonsDebug\1x1\beforeLeaveEdge.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="JsonsDebug\afterInitLowLim1x1.txt" />
+    <EmbeddedResource Include="JsonsDebug\1x1\afterInitLowLim.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\Mnist-1\start.txt" />
@@ -705,6 +702,36 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\Mnist-1\afterTranslateGraph.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\beforeRunLayout.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\beforeAsNonCompoundGraph.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\beforeRank.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\afterRankSimplify.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\afterRankLongestPath.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\afterFeasibleTree.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\beforeLeaveEdge.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\Espnet\beforeRankInitCutValues.g.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\1x1\leaveEdge1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\1x1\beforeExchangeChangesInitLowLim0.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -45,25 +45,31 @@ namespace Dagre
 
             if (util.DebugCompareEnabled)
             {
-                var ret1 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.downLayerGraphs"));
-                var ret2 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.upLayerGraphs"));
+                if (util.HasResource($"{util.DebugResourcesPrefix}downLayerGraphs"))
+                {
+                    var ret1 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.downLayerGraphs"));
+                    var ret2 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.upLayerGraphs"));
 
-                 for (int i = 0; i < ret1.Length; i++)
-                 {
-                     ret1[i].Compare(((dynamic)downLayerGraphs[i]));
-                 }
-                 for (int i = 0; i < ret2.Length; i++)
-                 {
-                     ret2[i].Compare(((dynamic)upLayerGraphs[i]));
-                 }
+                    for (int i = 0; i < ret1.Length; i++)
+                    {
+                        ret1[i].Compare(((dynamic)downLayerGraphs[i]));
+                    }
+                    for (int i = 0; i < ret2.Length; i++)
+                    {
+                        ret2[i].Compare(((dynamic)upLayerGraphs[i]));
+                    }
+                }
             }
 
             dynamic layering = initOrder(g) as object[][];
             assignOrder(g, layering);
             if (util.DebugCompareEnabled)
             {
-                var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.afterAssignOrder1"));
-                ret1.Compare(g);    
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterAssignOrder1"))
+                {
+                    var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.afterAssignOrder1"));
+                    ret1.Compare(g);
+                }
             }
 
             //var or = DagreGraph.FromJson(DagreTester.ReadResourceTxt("afterAssignOrder"));
@@ -85,7 +91,7 @@ namespace Dagre
                 sweepLayerGraphs((i % 2 != 0) ? downLayerGraphs.ToArray() : upLayerGraphs.ToArray(), i % 4 >= 2);
                 if (util.DebugCompareEnabled)
                 {
-                    if (util.HasResource("Mnist_1.afterSweep" + (i + 1)))
+                    if (util.HasResource($"{util.DebugResourcesPrefix}afterSweep" + (i + 1)))
                     {
                         var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.afterSweep" + (i + 1)));
                         ret1.Compare(g);
@@ -118,8 +124,11 @@ namespace Dagre
             }
             if (util.DebugCompareEnabled)
             {
-                var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.beforeAssignOrder2"));
-                ret1.Compare(g);
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforeAssignOrder2"))
+                {
+                    var ret1 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeAssignOrder2"));
+                    ret1.Compare(g);
+                }
             }
             assignOrder(g, best);
 

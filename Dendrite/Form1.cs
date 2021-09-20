@@ -421,12 +421,16 @@ namespace Dendrite
                 textBrush = Brushes.White;
                 switch (item.LayerType)
                 {
+                    case LayerType.Gemm:
                     case LayerType.Conv:
+                    case LayerType.Lstm:
                         brush = StaticColors.ConvBrush;
                         break;
                     case LayerType.Dropout:
                         brush = StaticColors.DropoutBrush;
                         break;
+                    case LayerType.Gather:
+                    case LayerType.Squeeze:
                     case LayerType.Batch:
                         brush = StaticColors.BatchNormBrush;
                         break;
@@ -435,6 +439,7 @@ namespace Dendrite
                     case LayerType.Relu:
                         brush = StaticColors.ReluBrush;
                         break;
+                    case LayerType.PrimitiveMath:
                     case LayerType.MathOperation:
                         brush = StaticColors.MathBrush;
                         break;
@@ -545,6 +550,76 @@ namespace Dendrite
                     {
                         ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 65);
                         ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                    }
+                }
+                if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Gather)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Attributes.Count > 0)
+                    {
+                        ctx.Graphics.DrawString("Indicies = ", f, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Attributes[0].IntData)})", f, Brushes.Black, 120, 35);
+                    }
+                    
+                }
+                if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Gemm)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("C:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                    }
+                }
+                if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Lstm)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("W:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("R:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                    }
+                    if (item.Data.Count > 2)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 95);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 45, 95);
+                    }
+                }
+                if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Batch)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("scale:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 85, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 85, 65);
+                    }
+                    if (item.Data.Count > 2)
+                    {
+                        ctx.Graphics.DrawString("mean:", fb, Brushes.Black, 5, 95);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 85, 95);
+                    }
+                    if (item.Data.Count > 3)
+                    {
+                        ctx.Graphics.DrawString("var:", fb, Brushes.Black, 5, 125);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[3].Dims)})", f, Brushes.Black, 85, 125);
                     }
                 }
                 if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.MathOperation)
@@ -680,7 +755,7 @@ namespace Dendrite
             {
                 GraphNodeDrawInfo dd = new GraphNodeDrawInfo() { X = 0, Y = 0, Width = 300, Height = 100 };
                 item.DrawTag = dd;
-                if (item.LayerType == LayerType.Conv || (item.LayerType == LayerType.MathOperation && item.Parents.Count < 2))
+                if (item.LayerType == LayerType.Conv || item.LayerType == LayerType.Lstm || item.LayerType == LayerType.Gather || item.LayerType == LayerType.Batch || (item.LayerType == LayerType.MathOperation && item.Parents.Count < 2)|| item.LayerType == LayerType.Gemm)
                 {
                     item.DrawHeader = true;
                 }
@@ -868,6 +943,7 @@ namespace Dendrite
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
             LoadModel(ofd.FileName);
+            fitAll();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)

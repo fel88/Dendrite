@@ -19,14 +19,28 @@ namespace Dendrite.Layouts
                 item.DrawTag = dd;
                 switch (item.LayerType)
                 {
+                    case LayerType.Lstm:
+                        dd.Width = 220;
+                        dd.Height = 140;
+                        break;
                     case LayerType.Conv:
-                        dd.Width = 200;
+                    case LayerType.Gemm:
+                        dd.Width = 220;
                         dd.Height = 110;
                         break;
+                    case LayerType.Batch:
+                        dd.Width = 250;
+                        dd.Height = 170;
+                        break;
+                    case LayerType.PrimitiveMath:
+                        dd.Width = 150;
+                        dd.Height = 50;
+                        break;
                     case LayerType.MathOperation:
+
                         if (item.Parents.Count < 2)
                         {
-                            dd.Width = 180;
+                            dd.Width = 210;
                             dd.Height = 90;
                         }
                         else
@@ -34,6 +48,14 @@ namespace Dendrite.Layouts
                             dd.Width = 150;
                             dd.Height = 50;
                         }
+                        break;
+                    case LayerType.Gather:
+                        dd.Width = 200;
+                        dd.Height = 90;
+                        break;
+                    case LayerType.Squeeze:
+                        dd.Width = 150;
+                        dd.Height = 50;
                         break;
                     case LayerType.Output:
                     case LayerType.Input:
@@ -128,7 +150,7 @@ namespace Dendrite.Layouts
             List<EdgeNode> enodes = new List<EdgeNode>();
             foreach (var item in dg.edges())
             {
-                
+
                 var edge = dg.edge(item);
                 var src = edge["source"];
                 dynamic pnts = edge["points"];

@@ -30,18 +30,30 @@ namespace Dendrite
                 LayerType = LayerType.Conv;
                 return;
             }
-            string[] batch = new[] { "batch", "gather", "unsqueeze", "transpose" };
-            if (batch.Any(z => OpType.ToLower().Contains(z)))
+            string[] squeeze = new[] { "unsqueeze", "squeeze", "transpose" };
+            if (squeeze.Any(z => OpType.ToLower().Contains(z)))
+            {
+                LayerType = LayerType.Squeeze;
+            }
+            if (OpType.ToLower().Contains("gather"))
+            {
+                LayerType = LayerType.Gather;
+            }
+            if (OpType.ToLower().Contains("batch"))
             {
                 LayerType = LayerType.Batch;
             }
-            if (OpType.ToLower().Contains("relu"))
+            if (OpType.ToLower().Contains("relu") || OpType.ToLower().Contains("tanh") || OpType.ToLower().Contains("sigmoid"))
             {
                 LayerType = LayerType.Relu;
             }
             if (OpType.ToLower().Contains("pad"))
             {
                 LayerType = LayerType.Pad;
+            }
+            if (OpType.ToLower().Contains("lstm") || OpType.ToLower().Contains("gru"))
+            {
+                LayerType = LayerType.Lstm;
             }
             if (OpType.ToLower().Contains("transpose"))
             {
@@ -55,7 +67,7 @@ namespace Dendrite
             {
                 LayerType = LayerType.Log;
             }
-            if (OpType.ToLower().Contains("pool"))
+            if (OpType.ToLower().Contains("pool") || OpType.ToLower().Contains("lrn"))
             {
                 LayerType = LayerType.Pool;
             }
@@ -63,15 +75,24 @@ namespace Dendrite
             {
                 LayerType = LayerType.Dropout;
             }
+            if (OpType.ToLower().Contains("gemm"))
+            {
+                LayerType = LayerType.Gemm;
+            }
             if (OpType.ToLower().Contains("constant"))
             {
                 LayerType = LayerType.Constant;
             }
 
-            string[] maths = new[] { "add", "matmul", "mul", "cast", "shape", "div", "slice" };
+            string[] maths = new[] { "matmul", "mul" };
             if (maths.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.MathOperation;
+            }
+            string[] pmaths = new[] { "add", "sub", "pow", "sqrt", "reduce", "exp", "cast", "shape", "div", "slice", "clip" };
+            if (pmaths.Any(z => OpType.ToLower().Contains(z)))
+            {
+                LayerType = LayerType.PrimitiveMath;
             }
 
             string[] concats = new[] { "concat", "reshape" };
@@ -96,11 +117,11 @@ namespace Dendrite
         public string Input { get; internal set; }
         public long[] Shape;
 
-        
+
     }
 
     public enum LayerType
     {
-        Unknown, Conv, Batch, Relu, Input, Output, MathOperation, Concat, Pool, Pad, Softmax, Transpose, Dropout, Log, Constant
+        Unknown, Conv, Batch, Squeeze, Relu, Input, Output, MathOperation, PrimitiveMath, Concat, Pool, Pad, Softmax, Transpose, Dropout, Log, Constant, Gemm, Gather, Lstm
     }
 }

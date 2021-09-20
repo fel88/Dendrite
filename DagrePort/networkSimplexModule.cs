@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Script.Serialization;
 
 namespace Dagre
 {
@@ -124,7 +125,10 @@ namespace Dagre
             var edge = t.edgeRaw(new object[] { child, parent });
             //TODO!!! check tha edge can be null
             if (edge != null)
-                edge["cutvalue"] = calcCutValue(t, g, child);
+            {
+                var res = calcCutValue(t, g, child);
+                edge["cutvalue"] = res;
+            }
         }
 
         /*
@@ -214,8 +218,12 @@ namespace Dagre
             }).ToArray();
 
             //return _.minBy(candidates, function(edge) { return slack(g, edge); });
+            if (candidates.Any())
+            {
+                return candidates.OrderBy(z => slack(g, z)).First();
 
-            return candidates.OrderBy(z => slack(g, z)).First();
+            }
+            return null;
         }
 
         /*
@@ -232,9 +240,9 @@ namespace Dagre
             g = util.simplify(g);
             if (util.DebugCompareEnabled)
             {
-                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify"))
                 {
-                    var test1 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterRankSimplify1x1"));
+                    var test1 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterRankSimplify"));
                     if (!g.Compare(test1)) throw new DagreException();
                 }
             }
@@ -242,86 +250,120 @@ namespace Dagre
             longestPath(g);
             if (util.DebugCompareEnabled)
             {
-                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankLongestPath"))
                 {
-                    var test2 = DagreGraph.FromJson(util.ReadResourceTxt("afterRankLongestPath1x1"));
+                    var test2 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterRankLongestPath"));
                     if (!g.Compare(test2)) throw new DagreException();
                 }
             }
             var tree = feasibleTree(g);
             if (util.DebugCompareEnabled)
             {
-                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterFeasibleTree"))
                 {
-                    var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterFeasibleTree1x1"));
+                    var test3 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterFeasibleTree"));
+                    test3.PreserveOrder = true;
                     if (!tree.Compare(test3)) throw new DagreException();
                 }
             }
             initLowLimValues(tree);
+
             if (util.DebugCompareEnabled)
             {
-                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforeRankInitCutValues.tree"))
                 {
-                    var test3 = DagreGraph.FromJson(util.ReadResourceTxt("afterInitLowLim1x1"));
+                    var test3 = DagreGraph.FromJson(util.ReadResourceTxt("beforeRankInitCutValues.tree"));
                     if (!tree.Compare(test3)) throw new DagreException();
                 }
             }
+            if (util.DebugCompareEnabled)
+            {
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforeRankInitCutValues.g"))
+                {
+                    var test3 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeRankInitCutValues.g"));
+                    if (!g.Compare(test3)) throw new DagreException();
+                }
+            }
 
-            //var test4 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.tree"));
-            //var test5 = DagreGraph.FromJson(DagreTester.ReadResourceTxt("beforeRankInitCutValues.g"));
-            //if (!t.Compare(test4)) throw new DagreException();
-            //if (!g.Compare(test5)) throw new DagreException();
+
+
             initCutValues(tree, g);
             if (util.DebugCompareEnabled)
             {
-                if (util.HasResource($"{util.DebugResourcesPrefix}afterRankSimplify1x1"))
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforeLeaveEdge"))
                 {
-                    var test33 = DagreGraph.FromJson(util.ReadResourceTxt("beforeLeaveEdge1x1"));
+                    var test33 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeLeaveEdge"));
                     if (!tree.Compare(test33)) throw new DagreException();
                 }
             }
             object e = null, f = null;
+            int step = 0;
             while ((e = leaveEdge(tree)) != null)
             {
+                if (util.DebugCompareEnabled)
+                {
+                    if (util.HasResource($"{util.DebugResourcesPrefix}leaveEdge" + step))
+                    {
+                        JavaScriptSerializer jss = new JavaScriptSerializer();
+
+                        var des = jss.Deserialize<dynamic>(util.ReadResourceTxt($"{util.DebugResourcesPrefix}leaveEdge" + step));
+                        var gTest = DagreGraph.FromJson(des[0]) as DagreGraph;
+                        if (!gTest.Compare(g)) throw new DagreException();
+                        var treeTest = DagreGraph.FromJson(des[1]) as DagreGraph;
+                        if (!treeTest.Compare(tree)) throw new DagreException();
+                        var eTest = des[2];
+                    }
+                }
                 f = enterEdge(tree, g, e);
-                exchangeEdges(tree, g, e, f);
+                exchangeEdges(tree, g, e, f, step);
+                step++;
             }
         }
 
-        public static void exchangeEdges(DagreGraph t, dynamic g, dynamic e, dynamic f)
+        public static void exchangeEdges(DagreGraph t, dynamic g, dynamic e, dynamic f, int step)
         {
             var v = e["v"];
             var w = e["w"];
             t.removeEdge(new[] { v, w });
-            t.setEdgeRaw(new object[] { f["v"], f["w"], null });
+            t.setEdgeRaw(new object[] { f["v"], f["w"], new JavaScriptLikeObject() });
+            if (util.DebugCompareEnabled)
+            {
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforeExchangeChangesInitLowLim" + step))
+                {
+                    var test33 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeExchangeChangesInitLowLim" + step));
+                    if (!t.Compare(test33)) throw new DagreException();
+                }
+            }
             initLowLimValues(t);
             initCutValues(t, g);
             updateRanks(t, g);
         }
         public static object leaveEdge(DagreGraph tree)
         {
-            return tree.edgesRaw().FirstOrDefault(e => tree.edgeRaw(e)["cutvalue"] < 0);
+            return tree.edgesRaw().FirstOrDefault(e => tree.edgeRaw(e) != null && tree.edgeRaw(e)["cutvalue"] < 0);
         }
 
         public static void updateRanks(DagreGraph t, DagreGraph g)
         {
-            var root = t.nodes().FirstOrDefault(v => { return !g.node(v).ContainsKey("parent") ; });
+            var root = t.nodes().FirstOrDefault(v => { return !g.node(v).ContainsKey("parent"); });
             var vs = preorder(t, new string[] { root });
             //vs = vs.slice(1);
-            vs = vs.Take(1).ToArray();
+            vs = vs.Skip(1).ToArray();
             foreach (var v in vs)
             {
                 dynamic parent = null;
                 //TODO!!! check that parent can be null
-                if (t.node(v).ContainsKey("parent")){
+                if (t.node(v).ContainsKey("parent"))
+                {
                     parent = t.node(v)["parent"];
                 }
-                var edge = g.edge(v, parent);
+
+                var edge = g.edgeRaw(new object[] { v, parent });
                 var flipped = false;
 
-                if (edge != null)
+                if (edge == null)
                 {
-                    edge = g.edge(parent, v);
+                    edge = g.edgeRaw(new object[] { parent, v });
                     flipped = true;
                 }
 
@@ -354,7 +396,7 @@ namespace Dagre
         {
             HashSet<string> visited = new HashSet<string>();
 
-            Func<string, int> dfs = null;
+            Func<string, dynamic> dfs = null;
             dfs = (v) =>
             {
                 dynamic label = g.nodeRaw(v);
@@ -404,7 +446,7 @@ namespace Dagre
             if (!node1.ContainsKey("rank")) return null;
             if (!node2.ContainsKey("rank")) return null;
             if (!edge.ContainsKey("minlen")) return null;
-            return node1["rank"] - node2["rank"] - edge["minlen"];
+            return (dynamic)node1["rank"] - (dynamic)node2["rank"] - edge["minlen"];
         }
         /*public static int slack(DagreGraph g, object e)
         {

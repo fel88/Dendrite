@@ -52,6 +52,8 @@ namespace Dagre
             if (_edgeLabels.Keys.Count != gr._edgeLabels.Keys.Count) throw new DagreException();
             if (_parent.Keys.Count != gr._parent.Keys.Count) throw new DagreException();
             if (_children.Keys.Count != gr._children.Keys.Count) throw new DagreException();
+
+
             for (int i = 0; i < _parent.Keys.Count; i++)
             {
                 var key1 = _parent.Keys.ToArray()[i];
@@ -272,6 +274,22 @@ namespace Dagre
 
             }
             if (!DagreLabel.Compare(_label, gr._label)) throw new DagreException();
+
+
+            for (int i = 0; i < _nodesRaw.Keys.Count; i++)
+            {
+                var key = _nodesRaw.Keys.ToArray()[i];
+
+                var res1 = gr.neighbors(key);
+                var res = neighbors(key);
+                for (int j = 0; j < res1.Length; j++)
+                {
+                    if (res1[j] != res[j])
+                    {
+                        throw new DagreException();
+                    }
+                }
+            }
 
             return true;
 
@@ -573,18 +591,31 @@ namespace Dagre
         {
             var e = edgeArgsToId(_isDirected, v, w, name);
             if (_edgeLabels.ContainsKey(e as string)) return null;
-            return _edgeLabels[e as string] ;
+            return _edgeLabels[e as string];
             //return _edges[v];
         }
 
+        public bool PreserveOrder = false;
         internal string[] neighbors(string v)
         {
             var preds = predecessors(v);
             if (preds != null)
             {
-                var ret = preds.Union(successors(v)).OrderBy(z => z).ToArray();
-                Array.Sort(ret, (x, y) => string.CompareOrdinal(x, y));
-                ret = ret.Reverse().ToArray();
+                string[] ret = null;
+                if (!PreserveOrder)
+                {
+                    ret = successors(v).OrderBy(z => z).ToArray();
+                    var dgts = ret.Where(z => z.All(char.IsDigit)).ToArray();
+                    Array.Sort(dgts, (x, y) => int.Parse(x) - int.Parse(y));
+                    var remains = ret.Except(dgts).ToArray();
+                    Array.Sort(remains, (x, y) => string.CompareOrdinal(x, y));
+                    ret = preds.Union(dgts.Union(remains)).ToArray();
+                }
+                else
+                {
+                    ret = preds.Union(successors(v)).ToArray();
+                }
+                //ret = ret.Reverse().ToArray();
                 return ret;
             }
             return null;
@@ -594,8 +625,22 @@ namespace Dagre
         {
             if (_predecessors.ContainsKey(v))
             {
+                string[] ret = null;
+                if (!PreserveOrder)
+                {
+                    ret = _predecessors[v].Keys.ToArray();
+                    var dgts = ret.Where(z => z.All(char.IsDigit)).ToArray();
+                    Array.Sort(dgts, (x, y) => int.Parse(x) - int.Parse(y));
+                    var remains = ret.Except(dgts).ToArray();
+                    Array.Sort(remains, (x, y) => string.CompareOrdinal(x, y));
+                    ret = dgts.Union(remains).ToArray();
+                    return ret;
+                }
+
                 var predsV = _predecessors[v];
                 return predsV.Keys.ToArray();
+
+
             }
             return null;
         }
