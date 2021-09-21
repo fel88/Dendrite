@@ -334,7 +334,7 @@ namespace Dendrite
         Brush textBrush = Brushes.Black;
         private void drawEdges()
         {
-            if (Model.Edges != null)
+            if (Model.Edges != null && CurrentLayout.EdgesDrawAllowed)
                 foreach (var item in Model.Edges)
                 {
                     item.Draw(ctx);
@@ -361,6 +361,8 @@ namespace Dendrite
                     }
                 }
         }
+
+        bool drawEnabled = true;
         void Redraw()
         {
             if (ParentForm != null)
@@ -388,7 +390,7 @@ namespace Dendrite
                 //ctx.Graphics.DrawLine(Pens.Blue, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(0, 1000)));
 
 
-                if (Model != null)
+                if (Model != null && drawEnabled)
                 {
                     drawEdges();
                     drawNodes();
@@ -560,7 +562,7 @@ namespace Dendrite
                         ctx.Graphics.DrawString("Indicies = ", f, Brushes.Black, 5, 35);
                         ctx.Graphics.DrawString($"({string.Join("x", item.Attributes[0].IntData)})", f, Brushes.Black, 120, 35);
                     }
-                    
+
                 }
                 if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Gemm)
                 {
@@ -719,33 +721,41 @@ namespace Dendrite
                 MessageBox.Show("Unsupported file format.", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-
-            var model = fr.LoadFromFile(path);
-            Model = model;
-            if (!loadedModels.Any(z => z.ToLower() == path.ToLower()))
+            Action loadAct = () =>
             {
-                loadedModels.Add(path);
-            }
+                var model = fr.LoadFromFile(path);
+                Model = model;
+                if (!loadedModels.Any(z => z.ToLower() == path.ToLower()))
+                {
+                    loadedModels.Add(path);
+                }
 
-            listView1.Items.Clear();
+                listView1.Items.Clear();
 
-            foreach (var item in model.Nodes)
-            {
-                //listView1.Items.Add(new ListViewItem(new string[] { item.Name, ss, item.Output[0] }) { Tag = nodes[i] });
-            }
+                foreach (var item in model.Nodes)
+                {
+                    //listView1.Items.Add(new ListViewItem(new string[] { item.Name, ss, item.Output[0] }) { Tag = nodes[i] });
+                }
 
-            //var cnt2 = res2.Graph.Output[0].Name;
-            //nodes.InsertRange(0, res2.Graph.Input.Select(z => outs[z.Name]));
+                //var cnt2 = res2.Graph.Output[0].Name;
+                //nodes.InsertRange(0, res2.Graph.Input.Select(z => outs[z.Name]));
 
-            updateNodesSizes();
-            CurrentLayout.Layout(Model);
-            //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
-            if (ParentForm != null)
-            {
-                ParentForm.Text = Path.GetFileName(path);
-            }
+                updateNodesSizes();
+                CurrentLayout.Layout(Model);
+                //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
+                if (ParentForm != null)
+                {
+                    ParentForm.Text = Path.GetFileName(path);
+                }
+                drawEnabled = true;
+                fitAll();
+            };
+            drawEnabled = false;
+            WaitDialog wd = new WaitDialog();
+            wd.Init(loadAct);
+            wd.ShowDialog();
 
-            fitAll();
+
             return true;
         }
 
@@ -755,7 +765,7 @@ namespace Dendrite
             {
                 GraphNodeDrawInfo dd = new GraphNodeDrawInfo() { X = 0, Y = 0, Width = 300, Height = 100 };
                 item.DrawTag = dd;
-                if (item.LayerType == LayerType.Conv || item.LayerType == LayerType.Lstm || item.LayerType == LayerType.Gather || item.LayerType == LayerType.Batch || (item.LayerType == LayerType.MathOperation && item.Parents.Count < 2)|| item.LayerType == LayerType.Gemm)
+                if (item.LayerType == LayerType.Conv || item.LayerType == LayerType.Lstm || item.LayerType == LayerType.Gather || item.LayerType == LayerType.Batch || (item.LayerType == LayerType.MathOperation && item.Parents.Count < 2) || item.LayerType == LayerType.Gemm)
                 {
                     item.DrawHeader = true;
                 }
@@ -908,12 +918,15 @@ namespace Dendrite
         {
             CurrentLayout = new TableGraphLayout();
             CurrentLayout.Layout(Model);
+            fitAll();
+
         }
 
         private void simpleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CurrentLayout = new SimpleGraphLayout();
             CurrentLayout.Layout(Model);
+            fitAll();
 
         }
 
@@ -933,7 +946,11 @@ namespace Dendrite
         private void dagreToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CurrentLayout = new DagreGraphLayout();
-            CurrentLayout.Layout(Model);
+            WaitDialog wd = new WaitDialog();
+            drawEnabled = false;
+            wd.Init(() => { CurrentLayout.Layout(Model);drawEnabled = true;  });
+            wd.ShowDialog();
+            fitAll();
         }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dagre
 {
@@ -9,9 +10,32 @@ namespace Dagre
         Dictionary<string, object> dic = new Dictionary<string, object>();
         bool _isFreezed;
 
-        public ICollection<string> Keys => dic.Keys;
 
-        public ICollection<object> Values => dic.Values;
+        //public ICollection<string> Keys => dic.Keys;
+        public ICollection<string> Keys
+        {
+            get
+            {
+                var l = orderedList.Select(z => z.Key).ToList();
+                var dgts = l.Where(z => z.All(char.IsDigit)).Where(z => (int.Parse(z) + "") == z).OrderBy(int.Parse).ToArray();
+                l = dgts.Union(l.Except(dgts)).ToList();
+                return l;
+            }
+        }
+
+        public ICollection<object> Values {
+            get
+            {
+
+                List<object> ret = new List<object>();
+                foreach (var item in Keys)
+                {
+                    ret.Add(dic[item]);
+                }
+                return ret.ToArray();
+            }
+        
+        }
 
         public int Count => dic.Count;
 
@@ -20,7 +44,10 @@ namespace Dagre
         public object this[string key]
         {
             get => dic[key];
-            set => dic[key] = value;
+            set
+            {
+                AddOrUpdate(key, value);
+            }
         }
         public void Freeze()
         {
@@ -32,11 +59,19 @@ namespace Dagre
             if (dic.ContainsKey(key))
             {
                 dic[key] = val;
+                var fr = orderedList.First(z => z.Key == key);
+                var ind1 = orderedList.IndexOf(fr);
+                orderedList.Remove(fr);
+                orderedList.Insert(ind1, new KeyValuePair<string, object>(key, val));
+
                 return;
             }
             dic.Add(key, val);
+            orderedList.Add(new KeyValuePair<string, object>(key, val));
+            if (dic.Keys.Count != orderedList.Count) throw new DagreException();
         }
 
+        List<KeyValuePair<string, object>> orderedList = new List<KeyValuePair<string, object>>();
         public override string ToString()
         {
             return $"dic ({dic.Keys.Count})";
@@ -50,14 +85,18 @@ namespace Dagre
         public void Add(string key, object value)
         {
             if (_isFreezed) throw new DagreException("can't add to frozen object");
-
+            orderedList.Add(new KeyValuePair<string, object>(key, value));
             dic.Add(key, value);
+            if (dic.Keys.Count != orderedList.Count) throw new DagreException();
         }
 
         public bool Remove(string key)
         {
             if (_isFreezed) throw new DagreException("can't remove from frozen object");
-            return dic.Remove(key);
+            orderedList.RemoveAll(z => z.Key == key);
+            var ret = dic.Remove(key);
+            if (dic.Keys.Count != orderedList.Count) throw new DagreException();
+            return ret;
         }
 
         public bool TryGetValue(string key, out object value)
@@ -67,12 +106,16 @@ namespace Dagre
 
         public void Add(KeyValuePair<string, object> item)
         {
-            dic.Add(item.Key,item.Value);
+            if (_isFreezed) return;
+            dic.Add(item.Key, item.Value);
+            orderedList.Add(new KeyValuePair<string, object>(item.Key, item.Value));
+            if (dic.Keys.Count != orderedList.Count) throw new DagreException();
         }
 
         public void Clear()
         {
-            throw new System.NotImplementedException();
+            dic.Clear();
+            orderedList.Clear();
         }
 
 
@@ -83,7 +126,7 @@ namespace Dagre
         }
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {            
+        {
             throw new System.NotImplementedException();
         }
 
@@ -94,7 +137,8 @@ namespace Dagre
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return dic.GetEnumerator();
+
         }
 
         IEnumerator IEnumerable.GetEnumerator()

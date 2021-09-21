@@ -32,6 +32,133 @@ namespace Dagre
             }
 
         }
+        public void CompareNodes(DagreGraph gr)
+        {
+            if (gr._nodeCount != _nodeCount) throw new DagreException();
+            if (_nodesRaw.Keys.Count != gr._nodesRaw.Keys.Count) throw new DagreException();
+            for (int i = 0; i < _nodesRaw.Keys.Count; i++)
+            {
+                var key1 = _nodesRaw.Keys.ToArray()[i];
+                if (!gr._nodesRaw.ContainsKey(key1)) throw new DagreException();
+            }
+            for (int i = 0; i < _nodesRaw.Keys.Count; i++)
+            {
+                var key1 = _nodesRaw.Keys.ToArray()[i];
+                //if (_nodesRaw.Keys.ToArray()[i] != gr._nodesRaw.Keys.ToArray()[i]) throw new DagreException();
+                if (!gr._nodesRaw.ContainsKey(key1)) throw new DagreException();
+                dynamic node1 = _nodesRaw[key1];
+                dynamic node2 = gr._nodesRaw[key1];
+
+                if (node1 is IDictionary<string, object>)
+                {
+                    continue;
+                    if (node1.Keys.Count != node2.Keys.Count) throw new DagreException();
+
+                    foreach (var key in node1.Keys)
+                    {
+                        dynamic val1 = node1[key];
+                        dynamic val2 = node2[key];
+                        if (val1 is IDictionary<string, object>)
+                        {
+
+                        }
+                        else
+                        {
+                            if (val1 is decimal || val2 is decimal)
+                            {
+                                if ((float)val1 != (float)val2) throw new DagreException();
+                            }
+                            else if (val1 != val2) throw new DagreException();
+                        }
+                    }
+                }
+                else
+                {
+                    if (node1 != node2) throw new DagreException();
+                }
+            }
+        }
+        public void CompareEdges(DagreGraph gr)
+        {
+            if (gr._edgeCount != _edgeCount) throw new DagreException();
+            if (_edgeObjs.Keys.Count != gr._edgeObjs.Keys.Count) throw new DagreException();
+            if (_edgeLabels.Keys.Count != gr._edgeLabels.Keys.Count) throw new DagreException();
+            for (int i = 0; i < _edgeLabels.Keys.Count; i++)
+            {
+                var key1 = _edgeLabels.Keys.ToArray()[i];
+                if (!gr._edgeLabels.ContainsKey(key1)) throw new DagreException();
+            }
+            for (int i = 0; i < _edgeLabels.Keys.Count; i++)
+            {
+                var key1 = _edgeLabels.Keys.ToArray()[i];
+                if (!gr._edgeLabels.ContainsKey(key1)) throw new DagreException();
+
+                dynamic edge1 = _edgeLabels[key1];
+                dynamic edge2 = gr._edgeLabels[key1];
+                if (edge1 is IDictionary<string, object>)
+                {
+                    if (edge1.Keys.Count != edge2.Keys.Count) throw new DagreException();
+                    foreach (var key in edge1.Keys)
+                    {
+                        dynamic val1 = edge1[key];
+                        dynamic val2 = edge2[key];
+
+                        if (val1 is IEnumerable<object> || val2 is IEnumerable<object>)
+                        {
+                            int index = 0;
+                            foreach (var item in val1)
+                            {
+                                var second = val2[index++];
+                                if (item is IDictionary<string, object>)
+                                {
+                                    foreach (var zitem in item)
+                                    {
+                                        var key2 = zitem.Key;
+                                        if (!second.ContainsKey(key2)) throw new DagreException("wrong");
+                                        if (zitem.Value is float || zitem.Value is decimal)
+                                        {
+                                            if ((float)zitem.Value != (float)second[key2]) throw new DagreException("wrong");
+                                        }
+                                        else
+                                        if (zitem.Value != second[key2]) throw new DagreException("wrong");
+                                    }
+                                }
+
+                            }
+                        }
+                        else if (val2 is decimal || val1 is decimal)
+                        {
+                            if ((float)val1 != (float)val2) throw new DagreException();
+                        }
+                        else
+                        if (val1 != val2) throw new DagreException();
+                    }
+                }
+                else
+                {
+                    if (edge1 != edge2) throw new DagreException();
+
+                }
+
+            }
+            for (int i = 0; i < _edgeObjs.Keys.Count; i++)
+            {
+                var key1 = _edgeObjs.Keys.ToArray()[i];
+                if (!gr._edgeObjs.ContainsKey(key1)) throw new DagreException();
+
+                //if (_edgeLabels.Keys.ToArray()[i] != gr._edgeLabels.Keys.ToArray()[i]) throw new DagreException();
+                dynamic edge1 = _edgeObjs[key1];
+                dynamic edge2 = gr._edgeObjs[key1];
+                if (edge1.Keys.Count != edge2.Keys.Count) throw new DagreException();
+                foreach (var key in edge1.Keys)
+                {
+                    dynamic val1 = edge1[key];
+                    dynamic val2 = edge2[key];
+                    if (val1 != val2) throw new DagreException();
+                }
+
+            }
+        }
         public bool Compare(DagreGraph gr)
         {
             ClearNulls();
@@ -274,14 +401,41 @@ namespace Dagre
 
             }
             if (!DagreLabel.Compare(_label, gr._label)) throw new DagreException();
-
-
+            var a1 = gr.nodes();
+            var a2 = nodes();
+            for (int i = 0; i < a1.Length; i++)
+            {
+                var res1 = a1[i];
+                var res2 = a2[i];
+                for (int j = 0; j < res1.Length; j++)
+                {
+                    if (res1[j] != res2[j])
+                    {
+                        throw new DagreException();
+                    }
+                }
+            }
             for (int i = 0; i < _nodesRaw.Keys.Count; i++)
             {
                 var key = _nodesRaw.Keys.ToArray()[i];
 
                 var res1 = gr.neighbors(key);
                 var res = neighbors(key);
+                for (int j = 0; j < res1.Length; j++)
+                {
+                    if (res1[j] != res[j])
+                    {
+                        throw new DagreException();
+                    }
+                }
+            }
+
+            for (int i = 0; i < _nodesRaw.Keys.Count; i++)
+            {
+                var key = _nodesRaw.Keys.ToArray()[i];
+
+                var res1 = gr.children(key);
+                var res = children(key);
                 for (int j = 0; j < res1.Length; j++)
                 {
                     if (res1[j] != res[j])
@@ -371,6 +525,8 @@ namespace Dagre
                                 dynamic lb = _label;
                                 if (dic.ContainsKey("ranksep"))
                                     lb.Add("ranksep", (int)dic["ranksep"]);
+                                if (dic.ContainsKey("maxrank"))
+                                    lb.Add("maxrank", (int)dic["maxrank"]);
                                 if (dic.ContainsKey("edgesep"))
                                     lb.Add("edgesep", (int)dic["edgesep"]);
                                 if (dic.ContainsKey("nodesep"))
@@ -500,6 +656,104 @@ namespace Dagre
             }
             ClearNulls();
         }
+
+        public void UpdateAttributeEdgesTo(DagreGraph gr)
+        {
+            if (gr._edgeCount != _edgeCount) throw new DagreException();
+            if (_edgeLabels.Keys.Count != gr._edgeLabels.Keys.Count) throw new DagreException();
+            for (int i = 0; i < _edgeLabels.Keys.Count; i++)
+            {
+                var key1 = _edgeLabels.Keys.ToArray()[i];
+                if (!gr._edgeLabels.ContainsKey(key1)) throw new DagreException();
+            }
+            for (int i = 0; i < _edgeLabels.Keys.Count; i++)
+            {
+                var key1 = _edgeLabels.Keys.ToArray()[i];
+                //if (_nodesRaw.Keys.ToArray()[i] != gr._nodesRaw.Keys.ToArray()[i]) throw new DagreException();
+                if (!gr._edgeLabels.ContainsKey(key1)) throw new DagreException();
+                dynamic node1 = _edgeLabels[key1];
+                dynamic node2 = gr._edgeLabels[key1];
+
+                if (node1 is IDictionary<string, object>)
+                {
+                    ((dynamic)gr._edgeLabels[key1]).Clear();
+                    //if (node1.Keys.Count != node2.Keys.Count) throw new DagreException();
+
+                    foreach (var key in node1.Keys)
+                    {
+                        dynamic val1 = node1[key];
+                        ((dynamic)gr._edgeLabels[key1]).Add(key, val1);
+                        continue;
+
+                        dynamic val2 = node2[key];
+                        if (val1 is IDictionary<string, object>)
+                        {
+
+                        }
+                        else
+                        {
+                            // if (val1 is decimal || val2 is decimal)
+                            // {
+                            //     if ((float)val1 != (float)val2) throw new DagreException();
+                            // }
+                            //else if (val1 != val2) throw new DagreException();
+                        }
+                    }
+                }
+                else
+                {
+                    gr._edgeLabels[key1] = node1;
+                }
+            }
+        }
+
+        public void UpdateAttributeNodesTo(DagreGraph gr)
+        {
+            if (gr._nodeCount != _nodeCount) throw new DagreException();
+            if (_nodesRaw.Keys.Count != gr._nodesRaw.Keys.Count) throw new DagreException();
+            for (int i = 0; i < _nodesRaw.Keys.Count; i++)
+            {
+                var key1 = _nodesRaw.Keys.ToArray()[i];
+                if (!gr._nodesRaw.ContainsKey(key1)) throw new DagreException();
+            }
+            for (int i = 0; i < _nodesRaw.Keys.Count; i++)
+            {
+                var key1 = _nodesRaw.Keys.ToArray()[i];
+                //if (_nodesRaw.Keys.ToArray()[i] != gr._nodesRaw.Keys.ToArray()[i]) throw new DagreException();
+                if (!gr._nodesRaw.ContainsKey(key1)) throw new DagreException();
+                dynamic node1 = _nodesRaw[key1];
+                dynamic node2 = gr._nodesRaw[key1];
+                gr._nodesRaw[key1] = node1;
+                if (node1 is IDictionary<string, object>)
+                {
+                    continue;
+                    //if (node1.Keys.Count != node2.Keys.Count) throw new DagreException();
+
+                    foreach (var key in node1.Keys)
+                    {
+                        dynamic val1 = node1[key];
+                        dynamic val2 = node2[key];
+                        if (val1 is IDictionary<string, object>)
+                        {
+
+                        }
+                        else
+                        {
+                            // if (val1 is decimal || val2 is decimal)
+                            // {
+                            //     if ((float)val1 != (float)val2) throw new DagreException();
+                            // }
+                            //else if (val1 != val2) throw new DagreException();
+                        }
+                    }
+                }
+                else
+                {
+                    if (node1 != node2) throw new DagreException();
+                }
+            }
+        }
+
         public string[] nodes()
         {
             return nodesRaw();
@@ -509,7 +763,7 @@ namespace Dagre
             return _nodesRaw.Keys.ToArray();
         }
 
-        public Dictionary<string, object> _nodesRaw = new Dictionary<string, object>();
+        public JavaScriptLikeObject _nodesRaw = new JavaScriptLikeObject();
 
         object _label = new JavaScriptLikeObject();
         public dynamic graph() { return _label; }
@@ -626,19 +880,19 @@ namespace Dagre
             if (_predecessors.ContainsKey(v))
             {
                 string[] ret = null;
-                if (!PreserveOrder)
+                //if (!PreserveOrder)
                 {
-                    ret = _predecessors[v].Keys.ToArray();
-                    var dgts = ret.Where(z => z.All(char.IsDigit)).ToArray();
+                    ret = (((dynamic)_predecessors[v]).Keys as ICollection<string>).ToArray();
+                    /*var dgts = ret.Where(z => z.All(char.IsDigit)).ToArray();
                     Array.Sort(dgts, (x, y) => int.Parse(x) - int.Parse(y));
                     var remains = ret.Except(dgts).ToArray();
                     Array.Sort(remains, (x, y) => string.CompareOrdinal(x, y));
-                    ret = dgts.Union(remains).ToArray();
+                    ret = dgts.Union(remains).ToArray();*/
                     return ret;
                 }
 
-                var predsV = _predecessors[v];
-                return predsV.Keys.ToArray();
+                //var predsV = _predecessors[v];
+                //return predsV.Keys.ToArray();
 
 
             }
@@ -691,8 +945,8 @@ namespace Dagre
                  };
                 decrementOrRemoveEntry(this._predecessors[(string)w], v);
                 decrementOrRemoveEntry(this._successors[(string)v], w);
-                _in[(string)w].Remove(key);
-                _out[(string)v].Remove(key);
+                ((dynamic)_in[(string)w]).Remove(key);
+                ((dynamic)_out[(string)v]).Remove(key);
                 this._edgeCount--;
             }
             return this;
@@ -788,8 +1042,8 @@ namespace Dagre
             };
             incrementOrInitEntry(this._predecessors[(string)w], v);
             incrementOrInitEntry(this._successors[(string)v], w);
-            _in[(string)w][(string)e] = edgeObj;
-            _out[(string)v][(string)e] = edgeObj;
+            (((dynamic)_in[(string)w])[(string)e]) = edgeObj;
+            (((dynamic)_out[(string)v])[(string)e]) = edgeObj;
             _edgeCount++;
             return this;
 
@@ -806,7 +1060,7 @@ namespace Dagre
                 {
                     return false;
                 }
-                return _in[v].Count == 0;
+                return ((dynamic)_in[v]).Count == 0;
             }).ToArray();
         }
 
@@ -828,7 +1082,7 @@ namespace Dagre
             return edgeRaw(args) != null;
         }
 
-        public Dictionary<string, object> _edgeObjs = new Dictionary<string, object>();
+        public JavaScriptLikeObject _edgeObjs = new JavaScriptLikeObject();
 
         private Func<object, object, object, object> _defaultEdgeLabelFn;
 
@@ -847,8 +1101,8 @@ namespace Dagre
         {
             if (_successors.ContainsKey(v))
             {
-                var sucsV = _successors[v];
-                return sucsV.Keys.ToArray();
+                dynamic sucsV = _successors[v];
+                return (sucsV.Keys as ICollection<string>).ToArray();
             }
             return null;
         }
@@ -864,7 +1118,19 @@ namespace Dagre
                 if (_children.ContainsKey(v as string))
                 {
                     var children = _children[v as string] as IDictionary<string, object>;
-                    return children.Keys.ToArray();
+                    var ret = children.Keys.ToArray();
+
+                    //   if (PreserveOrder)
+                    {
+                        return ret.ToArray();
+                    }
+                    var dgts = ret.Where(z => z.All(char.IsDigit)).ToArray();
+                    Array.Sort(dgts, (x, y) => int.Parse(x) - int.Parse(y));
+                    var remains = ret.Except(dgts).ToArray();
+                    Array.Sort(remains, (x, y) => string.CompareOrdinal(x, y));
+                    ret = dgts.Union(remains).ToArray();
+                    return ret.ToArray();
+
                 }
 
             }
@@ -885,7 +1151,7 @@ namespace Dagre
         {
             if (_out.ContainsKey(v))
             {
-                var outV = _out[v].Values.ToArray();
+                var outV = (((dynamic)_out[v]).Values as ICollection<object>).ToArray();
                 if (outV != null && outV.Any())
                 {
                     if (w == null)
@@ -993,7 +1259,7 @@ namespace Dagre
                     }
                     _children.Remove(v);
                 }
-                var keys2 = _in[v].Keys.ToArray();
+                var keys2 = (((dynamic)_in[v]).Keys as ICollection<string>).ToArray();
                 foreach (var e in keys2)
                 {
                     this.removeEdge(new object[] { this._edgeObjs[e] });
@@ -1001,7 +1267,7 @@ namespace Dagre
                 _in.Remove(v);
                 _predecessors.Remove(v);
 
-                var keys = _out[v].Keys.ToArray();
+                var keys = (((dynamic)_out[v]).Keys as ICollection<string>).ToArray();
                 foreach (var e in keys)
                 {
                     this.removeEdge(new object[] { this._edgeObjs[e] });
@@ -1027,7 +1293,7 @@ namespace Dagre
             Dictionary<string, object> inV = null;
             if (_in.ContainsKey(v))
             {
-                inV = _in[v];
+                inV = (dynamic)_in[v];
                 var edges = inV.Values.ToArray();
                 if (u == null)
                 {
@@ -1152,14 +1418,14 @@ namespace Dagre
 
 
 
-        public Dictionary<string, object> _children = new Dictionary<string, object>();
-        public Dictionary<string, Dictionary<string, object>> _predecessors = new Dictionary<string, Dictionary<string, object>>();
-        public Dictionary<string, Dictionary<string, object>> _successors = new Dictionary<string, Dictionary<string, object>>();
-        public Dictionary<string, Dictionary<string, object>> _in = new Dictionary<string, Dictionary<string, object>>();
-        public Dictionary<string, Dictionary<string, object>> _out = new Dictionary<string, Dictionary<string, object>>();
+        public JavaScriptLikeObject _children = new JavaScriptLikeObject();
+        public JavaScriptLikeObject _predecessors = new JavaScriptLikeObject();
+        public JavaScriptLikeObject _successors = new JavaScriptLikeObject();
+        public JavaScriptLikeObject _in = new JavaScriptLikeObject();
+        public JavaScriptLikeObject _out = new JavaScriptLikeObject();
         public static object GRAPH_NODE = "undefined";
 
-        public Dictionary<string, object> _parent = new Dictionary<string, object>();
+        public JavaScriptLikeObject _parent = new JavaScriptLikeObject();
         internal object parent(string v)
         {
             if (_isCompound)

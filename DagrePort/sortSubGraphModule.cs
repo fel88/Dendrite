@@ -67,6 +67,7 @@ namespace Dagre
 
             if (bl != null)
             {
+                throw new NotImplementedException();
                 /*movable.Where(z => z != bl && z != br);
                 movable = _.filter(movable, function(w) {
                     return w !== bl && w !== br;
@@ -137,9 +138,9 @@ namespace Dagre
                     result.weight += 2;
                 }
             }
-            var ar1 = (result["vs"] as List<object>);
+            /*var ar1 = (result["vs"] as List<object>);
             ar1.Sort((x, y) => string.CompareOrdinal((string)x, (string)y));
-            result["vs"] = ar1;
+            result["vs"] = ar1;*/
             return result;
         }
         public static dynamic consumeUnsortable(dynamic vs, dynamic unsortable, dynamic index)

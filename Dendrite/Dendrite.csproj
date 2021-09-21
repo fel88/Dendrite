@@ -428,6 +428,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TorchScriptModelProvider.cs" />
     <Compile Include="Preprocessors\ZeroImagePreprocessor.cs" />
+    <Compile Include="WaitDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WaitDialog.Designer.cs">
+      <DependentUpon>WaitDialog.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="ArrayComparer.resx">
       <DependentUpon>ArrayComparer.cs</DependentUpon>
     </EmbeddedResource>
@@ -504,6 +510,9 @@
       <DependentUpon>TextEnterDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="JsonsDebug\Espnet\beforeRankInitCutValues.tree.txt" />
+    <EmbeddedResource Include="WaitDialog.resx">
+      <DependentUpon>WaitDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -732,6 +741,54 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="JsonsDebug\1x1\beforeExchangeChangesInitLowLim0.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\beforeRunLayout.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\afterRank.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\afterPosition.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\beforePosition.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\beforeOrder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\afterOrder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\downLayerGraphs.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample2\upLayerGraphs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\afterAssignOrder1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\afterSweep1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\beforeRank.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\beforeNormalize.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\afterNormalize.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\beforeAssignOrder2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample2\beforeSmallest.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample2\afterPositionAsNonCompound.txt" />
+    <Content Include="JsonsDebug\sample2\beforeAssignOrder2Best.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample2\xss1.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample2\smallestWidth1.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample2\beforeBalance1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

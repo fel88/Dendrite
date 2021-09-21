@@ -419,11 +419,13 @@ namespace Dagre
             double maxY = 0;
             var graphLabel = g.graph();
             dynamic marginX = 0;
-            if (graphLabel.ContainsKey("marginx")){
+            if (graphLabel.ContainsKey("marginx"))
+            {
                 marginX = graphLabel["marginx"];
             }
             dynamic marginY = 0;
-            if (graphLabel.ContainsKey("marginy")){
+            if (graphLabel.ContainsKey("marginy"))
+            {
                 marginY = graphLabel["marginy"];
             }
 
@@ -542,6 +544,10 @@ namespace Dagre
         public static void position(DagreGraph g)
         {
             g = util.asNonCompoundGraph(g);
+
+            if (util.DebugCompareEnabled)
+                if (util.HasResource("sample2.afterPositionAsNonCompound.txt"))
+                    if (!DagreGraph.FromJson(util.ReadResourceTxt("sample2.afterPositionAsNonCompound.txt")).Compare(g)) throw new DagreException("wrong");
 
             dynamic layering = util.buildLayerMatrix(g);
             var rankSep = g.graph()["ranksep"];

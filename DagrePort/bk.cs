@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web.Script.Serialization;
 
 namespace Dagre
 {
@@ -86,18 +87,18 @@ namespace Dagre
         public static dynamic entries(dynamic oo)
         {
             dynamic ret = new List<object>();
-            foreach (var item in oo)
+            foreach (var item in oo.Keys)
             {
-                ret.Add(new object[] { item.Key, item.Value });
+                ret.Add(new object[] { item, oo[item] });
             }
             return ret;
         }
         public static dynamic keys(dynamic oo)
         {
             dynamic ret = new List<object>();
-            foreach (var item in oo)
+            foreach (var item in oo.Keys)
             {
-                ret.Add(item.Key);
+                ret.Add(item);
 
             }
             return ret;
@@ -174,7 +175,7 @@ namespace Dagre
 
 
         }
-     
+
 
         public static dynamic horizontalCompaction(DagreGraph g, dynamic layering, dynamic root, dynamic align, bool reverseSep)
         {
@@ -186,9 +187,9 @@ namespace Dagre
             dynamic xs = new JavaScriptLikeObject();
             //if (!DagreGraph.FromJson(util.ReadResourceTxt("beforeHorizontalCompaction.txt")).Compare(g)) throw new DagreException("wrong");
 
-            
+
             DagreGraph blockG = buildBlockGraph(g, layering, root, reverseSep) as DagreGraph;
-           // if (!DagreGraph.FromJson(util.ReadResourceTxt("blockGtemp1.txt")).Compare(blockG)) throw new DagreException("wrong");
+            // if (!DagreGraph.FromJson(util.ReadResourceTxt("blockGtemp1.txt")).Compare(blockG)) throw new DagreException("wrong");
 
             var borderType = reverseSep ? "borderLeft" : "borderRight";
             Action<dynamic, dynamic> iterate = (setXsFunc, nextNodesFunc) =>
@@ -338,9 +339,9 @@ namespace Dagre
             {
                 foreach (dynamic v in keys(xss["ul"]))
                 {
-                    dynamic xs = new[] { xss["ul"][v], xss["ur"][v], xss["dl"][v], xss["dr"][v] };
-                    //xs=xs.sort((a, b) => a - b);
-                    value[v] = (xs[1] + xs[2]) / 2;
+                    var xs = new float[] { xss["ul"][v], xss["ur"][v], xss["dl"][v], xss["dr"][v] };
+                    Array.Sort(xs, (a, b) => a.CompareTo(b));
+                    value[v] = (xs[1] + xs[2]) / 2f;
                 }
             }
             return value;
@@ -479,8 +480,9 @@ namespace Dagre
                     xss[vert + horiz] = xs;
                 }
             }
-
-
+            if (util.DebugCompareEnabled)
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforeSmallest"))
+                DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeSmallest")).Compare(g);
             dynamic smallestWidth = findSmallestWidthAlignment(g, xss);
 
             alignCoordinates(xss, smallestWidth);
@@ -489,6 +491,60 @@ namespace Dagre
             {
                 _align = g.graph()["align"];
             }
+            if (util.DebugCompareEnabled)
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforeBalance1"))
+                DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeBalance1")).Compare(g);
+            if (util.DebugCompareEnabled)
+                if (util.HasResource($"{util.DebugResourcesPrefix}xss1"))
+            {
+                JavaScriptSerializer jss = new JavaScriptSerializer();
+
+                var des = jss.Deserialize<dynamic>(util.ReadResourceTxt($"{util.DebugResourcesPrefix}xss1"));
+
+                foreach (var item in des)
+                {
+                    var v1 = item.Value;
+                    var v2 = xss[item.Key];
+
+                    if (v1 is IDictionary<string, object>)
+                    {
+                        foreach (var key1 in v1.Keys)
+                        {
+                            dynamic ee1 = v1[key1];
+                            dynamic ee2 = v2[key1];
+                            if (ee1 != ee2) throw new DagreException();
+                        }
+                    }
+                    else { if (v1 != v2) throw new DagreException(); }
+
+                }
+            }
+            if (util.DebugCompareEnabled)
+                if (util.HasResource($"{util.DebugResourcesPrefix}smallestWidth1"))
+            {
+                JavaScriptSerializer jss = new JavaScriptSerializer();
+
+                var des = jss.Deserialize<dynamic>(util.ReadResourceTxt($"{util.DebugResourcesPrefix}smallestWidth1"));
+
+                foreach (var item in des)
+                {
+                    var v1 = item.Value;
+                    var v2 = smallestWidth[item.Key];
+
+                    if (v1 is IDictionary<string, object>)
+                    {
+                        foreach (var key1 in v1.Keys)
+                        {
+                            dynamic ee1 = v1[key1];
+                            dynamic ee2 = v2[key1];
+                            if (ee1 != ee2) throw new DagreException();
+                        }
+                    }
+                    else { if (v1 != v2) throw new DagreException(); }
+
+                }
+            }
+
             return balance(xss, _align);
         }
         public static bool hasConflict(dynamic conflicts, dynamic v, dynamic w)

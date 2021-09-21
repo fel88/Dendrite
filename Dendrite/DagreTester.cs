@@ -51,10 +51,12 @@ namespace Dendrite
                 pen1.CustomEndCap = bigArrow;
                 //gr.DrawLines(pen1, rr.ToArray());
                 var curve = new Curve(rr.ToArray());
-                
+
                 gr.DrawPath(pen1, curve.Path);
 
             }
+            int gap = 5;
+
             foreach (dynamic d in dg._nodesRaw)
             {
                 var xx = (float)d.Value["x"];
@@ -133,8 +135,7 @@ namespace Dendrite
                             gr.DrawPath(Pens.Black, path);
                         }
                     }
-                    int gap = 5;
-                    gr.DrawString(source.Name, SystemFonts.DefaultFont, fr, new RectangleF(xx - ww / 2 + gap, yy - hh / 2 + gap, ww - gap * 2, hh - gap * 2));
+                    gr.DrawString($"({d.Key}): {source.Name}", SystemFonts.DefaultFont, fr, new RectangleF(xx - ww / 2 + gap, yy - hh / 2 + gap, ww - gap * 2, hh - gap * 2));
                 }
                 else
                 {
@@ -161,6 +162,8 @@ namespace Dendrite
                         }
 
                     }
+                    gr.DrawString(d.Key + "", SystemFonts.DefaultFont, Brushes.White, new RectangleF(xx - ww / 2 + gap, yy - hh / 2 + gap, ww - gap * 2, hh - gap * 2));
+
                 }
 
             }
@@ -421,17 +424,21 @@ namespace Dendrite
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "onnx|*.onnx";
+            DagreLayout dl = new DagreLayout();
 
             if (ofd.ShowDialog() != DialogResult.OK) return;
             DagreGraph dg1 = DagreGraph.FromJson(ReadResourceTxt("Mnist_1.start.txt"));
+            //dl.runLayout(dg1);
+          //  var bmp1 = DagreTester.DrawGraph(dg1);
+          //  Clipboard.SetImage(bmp1);
 
-            DagreLayout dl = new DagreLayout();
             var p = new OnnxModelProvider();
             var g = p.LoadFromFile(ofd.FileName);
             g.Nodes = g.Nodes.Where(z => z.LayerType != LayerType.Constant && (z.Childs.Any() || z.Parent != null || z.Parents.Any())).ToArray();
 
             DagreGraph dg = new DagreGraph(true);
-            var list1 = g.Nodes.ToList();
+            var list1 = g.Nodes.ToList().Where(z => z.LayerType != LayerType.Input && z.LayerType != LayerType.Output).ToList();
+            list1 = list1.Union(g.Nodes.Where(z => z.LayerType == LayerType.Input || z.LayerType == LayerType.Output)).ToList();
             foreach (var gg in list1)
             {
                 //if (gg.Childs.Count == 0 && gg.Parent == null) continue;
@@ -503,7 +510,7 @@ namespace Dendrite
             dg.graph()["nodesep"] = 25;
             dg.graph()["rankdir"] = "tb";
             //dg._isMultigraph = true;
-            //dg.Compare(dg1);
+
             var edge1 = dg.edge(dg.edges()[0]);
             var edge2 = dg1.edge(dg1.edges()[0]);
             foreach (var item in dg1.edges())
@@ -512,10 +519,29 @@ namespace Dendrite
                 edge["width"] = 0;
                 edge["height"] = 0;
             }
+            dg.CompareNodes(dg1);
+            dg.CompareEdges(dg1);
+            //dg.Compare(dg1);
+            dg1.UpdateAttributeNodesTo(dg);
+            dg1.UpdateAttributeEdgesTo(dg);
+            dl.runLayout(dg);
+            var bmp = DrawGraph(dg);
+            dl = new DagreLayout();
             dl.runLayout(dg1);
-            var bmp = DrawGraph(dg1);
+
+            var bmp2 = DrawGraph(dg1);
+            bmp = VerticalStack(bmp, bmp2);
             Clipboard.SetImage(bmp);
             dg = dg1;
+        }
+        public static Bitmap VerticalStack(Bitmap bmp1,Bitmap bmp2)
+        {
+            Bitmap ret = new Bitmap(bmp1.Width + bmp2.Width, Math.Max(bmp1.Height, bmp2.Height));
+            var gr = Graphics.FromImage(ret);
+            gr.Clear(Color.White);
+            gr.DrawImage(bmp1, 0, 0);
+            gr.DrawImage(bmp2, bmp1.Width, 0);
+            return ret;
         }
         public static void Test9()
         {
@@ -567,7 +593,7 @@ namespace Dendrite
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeOrder.txt")).Compare(dg)) throw new DagreException("wrong");
             order._order(dg);
-          //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+            //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
 
             dl.insertSelfEdges(dg);
 
@@ -575,25 +601,112 @@ namespace Dendrite
             //if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
 
             DagreLayout.position(dg);
-          //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterPosition.txt")).Compare(dg)) throw new DagreException("wrong");
+            //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterPosition.txt")).Compare(dg)) throw new DagreException("wrong");
 
             DagreLayout.positionSelfEdges(dg);
             DagreLayout.removeBorderNodes(dg);
 
-           // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.undo(dg);
-          //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+            //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             DagreLayout.fixupEdgeLabelCoords(dg);
 
-          //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterFixupEdgeLabels.txt")).Compare(dg)) throw new DagreException("wrong");
+            //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterFixupEdgeLabels.txt")).Compare(dg)) throw new DagreException("wrong");
 
             coordinateSystem.undo(dg);
-           // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
 
             DagreLayout.translateGraph(dg);
-           // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.assignNodeIntersects(dg);
+            DagreLayout.reversePointsForReversedEdges(dg);
+            acyclic.undo(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterAcyclicUndo.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
+        }
+        public static void Test10()
+        {            
+            var dl = new DagreLayout();
+            DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("sample2.beforeRunLayout.txt"));
+            util.DebugCompareEnabled = true;
+            util.DebugResourcesPrefix = "sample2.";
+            dl.makeSpaceForEdgeLabels(dg);
+
+            dl.removeSelfEdges(dg);
+            acyclic.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            nestingGraph.run(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("Espnet.beforeAsNonCompoundGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var ncg = util.asNonCompoundGraph(dg);
+
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
+            dl.rank(ncg);
+
+
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.afterRank.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.injectEdgeLabelProxies(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRemoveEmptyRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.removeEmptyRanks(dg);
+            nestingGraph.cleanup(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterCleanup.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            util.normalizeRanks(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.assignRankMinMax(dg);
+
+            dl.removeEdgeLabelProxies(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+            normalize.run(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.afterNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            parentDummyChains._parentDummyChains(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterParentDummies.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            addBorderSegments._addBorderSegments(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.beforeOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+            order._order(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            dl.insertSelfEdges(dg);
+
+            coordinateSystem.adjust(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.position(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("sample2.afterPosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.positionSelfEdges(dg);
+            DagreLayout.removeBorderNodes(dg);
+
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.undo(dg);
+            //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.fixupEdgeLabelCoords(dg);
+
+            //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterFixupEdgeLabels.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            coordinateSystem.undo(dg);
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.translateGraph(dg);
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
 
             DagreLayout.assignNodeIntersects(dg);
             DagreLayout.reversePointsForReversedEdges(dg);
@@ -691,11 +804,11 @@ namespace Dendrite
         }
         public static void Test7()
         {
-            var dl = new DagreLayout(); 
+            var dl = new DagreLayout();
             util.DebugCompareEnabled = true;
             util.DebugResourcesPrefix = "1x1.";
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt($"{util.DebugResourcesPrefix}beforeRunLayout.txt"));
-      
+
             dl.makeSpaceForEdgeLabels(dg);
 
             dl.removeSelfEdges(dg);

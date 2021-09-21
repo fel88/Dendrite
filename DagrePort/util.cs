@@ -179,7 +179,7 @@ namespace Dagre
             //var layering = _.map(_.range(maxRank(g) + 1), function() { return []; });
 
             var nd = g.nodes();
-            Array.Sort(nd, (x, y) => string.CompareOrdinal(x, y));
+            //Array.Sort(nd, (x, y) => string.CompareOrdinal(x, y));
             foreach (var v in nd)
             {
                 var node = g.node(v);

@@ -24,7 +24,7 @@ namespace Dagre
          */
         public static void run(DagreGraph g)
         {
-            g.graph()["dummyChains"] = new System.Collections.Generic.List<string>();
+            g.graph()["dummyChains"] = new List<string>();
             foreach (var edge in g.edgesRaw())
             {
                 normalizeEdge(g, edge);

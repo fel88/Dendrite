@@ -10,6 +10,7 @@ namespace Dendrite.Layouts
     {
         public override bool FlashHoveredRelatives { get; set; } = false;
         public override bool DrawHeadersAllowed { get; set; } = true;
+        public override bool EdgesDrawAllowed { get; set; } = true;
 
         void updateNodesSizes(GraphModel model)
         {
@@ -150,7 +151,6 @@ namespace Dendrite.Layouts
             List<EdgeNode> enodes = new List<EdgeNode>();
             foreach (var item in dg.edges())
             {
-
                 var edge = dg.edge(item);
                 var src = edge["source"];
                 dynamic pnts = edge["points"];

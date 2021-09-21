@@ -47,15 +47,17 @@ namespace Dagre
             {
                 if (util.HasResource($"{util.DebugResourcesPrefix}downLayerGraphs"))
                 {
-                    var ret1 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.downLayerGraphs"));
-                    var ret2 = DagreGraph.FromJsonArray(util.ReadResourceTxt("Mnist_1.upLayerGraphs"));
+                    var ret1 = DagreGraph.FromJsonArray(util.ReadResourceTxt($"{util.DebugResourcesPrefix}downLayerGraphs"));
+                    var ret2 = DagreGraph.FromJsonArray(util.ReadResourceTxt($"{util.DebugResourcesPrefix}upLayerGraphs"));
 
                     for (int i = 0; i < ret1.Length; i++)
                     {
+                        ret1[i].PreserveOrder = true;
                         ret1[i].Compare(((dynamic)downLayerGraphs[i]));
                     }
                     for (int i = 0; i < ret2.Length; i++)
                     {
+                        ret1[i].PreserveOrder = true;
                         ret2[i].Compare(((dynamic)upLayerGraphs[i]));
                     }
                 }
@@ -67,7 +69,7 @@ namespace Dagre
             {
                 if (util.HasResource($"{util.DebugResourcesPrefix}afterAssignOrder1"))
                 {
-                    var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.afterAssignOrder1"));
+                    var ret1 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterAssignOrder1"));
                     ret1.Compare(g);
                 }
             }
@@ -93,7 +95,7 @@ namespace Dagre
                 {
                     if (util.HasResource($"{util.DebugResourcesPrefix}afterSweep" + (i + 1)))
                     {
-                        var ret1 = DagreGraph.FromJson(util.ReadResourceTxt("Mnist_1.afterSweep" + (i + 1)));
+                        var ret1 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterSweep" + (i + 1)));
                         ret1.Compare(g);
                     }
                 }
@@ -134,6 +136,17 @@ namespace Dagre
 
         }
 
+        public static string[] reorderKeys(string[] ret)
+        {
+           
+            var dgts = ret.Where(z => z.All(char.IsDigit)).ToArray();
+            Array.Sort(dgts, (x, y) => int.Parse(x) - int.Parse(y));
+            var remains = ret.Except(dgts).ToArray();
+            Array.Sort(remains, (x, y) => string.CompareOrdinal(x, y));
+            ret = dgts.Union(remains).ToArray();
+            return ret;
+        }
+
         public static void sweepLayerGraphs(object[] layerGraphs, bool biasRight)
         {
             var cg = new DagreGraph(false);
@@ -141,7 +154,9 @@ namespace Dagre
             {
                 var root = (lg as DagreGraph).graph()["root"];
                 var sorted = sortSubGraphModule.sortSubraph(lg as DagreGraph, root, cg, biasRight);
-                var vs = sorted["vs"];
+                var vs = sorted["vs"] as List<object>;
+              /*  vs=reorderKeys(vs.Cast<string>().ToArray()).Cast<object>().ToList();
+                sorted["vs"] = vs;*/
                 var length = vs.Count;
                 for (var i = 0; i < length; i++)
                 {
