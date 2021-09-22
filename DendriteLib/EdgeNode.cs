@@ -18,7 +18,7 @@ namespace Dendrite
         public PointF[] Points;
         Curve curve;
 
-        internal void Draw(DrawingContext ctx)
+        public void Draw(DrawingContext ctx)
         {
             var size = 4 * ctx.zoom;
             AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);

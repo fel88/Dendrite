@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dendrite", "Dendrite\Dendri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DagrePort", "DagrePort\DagrePort.csproj", "{B404BA6F-6334-46FB-B51A-AD235FFF3D85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DendriteLib", "DendriteLib\DendriteLib.csproj", "{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B404BA6F-6334-46FB-B51A-AD235FFF3D85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B404BA6F-6334-46FB-B51A-AD235FFF3D85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B404BA6F-6334-46FB-B51A-AD235FFF3D85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -86,8 +86,7 @@ namespace Dendrite.Layouts
             int ii = 0;
             updateNodesSizes(model);
 
-            DagreLayout dl = new DagreLayout();
-
+            
             model.Nodes = model.Nodes.Where(z => z.LayerType != LayerType.Constant && (z.Childs.Any() || z.Parent != null || z.Parents.Any())).ToArray();
 
             var list1 = model.Nodes.ToList();
@@ -95,7 +94,7 @@ namespace Dendrite.Layouts
             foreach (var gg in list1)
             {
                 var ind = list1.IndexOf(gg);
-                dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
+                dg.setNode(ind + "", new JavaScriptLikeObject());
                 var nd = dg.node(ind + "");
 
                 nd["source"] = gg;
@@ -123,14 +122,14 @@ namespace Dendrite.Layouts
                     jj.Add("labeloffset", 10);
                     jj.Add("labelpos", "r");
                     jj.Add("source", "r");
-                    dg.setEdgeRaw(new object[] { ind + "", list1.IndexOf(item) + "", jj });
+                    dg.setEdge(new object[] { ind + "", list1.IndexOf(item) + "", jj });
                 }
             }
             dg.graph()["ranksep"] = 20;
             dg.graph()["edgesep"] = 20;
             dg.graph()["nodesep"] = 25;
             dg.graph()["rankdir"] = "tb";
-            dl.runLayout(dg);
+            DagreLayout.runLayout(dg);
 
             //back
             for (int i = 0; i < model.Nodes.Length; i++)

@@ -1121,5 +1121,10 @@ namespace Dendrite
         {
             ShowFullNames = fullNamesToolStripMenuItem.Checked;
         }
+
+        private void exportAsImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

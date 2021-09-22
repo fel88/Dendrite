@@ -29,7 +29,7 @@ namespace Dendrite
         Action act;
         private void WaitDialog_Shown(object sender, EventArgs e)
         {
-            Thread th = new Thread(() => { act(); finished = true; Close(); });
+            Thread th = new Thread(() => { act(); finished = true; });            
             th.IsBackground = true;
             th.Start();
         }
@@ -44,6 +44,10 @@ namespace Dendrite
         {
             if (cnt == 100) { cnt = 0; }
             progressBar1.Value = cnt++;
+            if (finished)
+            {
+                Close();
+            }
         }
     }
 }

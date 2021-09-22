@@ -66,6 +66,7 @@
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.fullNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.exportAsImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -220,7 +221,8 @@
             this.toolStripSeparator1,
             this.recentToolStripMenuItem,
             this.toolStripSeparator2,
-            this.extractWeightsToZipToolStripMenuItem});
+            this.extractWeightsToZipToolStripMenuItem,
+            this.exportAsImageToolStripMenuItem});
             this.toolStripDropDownButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton3.Image")));
             this.toolStripDropDownButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton3.Name = "toolStripDropDownButton3";
@@ -405,6 +407,13 @@
             this.timer1.Interval = 50;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // exportAsImageToolStripMenuItem
+            // 
+            this.exportAsImageToolStripMenuItem.Name = "exportAsImageToolStripMenuItem";
+            this.exportAsImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.exportAsImageToolStripMenuItem.Text = "Export as image";
+            this.exportAsImageToolStripMenuItem.Click += new System.EventHandler(this.exportAsImageToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -465,6 +474,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton4;
         private System.Windows.Forms.ToolStripMenuItem fullNamesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAsImageToolStripMenuItem;
     }
 }
 
