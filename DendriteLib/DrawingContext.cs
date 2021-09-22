@@ -6,11 +6,25 @@ using System.Windows.Forms;
 
 namespace Dendrite
 {
-    public class DrawingContext
+    public class DrawingContext : IDrawingContext
     {
         public DrawingContext()
         {
 
+        }
+        public float Zoom
+        {
+            get
+            {
+                return zoom;
+            }
+        }
+        public PointF Shift
+        {
+            get
+            {
+                return new PointF(sx, sy);
+            }
         }
         public Bitmap Bmp
         {
@@ -100,7 +114,7 @@ namespace Dendrite
         }
 
         private void Box_MouseDown(object sender, MouseEventArgs e)
-        {            
+        {
             var pos = Box.PointToClient(Cursor.Position);
             var p = Transform(pos);
 
@@ -178,5 +192,7 @@ namespace Dendrite
             var test = Transform(new PointF(x, y));
 
         }
+        
     }
+
 }

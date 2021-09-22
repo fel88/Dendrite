@@ -115,6 +115,8 @@ namespace Dendrite
                             }
                             atr1.Floats = fff.ToList();
                             break;
+                        //case AttributeProto.Types.AttributeType.Graph:
+                           // break;
                         default:
                             throw new NotImplementedException();
                     }

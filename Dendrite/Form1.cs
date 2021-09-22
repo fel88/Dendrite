@@ -333,7 +333,7 @@ namespace Dendrite
         Font f = new Font("Arial", 18);
         Font f2 = new Font("Arial", 14);
         Brush textBrush = Brushes.Black;
-        private void drawEdges()
+        private void drawEdges(IDrawingContext ctx)
         {
             if (Model.Edges != null && CurrentLayout.EdgesDrawAllowed)
                 foreach (var item in Model.Edges)
@@ -350,7 +350,7 @@ namespace Dendrite
                     {
                         var dtag2 = citem.DrawTag as GraphNodeDrawInfo;
                         if (dtag2 == null) continue;
-                        var size = 6 * ctx.zoom;
+                        var size = 6 * ctx.Zoom;
                         AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);
                         Pen pen1 = new Pen(Color.Black);
                         pen1.CustomEndCap = bigArrow;
@@ -393,9 +393,9 @@ namespace Dendrite
 
                 if (Model != null && drawEnabled)
                 {
-                    drawEdges();
-                    drawNodes();
-                    drawLabels();
+                    drawEdges(ctx);
+                    drawNodes(ctx);
+                    drawLabels(ctx);
                 }
 
             }
@@ -406,7 +406,7 @@ namespace Dendrite
                 }));
         }
 
-        private void drawNodes()
+        private void drawNodes(IDrawingContext ctx)
         {
 
             foreach (var item in Model.Nodes)
@@ -419,7 +419,7 @@ namespace Dendrite
 
                 textBrush = Brushes.Black;
 
-                int cornerRadius = (int)(15 * ctx.zoom);
+                int cornerRadius = (int)(15 * ctx.Zoom);
                 Brush brush = Brushes.LightGray;
                 textBrush = Brushes.White;
                 switch (item.LayerType)
@@ -465,7 +465,7 @@ namespace Dendrite
                     textBrush = Brushes.Black;
                     if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
                     {
-                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
                         ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
                         ctx.Graphics.FillPath(Brushes.White, Helpers.HalfRoundedRect(headerRect, cornerRadius));
                         ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
@@ -473,17 +473,17 @@ namespace Dendrite
                     }
                     else
                     {
-                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightYellow);
+                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightYellow);
 
                     }
                 }
                 else if (CurrentLayout.FlashHoveredRelatives && item.Parents.Contains(hovered))
                 {
-                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightPink);
+                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightPink);
                 }
                 else if (CurrentLayout.FlashHoveredRelatives && item.Childs.Contains(hovered))
                 {
-                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightBlue);
+                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightBlue);
                 }
                 else
                 if (item == selected)
@@ -492,21 +492,21 @@ namespace Dendrite
 
                     if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
                     {
-                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
                         ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
                         ctx.Graphics.FillPath(Brushes.LightGreen, Helpers.HalfRoundedRect(headerRect, cornerRadius));
                         ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
                     }
                     else
                     {
-                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.zoom), Brushes.LightGreen);
+                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightGreen);
                     }
                 }
                 else
                 {
                     if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
                     {
-                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
                         ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
 
                         ctx.Graphics.FillPath(brush, Helpers.HalfRoundedRect(headerRect, cornerRadius));
@@ -528,7 +528,7 @@ namespace Dendrite
                 ctx.Graphics.ResetTransform();
                 var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Top + 10);
                 ctx.Graphics.TranslateTransform(sh.X, sh.Y);
-                ctx.Graphics.ScaleTransform(ctx.zoom, ctx.zoom);
+                ctx.Graphics.ScaleTransform(ctx.Zoom, ctx.Zoom);
                 //ctx.Graphics.DrawString($"{item.Name}: ({item.OpType})", f, Brushes.Black, 0, 0);
                 if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
                 {
@@ -653,11 +653,8 @@ namespace Dendrite
                 ctx.Graphics.ResetTransform();
             }
         }
-        private void drawLabels()
+        private void drawLabels(IDrawingContext ctx)
         {
-
-
-            #region draw labels
             foreach (var item in Model.Nodes)
             {
 
@@ -670,7 +667,7 @@ namespace Dendrite
                     ctx.Graphics.ResetTransform();
                     var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Bottom + 10);
                     ctx.Graphics.TranslateTransform(sh.X, sh.Y);
-                    ctx.Graphics.ScaleTransform(ctx.zoom, ctx.zoom);
+                    ctx.Graphics.ScaleTransform(ctx.Zoom, ctx.Zoom);
 
                     var s1 = string.Join("x", item.Shape);
 
@@ -679,8 +676,8 @@ namespace Dendrite
                     ctx.Graphics.ResetTransform();
                 }
             }
-            #endregion
         }
+
         public bool ShowFullNames { get; set; } = false;
         Thread drawThread;
         public void StartDrawThread()
@@ -758,6 +755,10 @@ namespace Dendrite
             WaitDialog wd = new WaitDialog();
             wd.Init(loadAct);
             wd.ShowDialog();
+            if (wd.Exception != null)
+            {
+                Helpers.ShowError(wd.Exception.Message, Program.MainForm.Text);
+            }
             Program.MainForm.SetStatusMessage($"Load time: {sw.ElapsedMilliseconds} ms");
 
             return true;
@@ -1122,8 +1123,53 @@ namespace Dendrite
             ShowFullNames = fullNamesToolStripMenuItem.Checked;
         }
 
+        public static int ExportImageMaxDim=4000;
         private void exportAsImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Jpeg files (*.jpg)|*.jpg|All files (*.*)|*.*";
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+            BitmapDrawingContext ectx = new BitmapDrawingContext();
+            var ar = Model.Nodes.Where(z => z.DrawTag != null).Select(z => z.DrawTag as GraphNodeDrawInfo).ToArray();
+            var minx = ar.Min(z => z.X);
+            var miny = ar.Min(z => z.Y);
+            var maxx = ar.Max(z => z.X);
+            var maxy = ar.Max(z => z.Y);
+            var ww = (int)Math.Ceiling(maxx - minx);
+            var hh = (int)Math.Ceiling(maxy - miny);
+            var maxDim = Math.Max(ww, hh);
+            Bitmap bmp = null;
+            if (maxDim > ExportImageMaxDim)
+            {
+                ectx.Zoom = (float)ExportImageMaxDim / maxDim;
+                bmp = new Bitmap((int)(ww * ectx.Zoom), (int)(hh * ectx.Zoom));
+            }
+            else
+            {
+                bmp = new Bitmap(ww, hh);
+            }
+
+            ectx.Bmp = bmp;
+            //fit all
+            List<PointF> pp = new List<PointF>();
+            foreach (var item in Model.Nodes)
+            {
+                var dtag = item.DrawTag as GraphNodeDrawInfo;
+                pp.Add(dtag.Rect.Location);
+                pp.Add(new PointF(dtag.Rect.Right, dtag.Rect.Bottom));
+            }
+
+            ectx.FitToPoints(pp.ToArray(), 5);
+            ectx.Graphics = Graphics.FromImage(bmp);
+            ectx.Graphics.Clear(Color.White);
+            ectx.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+            drawEdges(ectx);
+            drawLabels(ectx);
+            drawNodes(ectx);
+
+            bmp.Save(sfd.FileName);
+            Program.MainForm.SetStatusMessage("Successfully saved: " + sfd.FileName);
 
         }
     }

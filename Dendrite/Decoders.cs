@@ -110,12 +110,7 @@ namespace Dendrite
                 {
                     order2.Add(order[inds[j] + 1]);
                 }
-
-
                 order = order2.ToArray();
-
-
-
             }
 
             return keep.ToArray();

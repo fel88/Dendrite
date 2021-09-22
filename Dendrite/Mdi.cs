@@ -12,10 +12,7 @@ namespace Dendrite
         public Mdi()
         {
             InitializeComponent();
-            /*var f1 = new Form1();
-            var frm = GenerateChildForm(f1);
-            frm.WindowState = FormWindowState.Maximized;
-            frm.Show();*/
+            
             try
             {
                 LoadSettings();
@@ -24,7 +21,6 @@ namespace Dendrite
             {
                 Helpers.ShowError(ex.Message, Text);
             }
-
         }
 
         private void LoadSettings()
@@ -42,6 +38,9 @@ namespace Dendrite
                         {
                             Form1.DefaultLayout = typeof(DagreGraphLayout);
                         }
+                        break;
+                    case "exportImageMaxDim":
+                        Form1.ExportImageMaxDim = int.Parse(vl);
                         break;
                 }
             }

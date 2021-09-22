@@ -18,17 +18,17 @@ namespace Dendrite
         public PointF[] Points;
         Curve curve;
 
-        public void Draw(DrawingContext ctx)
+        public void Draw(IDrawingContext ctx)
         {
-            var size = 4 * ctx.zoom;
+            var size = 4 * ctx.Zoom;
             AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);
             Pen pen1 = new Pen(Color.Black);
             pen1.CustomEndCap = bigArrow;
 
             var temp = ctx.Graphics.Transform;
 
-            ctx.Graphics.ScaleTransform(ctx.zoom, ctx.zoom);
-            ctx.Graphics.TranslateTransform(ctx.sx, ctx.sy);
+            ctx.Graphics.ScaleTransform(ctx.Zoom, ctx.Zoom);
+            ctx.Graphics.TranslateTransform(ctx.Shift.X, ctx.Shift.Y);
 
             ctx.Graphics.DrawPath(pen1, curve.Path);
             ctx.Graphics.Transform = temp;

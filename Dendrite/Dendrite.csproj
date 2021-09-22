@@ -53,8 +53,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dagre.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dagre.NET.1.0.0\lib\netstandard2.0\Dagre.NET.dll</HintPath>
+    <Reference Include="Dagre.NET, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dagre.NET.1.0.0.2\lib\netstandard2.0\Dagre.NET.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.18.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.18.0\lib\net45\Google.Protobuf.dll</HintPath>
@@ -239,8 +239,8 @@
     <Compile Include="ArrayComparer.Designer.cs">
       <DependentUpon>ArrayComparer.cs</DependentUpon>
     </Compile>
+    <Compile Include="BitmapDrawingContext.cs" />
     <Compile Include="ComboBoxItem.cs" />
-    <Compile Include="DagreTester.cs" />
     <Compile Include="Layouts\DagreGraphLayout.cs" />
     <Compile Include="Edit.cs">
       <SubType>Form</SubType>

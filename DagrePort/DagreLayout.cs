@@ -64,7 +64,7 @@ namespace Dagre
          * We also add some minimal padding to the width to push the label for the edge
          * away from the edge itself a bit.
          */
-        public void makeSpaceForEdgeLabels(DagreGraph g)
+        public static void makeSpaceForEdgeLabels(DagreGraph g)
         {
             var graph = g.graph();
             graph["ranksep"] /= 2;
@@ -221,7 +221,7 @@ namespace Dagre
             return g;
         }
 
-        public void removeSelfEdges(DagreGraph g)
+        public static void removeSelfEdges(DagreGraph g)
         {
             var ar = g.edgesRaw().ToArray();
             foreach (dynamic e in ar)
@@ -239,7 +239,7 @@ namespace Dagre
             }
         }
 
-        public void rank(DagreGraph g)
+        public static void rank(DagreGraph g)
         {
             string res = null;
             if (g.graph().ContainsKey("ranker"))
@@ -260,7 +260,7 @@ namespace Dagre
                     break;
             }
         }
-        public void networkSimplexRanker(DagreGraph g)
+        public static void networkSimplexRanker(DagreGraph g)
         {
             networkSimplexModule.networkSimplex(g);
         }
@@ -330,7 +330,7 @@ namespace Dagre
             }
         }
 
-        public void runLayout(DagreGraph g)
+        public static void runLayout(DagreGraph g)
         {
             makeSpaceForEdgeLabels(g);
             removeSelfEdges(g);
@@ -605,7 +605,7 @@ namespace Dagre
             }
         }
 
-        public void insertSelfEdges(DagreGraph g)
+        public static void insertSelfEdges(DagreGraph g)
         {
             dynamic layers = util.buildLayerMatrix(g);
             foreach (var layer in layers)
@@ -636,7 +636,7 @@ namespace Dagre
             }
         }
 
-        public void removeEdgeLabelProxies(DagreGraph g)
+        public static void removeEdgeLabelProxies(DagreGraph g)
         {
             foreach (var v in g.nodesRaw())
             {
@@ -650,7 +650,7 @@ namespace Dagre
 
         }
 
-        public void assignRankMinMax(DagreGraph g)
+        public static void assignRankMinMax(DagreGraph g)
         {
             int maxRank = 0;
             foreach (var v in g.nodesRaw())

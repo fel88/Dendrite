@@ -14,10 +14,10 @@ namespace Dendrite
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            MainForm = new Mdi();       
-            
+            MainForm = new Mdi();
+                 
             //DagreTester.Test11();
-            
+
             Application.Run(MainForm);
         }       
 

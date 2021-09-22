@@ -80,83 +80,57 @@ namespace Dendrite.Layouts
                 }
             }
         }
+
         public override void Layout(GraphModel model)
         {
-            DagreGraph dg = new DagreGraph(true);
-            int ii = 0;
+            DagreInputGraph d = new DagreInputGraph();
             updateNodesSizes(model);
 
-            
             model.Nodes = model.Nodes.Where(z => z.LayerType != LayerType.Constant && (z.Childs.Any() || z.Parent != null || z.Parents.Any())).ToArray();
 
             var list1 = model.Nodes.ToList();
 
+
             foreach (var gg in list1)
             {
-                var ind = list1.IndexOf(gg);
-                dg.setNode(ind + "", new JavaScriptLikeObject());
-                var nd = dg.node(ind + "");
-
-                nd["source"] = gg;
-
                 var tag = (gg.DrawTag as GraphNodeDrawInfo);
-                nd["width"] = tag.Rect.Width;
-                nd["height"] = tag.Rect.Height;
-
+                d.AddNode(gg, tag.Rect.Width, tag.Rect.Height);
             }
+
             foreach (var gg in list1)
             {
-                var ind = list1.IndexOf(gg);
-
                 foreach (var item in gg.Childs)
                 {
-                    JavaScriptLikeObject jj = new JavaScriptLikeObject();
-                    jj.Add("minlen", 1);
-                    if (item.LayerType == LayerType.Input || gg.LayerType == LayerType.Input || item.LayerType == LayerType.Output || gg.LayerType == LayerType.Output)
-                    {
-                        jj["minlen"] = 3;
-                    }
-                    jj.Add("weight", 1);
-                    jj.Add("width", 0);
-                    jj.Add("height", 0);
-                    jj.Add("labeloffset", 10);
-                    jj.Add("labelpos", "r");
-                    jj.Add("source", "r");
-                    dg.setEdge(new object[] { ind + "", list1.IndexOf(item) + "", jj });
+                    var nd1 = d.GetNode(gg);
+                    var nd2 = d.GetNode(item);
+                    var minlen = (item.Parents.Count == 0 || item.Childs.Count == 0 || gg.Parents.Count == 0 || gg.Childs.Count == 0) ? 3 : 1;
+                    d.AddEdge(nd1, nd2, minlen);
                 }
             }
-            dg.graph()["ranksep"] = 20;
-            dg.graph()["edgesep"] = 20;
-            dg.graph()["nodesep"] = 25;
-            dg.graph()["rankdir"] = "tb";
-            DagreLayout.runLayout(dg);
+
+            d.Layout();
 
             //back
-            for (int i = 0; i < model.Nodes.Length; i++)
+            foreach (var n in model.Nodes)
             {
-                var node = dg.node(i + "");
-                var n = model.Nodes[i];
-                dynamic xx = node["x"];
-                dynamic yy = node["y"];
-                dynamic ww = node["width"];
-                dynamic hh = node["height"];
+                var nd = d.GetNode(n);
+                if (nd == null) continue;
                 var tag = (n.DrawTag as GraphNodeDrawInfo);
-                tag.X = (float)xx - (float)ww / 2;
-                tag.Y = (float)yy - (float)hh / 2;
-                //tag.X = (float)xx;
-                //tag.Y = (float)yy;
+                var xx = nd.X;
+                var yy = nd.Y;
+                tag.X = xx;
+                tag.Y = yy;
             }
 
+
             List<EdgeNode> enodes = new List<EdgeNode>();
-            foreach (var item in dg.edges())
+            foreach (var item in d.Edges())
             {
-                var edge = dg.edge(item);
-                var src = edge["source"];
-                dynamic pnts = edge["points"];
+                var pnts = item.Points;
                 List<PointF> rr = new List<PointF>();
-                foreach (dynamic itemz in pnts)
+                foreach (var itemz in pnts)
                 {
-                    rr.Add(new PointF((float)itemz["x"], (float)itemz["y"]));
+                    rr.Add(new PointF(itemz.X, itemz.Y));
                 }
 
                 enodes.Add(new EdgeNode(rr.ToArray()));

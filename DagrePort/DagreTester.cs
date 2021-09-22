@@ -265,7 +265,7 @@ namespace Dendrite
             dg.graph()["rankdir"] = "tb";
             dg._isMultigraph = true;
             //dg.Compare(dg1);
-            dl.runLayout(dg);
+            DagreLayout.runLayout(dg);
             var bmp = DrawGraph(dg);
             Clipboard.SetImage(bmp);
         }
@@ -274,9 +274,9 @@ namespace Dendrite
             var dl = new DagreLayout();
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("json.txt"));
 
-            dl.makeSpaceForEdgeLabels(dg);
+            DagreLayout.makeSpaceForEdgeLabels(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterMakeSpaceForEdgeLabels.txt")).Compare(dg)) throw new DagreException("wrong");
-            dl.removeSelfEdges(dg);
+            DagreLayout.removeSelfEdges(dg);
             acyclic.run(dg);
 
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -289,7 +289,7 @@ namespace Dendrite
 
 
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
 
 
@@ -303,9 +303,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.run(dg);
@@ -320,7 +320,7 @@ namespace Dendrite
             order._order(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
 
             coordinateSystem.adjust(dg);
             DagreLayout.position(dg);
@@ -349,9 +349,9 @@ namespace Dendrite
             var dl = new DagreLayout();
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("beforeRunLayoutSqueeze.txt"));
 
-            dl.makeSpaceForEdgeLabels(dg);
+            DagreLayout.makeSpaceForEdgeLabels(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterMakeSpaceForEdgeLabelsSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
-            dl.removeSelfEdges(dg);
+            DagreLayout.removeSelfEdges(dg);
             acyclic.run(dg);
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -364,7 +364,7 @@ namespace Dendrite
 
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
 
 
@@ -378,9 +378,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.run(dg);
@@ -395,7 +395,7 @@ namespace Dendrite
             order._order(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterOrderSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
 
             coordinateSystem.adjust(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("beforePositionSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -525,10 +525,10 @@ namespace Dendrite
             //dg.Compare(dg1);
             dg1.UpdateAttributeNodesTo(dg);
             dg1.UpdateAttributeEdgesTo(dg);
-            dl.runLayout(dg);
+            DagreLayout.runLayout(dg);
             var bmp = DrawGraph(dg);
             dl = new DagreLayout();
-            dl.runLayout(dg1);
+            DagreLayout.runLayout(dg1);
 
             var bmp2 = DrawGraph(dg1);
             bmp = VerticalStack(bmp, bmp2);
@@ -550,9 +550,9 @@ namespace Dendrite
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("Espnet.beforeRunLayout.txt"));
             util.DebugCompareEnabled = true;
             util.DebugResourcesPrefix = "Espnet.";
-            dl.makeSpaceForEdgeLabels(dg);
+            DagreLayout.makeSpaceForEdgeLabels(dg);
 
-            dl.removeSelfEdges(dg);
+            DagreLayout.removeSelfEdges(dg);
             acyclic.run(dg);
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -565,7 +565,7 @@ namespace Dendrite
 
 
             if (!DagreGraph.FromJson(ReadResourceTxt("Espnet.beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
 
 
@@ -579,9 +579,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.run(dg);
@@ -596,7 +596,7 @@ namespace Dendrite
             order._order(dg);
             //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
 
             coordinateSystem.adjust(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -636,9 +636,9 @@ namespace Dendrite
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("sample2.beforeRunLayout.txt"));
             util.DebugCompareEnabled = true;
             util.DebugResourcesPrefix = "sample2.";
-            dl.makeSpaceForEdgeLabels(dg);
+            DagreLayout.makeSpaceForEdgeLabels(dg);
 
-            dl.removeSelfEdges(dg);
+            DagreLayout.removeSelfEdges(dg);
             acyclic.run(dg);
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -651,7 +651,7 @@ namespace Dendrite
 
 
             if (!DagreGraph.FromJson(ReadResourceTxt("sample2.beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
 
 
@@ -666,9 +666,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
 
             if (!DagreGraph.FromJson(ReadResourceTxt("sample2.beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
             normalize.run(dg);
@@ -683,7 +683,7 @@ namespace Dendrite
             order._order(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("sample2.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
 
             coordinateSystem.adjust(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("sample2.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -723,9 +723,9 @@ namespace Dendrite
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("sample3.beforeRunLayout.txt"));
             util.DebugCompareEnabled = true;
             util.DebugResourcesPrefix = "sample3.";
-            dl.makeSpaceForEdgeLabels(dg);
+            DagreLayout.makeSpaceForEdgeLabels(dg);
 
-            dl.removeSelfEdges(dg);
+            DagreLayout.removeSelfEdges(dg);
             acyclic.run(dg);
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -738,7 +738,7 @@ namespace Dendrite
 
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("sample3.beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
 
 
@@ -753,9 +753,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("sample3.beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
             normalize.run(dg);
@@ -770,7 +770,7 @@ namespace Dendrite
             order._order(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("sample3.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
 
             coordinateSystem.adjust(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("sample3.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -810,9 +810,9 @@ namespace Dendrite
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("Mnist_1.start.txt"));
             util.DebugCompareEnabled = true;
             util.DebugResourcesPrefix = "Mnist_1.";
-            dl.makeSpaceForEdgeLabels(dg);
+            DagreLayout.makeSpaceForEdgeLabels(dg);
 
-            dl.removeSelfEdges(dg);
+            DagreLayout.removeSelfEdges(dg);
             acyclic.run(dg);
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -825,7 +825,7 @@ namespace Dendrite
 
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeRank1x1.txt")).Compare(ncg)) throw new DagreException("wrong");
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
 
 
@@ -839,9 +839,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.run(dg);
@@ -856,7 +856,7 @@ namespace Dendrite
             order._order(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
 
             coordinateSystem.adjust(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -897,9 +897,9 @@ namespace Dendrite
             util.DebugResourcesPrefix = "1x1.";
             DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt($"{util.DebugResourcesPrefix}beforeRunLayout.txt"));
 
-            dl.makeSpaceForEdgeLabels(dg);
+            DagreLayout.makeSpaceForEdgeLabels(dg);
 
-            dl.removeSelfEdges(dg);
+            DagreLayout.removeSelfEdges(dg);
             acyclic.run(dg);
 
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -912,7 +912,7 @@ namespace Dendrite
 
 
             if (!DagreGraph.FromJson(ReadResourceTxt($"{util.DebugResourcesPrefix}beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
 
 
@@ -926,9 +926,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.run(dg);
@@ -943,7 +943,7 @@ namespace Dendrite
             order._order(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("afterOrderSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
 
             coordinateSystem.adjust(dg);
             //if (!DagreGraph.FromJson(ReadResourceTxt("beforePositionSqueeze.txt")).Compare(dg)) throw new DagreException("wrong");
@@ -1009,7 +1009,7 @@ namespace Dendrite
             //DagreGraph ncg = DagreGraph.FromJson(ReadResourceTxt("beforeRank.txt"));
             var ncg = util.asNonCompoundGraph(dg);
 
-            dl.rank(ncg);
+            DagreLayout.rank(ncg);
 
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeInjectEdgeLabelProxies.txt")).Compare(dg)) throw new DagreException("wrong");
             util.uniqueCounter = 1;
@@ -1024,9 +1024,9 @@ namespace Dendrite
             util.normalizeRanks(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.assignRankMinMax(dg);
+            DagreLayout.assignRankMinMax(dg);
 
-            dl.removeEdgeLabelProxies(dg);
+            DagreLayout.removeEdgeLabelProxies(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
 
             normalize.run(dg);
@@ -1041,7 +1041,7 @@ namespace Dendrite
             order._order(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
 
-            dl.insertSelfEdges(dg);
+            DagreLayout.insertSelfEdges(dg);
             if (!DagreGraph.FromJson(ReadResourceTxt("beforeCoordSystemAdjust.txt")).Compare(dg)) throw new DagreException("wrong");
 
             coordinateSystem.adjust(dg);

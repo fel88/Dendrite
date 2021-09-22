@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <root>
-	<setting name="layout" value="dagre"/>
+  <setting name="layout" value="dagre"/>
+  <setting name="exportImageMaxDim" value="4000"/>
 </root>
