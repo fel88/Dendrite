@@ -783,6 +783,15 @@
     <EmbeddedResource Include="JsonsDebug\sample2\beforeAssignOrder2.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\sample3\beforeAssignOrder2.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\afterAssignOrder1.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\afterSweep1.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\downLayerGraphs.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\upLayerGraphs.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\afterOrder.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\beforeOrder.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\afterRank.txt" />
+    <EmbeddedResource Include="JsonsDebug\sample3\beforeRunLayout.txt" />
     <EmbeddedResource Include="JsonsDebug\sample2\beforeSmallest.txt" />
     <EmbeddedResource Include="JsonsDebug\sample2\afterPositionAsNonCompound.txt" />
     <Content Include="JsonsDebug\sample2\beforeAssignOrder2Best.txt" />

@@ -111,9 +111,9 @@ namespace Dagre
                         // best[i] = layering[i].slice()
                         //clone here
                         List<object> cln = new List<object>();
-                        foreach (var item in layering[j])
+                        foreach (var item in layering[j].Values)
                         {
-                            cln.Add(item.Value);
+                            cln.Add(item);
                         }
                         best[j] = cln;
                     }
@@ -147,12 +147,12 @@ namespace Dagre
             return ret;
         }
 
-        public static void sweepLayerGraphs(object[] layerGraphs, bool biasRight)
+        public static void sweepLayerGraphs(DagreGraph[] layerGraphs, bool biasRight)
         {
             var cg = new DagreGraph(false);
             foreach (var lg in layerGraphs)
             {
-                var root = (lg as DagreGraph).graph()["root"];
+                var root = lg.graph()["root"];
                 var sorted = sortSubGraphModule.sortSubraph(lg as DagreGraph, root, cg, biasRight);
                 var vs = sorted["vs"] as List<object>;
               /*  vs=reorderKeys(vs.Cast<string>().ToArray()).Cast<object>().ToList();
@@ -171,7 +171,7 @@ namespace Dagre
             }
 
         }
-        public static void addSubgraphConstraints(dynamic g, DagreGraph cg, dynamic vs)
+        public static void addSubgraphConstraints(DagreGraph g, DagreGraph cg, dynamic vs)
         {
             dynamic prev = new JavaScriptLikeObject();
             object rootPrev = null;

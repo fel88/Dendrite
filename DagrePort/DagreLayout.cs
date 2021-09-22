@@ -546,8 +546,8 @@ namespace Dagre
             g = util.asNonCompoundGraph(g);
 
             if (util.DebugCompareEnabled)
-                if (util.HasResource("sample2.afterPositionAsNonCompound.txt"))
-                    if (!DagreGraph.FromJson(util.ReadResourceTxt("sample2.afterPositionAsNonCompound.txt")).Compare(g)) throw new DagreException("wrong");
+                if (util.HasResource($"{util.DebugResourcesPrefix}afterPositionAsNonCompound.txt"))
+                    if (!DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterPositionAsNonCompound.txt")).Compare(g)) throw new DagreException("wrong");
 
             dynamic layering = util.buildLayerMatrix(g);
             var rankSep = g.graph()["ranksep"];
