@@ -783,6 +783,9 @@
     <EmbeddedResource Include="JsonsDebug\sample2\beforeAssignOrder2.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="settings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="JsonsDebug\sample3\beforeAssignOrder2.txt" />
     <EmbeddedResource Include="JsonsDebug\sample3\afterAssignOrder1.txt" />
     <EmbeddedResource Include="JsonsDebug\sample3\afterSweep1.txt" />

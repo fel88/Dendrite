@@ -62,10 +62,10 @@
             this.dagreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.fullNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -317,8 +317,8 @@
             this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(67, 22);
-            this.toolStripButton5.Text = "hide/show";
+            this.toolStripButton5.Size = new System.Drawing.Size(39, 22);
+            this.toolStripButton5.Text = "show";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click_1);
             // 
             // toolStripDropDownButton2
@@ -375,12 +375,6 @@
             this.toolStripButton1.Text = "edit";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click_1);
             // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 50;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -401,9 +395,15 @@
             // 
             this.fullNamesToolStripMenuItem.CheckOnClick = true;
             this.fullNamesToolStripMenuItem.Name = "fullNamesToolStripMenuItem";
-            this.fullNamesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fullNamesToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.fullNamesToolStripMenuItem.Text = "full names";
             this.fullNamesToolStripMenuItem.Click += new System.EventHandler(this.fullNamesToolStripMenuItem_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 50;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Form1
             // 

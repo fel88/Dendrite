@@ -16,14 +16,23 @@ namespace Dagre
         {
             get
             {
+                if (keysCached != null && !dirty)
+                {
+                    return keysCached;
+                }
+                dirty = false;
                 var l = orderedList.Select(z => z.Key).ToList();
                 var dgts = l.Where(z => z.All(char.IsDigit)).Where(z => (int.Parse(z) + "") == z).OrderBy(int.Parse).ToArray();
                 l = dgts.Union(l.Except(dgts)).ToList();
+                keysCached = l;
                 return l;
             }
         }
+        bool dirty = true;
+        List<string> keysCached;
 
-        public ICollection<object> Values {
+        public ICollection<object> Values
+        {
             get
             {
 
@@ -34,7 +43,7 @@ namespace Dagre
                 }
                 return ret.ToArray();
             }
-        
+
         }
 
         public int Count => dic.Count;
@@ -59,19 +68,23 @@ namespace Dagre
             if (dic.ContainsKey(key))
             {
                 dic[key] = val;
-                var fr = orderedList.First(z => z.Key == key);
-                var ind1 = orderedList.IndexOf(fr);
-                orderedList.Remove(fr);
+                //var ind1 = orderedList.IndexOf(fr);
+                var ind1 = orderedListIndexes[key];
+                orderedList.RemoveAt(ind1);
                 orderedList.Insert(ind1, new KeyValuePair<string, object>(key, val));
 
                 return;
             }
+            dirty = true;
+
             dic.Add(key, val);
             orderedList.Add(new KeyValuePair<string, object>(key, val));
+            orderedListIndexes.Add(key, orderedList.Count - 1);
             if (dic.Keys.Count != orderedList.Count) throw new DagreException();
         }
 
         List<KeyValuePair<string, object>> orderedList = new List<KeyValuePair<string, object>>();
+        Dictionary<string, int> orderedListIndexes = new Dictionary<string, int>();
         public override string ToString()
         {
             return $"dic ({dic.Keys.Count})";
@@ -85,7 +98,9 @@ namespace Dagre
         public void Add(string key, object value)
         {
             if (_isFreezed) throw new DagreException("can't add to frozen object");
+            dirty = true;
             orderedList.Add(new KeyValuePair<string, object>(key, value));
+            orderedListIndexes.Add(key, orderedList.Count - 1);
             dic.Add(key, value);
             if (dic.Keys.Count != orderedList.Count) throw new DagreException();
         }
@@ -93,7 +108,15 @@ namespace Dagre
         public bool Remove(string key)
         {
             if (_isFreezed) throw new DagreException("can't remove from frozen object");
-            orderedList.RemoveAll(z => z.Key == key);
+            var ind1 = orderedListIndexes[key];
+            dirty = true;
+            orderedList.RemoveAt(ind1);
+            orderedListIndexes.Remove(key);
+            for (int i = 0; i < orderedList.Count; i++)
+            {
+                orderedListIndexes[orderedList[i].Key] = i;
+            }
+
             var ret = dic.Remove(key);
             if (dic.Keys.Count != orderedList.Count) throw new DagreException();
             return ret;
@@ -107,8 +130,10 @@ namespace Dagre
         public void Add(KeyValuePair<string, object> item)
         {
             if (_isFreezed) return;
+            dirty = true;
             dic.Add(item.Key, item.Value);
             orderedList.Add(new KeyValuePair<string, object>(item.Key, item.Value));
+            orderedListIndexes.Add(item.Key, orderedList.Count - 1);
             if (dic.Keys.Count != orderedList.Count) throw new DagreException();
         }
 
@@ -116,6 +141,7 @@ namespace Dagre
         {
             dic.Clear();
             orderedList.Clear();
+            dirty = true;
         }
 
 

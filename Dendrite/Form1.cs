@@ -71,8 +71,7 @@ namespace Dendrite
             panel1.Controls.Add(group4);
             group4.SetCaption("Outputs");
 
-            CurrentLayout = new TableGraphLayout();
-
+            CurrentLayout = Activator.CreateInstance(DefaultLayout) as GraphLayout;
 
             pictureBox1.Focus();
             pictureBox1.MouseMove += PictureBox1_MouseMove;
@@ -86,6 +85,8 @@ namespace Dendrite
             }
             Load += Form1_Load;
         }
+
+        public static Type DefaultLayout = typeof(TableGraphLayout);
         private void Form1_Load(object sender, EventArgs e)
         {
             mf = new MessageFilter();
@@ -721,8 +722,10 @@ namespace Dendrite
                 MessageBox.Show("Unsupported file format.", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+            Stopwatch sw = new Stopwatch();
             Action loadAct = () =>
             {
+                sw.Start();
                 var model = fr.LoadFromFile(path);
                 Model = model;
                 if (!loadedModels.Any(z => z.ToLower() == path.ToLower()))
@@ -749,12 +752,13 @@ namespace Dendrite
                 }
                 drawEnabled = true;
                 fitAll();
+                sw.Stop();
             };
             drawEnabled = false;
             WaitDialog wd = new WaitDialog();
             wd.Init(loadAct);
             wd.ShowDialog();
-
+            Program.MainForm.SetStatusMessage($"Load time: {sw.ElapsedMilliseconds} ms");
 
             return true;
         }
@@ -902,9 +906,12 @@ namespace Dendrite
             if (tableLayoutPanel1.ColumnStyles[1].Width == 0)
             {
                 ShowInfoTab();
+                toolStripButton5.Text = "hide";
             }
             else
             {
+                toolStripButton5.Text = "show";
+
                 HideInfoTab();
             }
         }
@@ -948,7 +955,7 @@ namespace Dendrite
             CurrentLayout = new DagreGraphLayout();
             WaitDialog wd = new WaitDialog();
             drawEnabled = false;
-            wd.Init(() => { CurrentLayout.Layout(Model);drawEnabled = true;  });
+            wd.Init(() => { CurrentLayout.Layout(Model); drawEnabled = true; });
             wd.ShowDialog();
             fitAll();
         }

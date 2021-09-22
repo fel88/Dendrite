@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using Dendrite.Layouts;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Dendrite
 {
@@ -19,9 +16,42 @@ namespace Dendrite
             var frm = GenerateChildForm(f1);
             frm.WindowState = FormWindowState.Maximized;
             frm.Show();*/
+            try
+            {
+                LoadSettings();
+            }
+            catch (Exception ex)
+            {
+                Helpers.ShowError(ex.Message, Text);
+            }
 
         }
 
+        private void LoadSettings()
+        {
+            if (!File.Exists("settings.xml")) return;
+            XDocument doc = XDocument.Load("settings.xml");
+            foreach (var item in doc.Descendants("setting"))
+            {
+                var nm = item.Attribute("name").Value;
+                var vl = item.Attribute("value").Value;
+                switch (nm)
+                {
+                    case "layout":
+                        if (vl == "dagre")
+                        {
+                            Form1.DefaultLayout = typeof(DagreGraphLayout);
+                        }
+                        break;
+                }
+            }
+
+        }
+
+        public void SetStatusMessage(string str)
+        {
+            toolStripStatusLabel1.Text = str;
+        }
 
 
         public const string WindowCaption = "Dendrite";
