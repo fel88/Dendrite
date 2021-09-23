@@ -50,6 +50,7 @@
             this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.extractWeightsToZipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAsImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -66,7 +67,9 @@
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.fullNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.exportAsImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.showVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showHorizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -266,6 +269,13 @@
             this.extractWeightsToZipToolStripMenuItem.Text = "Extract weights to zip";
             this.extractWeightsToZipToolStripMenuItem.Click += new System.EventHandler(this.extractWeightsToZipToolStripMenuItem_Click);
             // 
+            // exportAsImageToolStripMenuItem
+            // 
+            this.exportAsImageToolStripMenuItem.Name = "exportAsImageToolStripMenuItem";
+            this.exportAsImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.exportAsImageToolStripMenuItem.Text = "Export as image";
+            this.exportAsImageToolStripMenuItem.Click += new System.EventHandler(this.exportAsImageToolStripMenuItem_Click);
+            // 
             // toolStripButton3
             // 
             this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -386,7 +396,10 @@
             // 
             this.toolStripDropDownButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton4.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fullNamesToolStripMenuItem});
+            this.fullNamesToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.showVerticalToolStripMenuItem,
+            this.showHorizontalToolStripMenuItem});
             this.toolStripDropDownButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton4.Image")));
             this.toolStripDropDownButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton4.Name = "toolStripDropDownButton4";
@@ -397,7 +410,7 @@
             // 
             this.fullNamesToolStripMenuItem.CheckOnClick = true;
             this.fullNamesToolStripMenuItem.Name = "fullNamesToolStripMenuItem";
-            this.fullNamesToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.fullNamesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.fullNamesToolStripMenuItem.Text = "full names";
             this.fullNamesToolStripMenuItem.Click += new System.EventHandler(this.fullNamesToolStripMenuItem_Click);
             // 
@@ -407,12 +420,24 @@
             this.timer1.Interval = 50;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // exportAsImageToolStripMenuItem
+            // toolStripSeparator4
             // 
-            this.exportAsImageToolStripMenuItem.Name = "exportAsImageToolStripMenuItem";
-            this.exportAsImageToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.exportAsImageToolStripMenuItem.Text = "Export as image";
-            this.exportAsImageToolStripMenuItem.Click += new System.EventHandler(this.exportAsImageToolStripMenuItem_Click);
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            // 
+            // showVerticalToolStripMenuItem
+            // 
+            this.showVerticalToolStripMenuItem.Name = "showVerticalToolStripMenuItem";
+            this.showVerticalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showVerticalToolStripMenuItem.Text = "show vertical";
+            this.showVerticalToolStripMenuItem.Click += new System.EventHandler(this.showVerticalToolStripMenuItem_Click);
+            // 
+            // showHorizontalToolStripMenuItem
+            // 
+            this.showHorizontalToolStripMenuItem.Name = "showHorizontalToolStripMenuItem";
+            this.showHorizontalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showHorizontalToolStripMenuItem.Text = "show horizontal";
+            this.showHorizontalToolStripMenuItem.Click += new System.EventHandler(this.showHorizontalToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -475,6 +500,9 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton4;
         private System.Windows.Forms.ToolStripMenuItem fullNamesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAsImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem showVerticalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showHorizontalToolStripMenuItem;
     }
 }
 

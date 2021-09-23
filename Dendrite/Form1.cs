@@ -1172,5 +1172,25 @@ namespace Dendrite
             Program.MainForm.SetStatusMessage("Successfully saved: " + sfd.FileName);
 
         }
+
+        private void showVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentLayout.VerticalLayout = true;
+            if (File.Exists(_lastPath))
+            {
+                LoadModel(_lastPath);
+                fitAll();
+            }
+        }
+
+        private void showHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentLayout.VerticalLayout = false;
+            if (File.Exists(_lastPath))
+            {
+                LoadModel(_lastPath);
+                fitAll();
+            }
+        }
     }
 }
