@@ -72,7 +72,7 @@ namespace Dagre
             foreach (var gg in list1)
             {
                 var ind = list1.IndexOf(gg);
-                dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
+                dg.setNode(ind + "", new JavaScriptLikeObject());
                 var nd = dg.node(ind + "");
 
                 nd["source"] = gg;
@@ -97,7 +97,7 @@ namespace Dagre
                     jj.Add("labeloffset", 10);
                     jj.Add("labelpos", "r");
                     jj.Add("source", edge);
-                    dg.setEdgeRaw(new object[] { ind + "", list1.IndexOf(item) + "", jj });
+                    dg.setEdge(new object[] { ind + "", list1.IndexOf(item) + "", jj });
                 }
             }
             dg.graph()["ranksep"] = 20;

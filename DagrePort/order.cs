@@ -195,7 +195,7 @@ namespace Dagre
                     }
                     if (prevChild != null && prevChild != child)
                     {
-                        cg.setEdgeRaw(new object[] { prevChild, child });
+                        cg.setEdge(new object[] { prevChild, child });
                         return;
                     }
                     child = parent;
@@ -274,7 +274,7 @@ namespace Dagre
                 var node = g.node(v);
                 if (node["rank"] == rank || (node.ContainsKey("minRank") && node.ContainsKey("maxRank") && node["minRank"] <= rank && rank <= node["maxRank"]))
                 {
-                    graph.setNodeRaw(v);
+                    graph.setNode(v);
                     var parent = g.parent(v);
                     graph.setParent2(v, parent != null ? parent : root);
                     // This assumes we have only short edges!
@@ -298,7 +298,7 @@ namespace Dagre
                         var weight = edge != null ? edge["weight"] : 0;
                         JavaScriptLikeObject j = new JavaScriptLikeObject();
                         j.Add("weight", g.edge(e)["weight"] + weight);
-                        graph.setEdgeRaw(new object[] { u, v, j });
+                        graph.setEdge(new object[] { u, v, j });
                     }
                     if (node.ContainsKey("minRank"))
                     {
@@ -306,7 +306,7 @@ namespace Dagre
                         jj.Add("borderLeft", node["borderLeft"][rank]);
                         jj.Add("borderRight", node["borderRight"][rank]);
 
-                        graph.setNodeRaw(v, jj);
+                        graph.setNode(v, jj);
                     }
                 }
             }

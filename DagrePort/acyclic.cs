@@ -24,7 +24,7 @@ namespace Dagre
                     label["forwardName"] = null;
 
 
-                    g.setEdgeRaw(new object[] { e["w"], e["v"], label, forwardName });
+                    g.setEdge(new object[] { e["w"], e["v"], label, forwardName });
                 }
             }
 
@@ -51,7 +51,7 @@ namespace Dagre
                 label.forwardName = e.name;
                 label.reversed = true;
 
-                g.setEdgeRaw(new object[] { e["w"], e["v"], label, util.uniqueId("rev") });
+                g.setEdge(new object[] { e["w"], e["v"], label, util.uniqueId("rev") });
 
             }
 

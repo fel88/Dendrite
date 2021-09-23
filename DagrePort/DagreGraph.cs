@@ -952,8 +952,8 @@ namespace Dagre
             return this;
         }
 
-        public object setEdgeRaw(object[] args)
-        {
+        public object setEdge(object[] args)
+        {            
             object value = null;
             dynamic arg0 = args[0];
             object v = null;
@@ -1005,8 +1005,8 @@ namespace Dagre
             }
             // It didn't exist, so we need to create it.
             // First ensure the nodes exist.
-            this.setNodeRaw(v);
-            this.setNodeRaw(w);
+            this.setNode(v);
+            this.setNode(w);
             this._edgeLabels[e] = valueSpecified ? value : this._defaultEdgeLabelFn(v, w, name);
             v = "" + v;
             w = "" + w;
@@ -1307,8 +1307,8 @@ namespace Dagre
 
         public Func<object, dynamic> _defaultNodeLabelFn = (t) => { return null; };
 
-
-        public DagreGraph setNodeRaw(object v, object o2 = null)
+        
+        public DagreGraph setNode(object v, object o2 = null)
         {
             if (_nodesRaw.ContainsKey(v as string))
             {
@@ -1402,9 +1402,9 @@ namespace Dagre
                         throw new DagreException("Setting " + parent + " as parent of " + v + " would create a cycle.");
                     }
                 }
-                this.setNodeRaw(parent);
+                this.setNode(parent);
             }
-            setNodeRaw(v);
+            setNode(v);
             if (_parent.ContainsKey(v))
             {
                 dynamic t1 = _children[_parent[v] as string];

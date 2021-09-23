@@ -157,12 +157,12 @@ namespace Dagre
                 foreach (var v in layer)
                 {
                     var vRoot = root[v];
-                    blockGraph.setNodeRaw(vRoot);
+                    blockGraph.setNode(vRoot);
                     if (u != null)
                     {
                         var uRoot = root[u];
                         var prevMax = blockGraph.edgeRaw(new object[] { uRoot, vRoot });
-                        blockGraph.setEdgeRaw(new object[] {
+                        blockGraph.setEdge(new object[] {
                             uRoot,
                             vRoot,
                             Math.Max(sepFn(g, v, u), (prevMax != null ? prevMax : 0))});

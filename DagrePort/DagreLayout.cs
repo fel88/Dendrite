@@ -208,7 +208,7 @@ namespace Dagre
             foreach (var v in inputGraph.nodesRaw())
             {
                 var node = canonicalize(inputGraph.nodeRaw(v));
-                g.setNodeRaw(v, defaults(selectNumberAttrs(node, nodeNumAttrs), new NodeDefaults()));
+                g.setNode(v, defaults(selectNumberAttrs(node, nodeNumAttrs), new NodeDefaults()));
                 g.setParent2(v, inputGraph.parent(v));
             }
 
@@ -216,7 +216,7 @@ namespace Dagre
             foreach (var e in inputGraph.edgesRaw())
             {
                 var edge = canonicalize(inputGraph.edgeRaw(e));
-                g.setEdgeRaw(new object[] { e, merge(new object[] { null, new EdgeDefaults(), selectNumberAttrs(edge, edgeNumAttrs), pick(edge, edgeAttrs) }) });
+                g.setEdge(new object[] { e, merge(new object[] { null, new EdgeDefaults(), selectNumberAttrs(edge, edgeNumAttrs), pick(edge, edgeAttrs) }) });
             }
             return g;
         }
@@ -526,7 +526,7 @@ namespace Dagre
                     var y = selfNode["y"];
                     var dx = (node["x"] - x);
                     var dy = (selfNode["height"] / 2);
-                    g.setEdgeRaw(new object[] { node["e"], node["label"] });
+                    g.setEdge(new object[] { node["e"], node["label"] });
                     g.removeNode(v);
                     node["label"]["points"] = new List<object>{
                     makePoint(  x + 2 * dx / 3, y - dy ),

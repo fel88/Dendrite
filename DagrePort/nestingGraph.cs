@@ -100,7 +100,7 @@ namespace Dagre
                     Dictionary<string, object> arg = new Dictionary<string, object>();
                     arg.Add("weight", 0);
                     arg.Add("minlen", nodeSep);
-                    g.setEdgeRaw(new object[] { root, v, arg });
+                    g.setEdge(new object[] { root, v, arg });
                     //g.setEdge(root, v, { weight: 0, minlen: nodeSep });
                 }
                 return;

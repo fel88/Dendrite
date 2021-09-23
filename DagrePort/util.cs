@@ -70,16 +70,14 @@ namespace Dagre
             {
                 if (g.children(v).Length == 0)
                 {
-                    graph.setNodeRaw(v, g.nodeRaw(v));
+                    graph.setNode(v, g.nodeRaw(v));
                 }
             }
 
             foreach (var e in g.edgesRaw())
             {
-                graph.setEdgeRaw(new object[] { e, g.edgeRaw(e) });
-
+                graph.setEdge(new object[] { e, g.edgeRaw(e) });
             }
-
 
             return graph;
         }
@@ -110,7 +108,7 @@ namespace Dagre
             var dic = attrs as IDictionary<string, object>;
             DagreGraph.addOrUpdate("dummy", dic, type);
 
-            g.setNodeRaw(v, attrs);
+            g.setNode(v, attrs);
             return v;
         }
 
@@ -125,10 +123,10 @@ namespace Dagre
  */
         public static DagreGraph simplify(DagreGraph g)
         {
-            var simplified = new DagreGraph(false).setGraph(g.graph());
+            DagreGraph simplified = new DagreGraph(false).setGraph(g.graph());
             foreach (var v in g.nodesRaw())
             {
-                simplified.setNodeRaw(v, g.nodeRaw(v));
+                simplified.setNode(v, g.nodeRaw(v));
             }
             foreach (dynamic e in g.edgesRaw())
             {
@@ -142,7 +140,7 @@ namespace Dagre
                 jo2.Add("weight", simpleLabel["weight"] + label["weight"]);
                 jo2.Add("minlen", Math.Max(simpleLabel["minlen"], label["minlen"]));
 
-                simplified.setEdgeRaw(new object[] { e["v"], e["w"], jo2 });
+                simplified.setEdge(new object[] { e["v"], e["w"], jo2 });
             }
 
 

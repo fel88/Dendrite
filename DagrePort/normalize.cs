@@ -44,7 +44,7 @@ namespace Dagre
                     var node = g.node(v);
                     var origLabel = node["edgeLabel"];
                     string w = null;
-                    g.setEdgeRaw(new object[] { node["edgeObj"], origLabel });
+                    g.setEdge(new object[] { node["edgeObj"], origLabel });
                     while (node.ContainsKey("dummy") && node["dummy"] != null)
                     {
                         w = g.successors(v)[0];
@@ -119,7 +119,7 @@ namespace Dagre
                     JavaScriptLikeObject jo1 = new JavaScriptLikeObject();
                     jo1.Add("weight", edgeLabel["weight"]);
 
-                    g.setEdgeRaw(new object[] { v, (string)dummy, jo1, name });
+                    g.setEdge(new object[] { v, (string)dummy, jo1, name });
                     if (i == 0)
                     {
                         g.graph()["dummyChains"].Add((string)dummy);
@@ -129,7 +129,7 @@ namespace Dagre
                 JavaScriptLikeObject jo2 = new JavaScriptLikeObject();
                 jo2.Add("weight", edgeLabel["weight"]);
 
-                g.setEdgeRaw(new object[] { v, w, jo2, name });
+                g.setEdge(new object[] { v, w, jo2, name });
             }
         }
     }

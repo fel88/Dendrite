@@ -325,7 +325,7 @@ namespace Dagre
             var v = e["v"];
             var w = e["w"];
             t.removeEdge(new[] { v, w });
-            t.setEdgeRaw(new object[] { f["v"], f["w"], new JavaScriptLikeObject() });
+            t.setEdge(new object[] { f["v"], f["w"], new JavaScriptLikeObject() });
             if (util.DebugCompareEnabled)
             {
                 if (util.HasResource($"{util.DebugResourcesPrefix}beforeExchangeChangesInitLowLim" + step))
@@ -486,7 +486,7 @@ namespace Dagre
             // Choose arbitrary node from which to start our tree
             var start = g.nodesRaw()[0];
             var size = g.nodeCount();
-            t.setNodeRaw(start, new JavaScriptLikeObject());
+            t.setNode(start, new JavaScriptLikeObject());
 
             dynamic edge;
             int delta;
@@ -520,8 +520,8 @@ namespace Dagre
                     var _slack = slack(g, e);
                     if (!t.hasNode(w) && (_slack == null || _slack == 0))
                     {
-                        t.setNodeRaw(w, new JavaScriptLikeObject() { });
-                        t.setEdgeRaw(new object[] { v, w, new JavaScriptLikeObject() { } });
+                        t.setNode(w, new JavaScriptLikeObject() { });
+                        t.setEdge(new object[] { v, w, new JavaScriptLikeObject() { } });
                         stack.Add(w);
                     }
                 }

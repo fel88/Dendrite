@@ -199,7 +199,7 @@ namespace Dendrite
                 //if (gg.Childs.Count == 0 && gg.Parent == null) continue;
 
                 var ind = list1.IndexOf(gg);
-                dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
+                dg.setNode(ind + "", new JavaScriptLikeObject());
                 var nd = dg.node(ind + "");
                 nd["width"] = 100;
                 nd["height"] = 50;
@@ -256,7 +256,7 @@ namespace Dendrite
                     jj.Add("labeloffset", 10);
                     jj.Add("labelpos", "r");
                     var ind2 = list1.IndexOf(item);
-                    dg.setEdgeRaw(new object[] { ind + "", ind2 + "", jj });
+                    dg.setEdge(new object[] { ind + "", ind2 + "", jj });
                 }
             }
             dg.graph()["ranksep"] = 20;
@@ -445,7 +445,7 @@ namespace Dendrite
                 //if (gg.Childs.Count == 0 && gg.Parent == null) continue;
 
                 var ind = list1.IndexOf(gg);
-                dg.setNodeRaw(ind + "", new JavaScriptLikeObject());
+                dg.setNode(ind + "", new JavaScriptLikeObject());
                 var nd = dg.node(ind + "");
                 nd["width"] = 100;
                 nd["height"] = 50;
@@ -503,7 +503,7 @@ namespace Dendrite
                     jj.Add("labelpos", "r");
                     var ind2 = list1.IndexOf(item);
                     if (ind2 == -1) continue;
-                    dg.setEdgeRaw(new object[] { ind + "", ind2 + "", jj });
+                    dg.setEdge(new object[] { ind + "", ind2 + "", jj });
                 }
             }
             dg.graph()["ranksep"] = 20;
