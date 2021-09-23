@@ -1123,7 +1123,7 @@ namespace Dendrite
             ShowFullNames = fullNamesToolStripMenuItem.Checked;
         }
 
-        public static int ExportImageMaxDim=4000;
+        public static int ExportImageMaxDim = 4000;
         private void exportAsImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -1171,6 +1171,28 @@ namespace Dendrite
             bmp.Save(sfd.FileName);
             Program.MainForm.SetStatusMessage("Successfully saved: " + sfd.FileName);
 
+        }
+
+        private void horizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentLayout.VerticalLayout = false;
+
+            if (File.Exists(_lastPath))
+            {
+                LoadModel(_lastPath);
+                fitAll();
+            }
+        }
+
+        private void showVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CurrentLayout.VerticalLayout = true;
+
+            if (File.Exists(_lastPath))
+            {
+                LoadModel(_lastPath);
+                fitAll();
+            }
         }
     }
 }

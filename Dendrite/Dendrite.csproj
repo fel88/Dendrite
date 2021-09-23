@@ -53,9 +53,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dagre.NET, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dagre.NET.1.0.0.2\lib\netstandard2.0\Dagre.NET.dll</HintPath>
-    </Reference>
     <Reference Include="Google.Protobuf, Version=3.18.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.18.0\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -531,6 +528,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DagrePort\DagrePort.csproj">
+      <Project>{b404ba6f-6334-46fb-b51a-ad235fff3d85}</Project>
+      <Name>DagrePort</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DendriteLib\DendriteLib.csproj">
       <Project>{af17be9c-7e92-4d02-9cb9-e19910dd1b34}</Project>
       <Name>DendriteLib</Name>

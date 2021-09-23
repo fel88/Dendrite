@@ -81,9 +81,11 @@ namespace Dendrite.Layouts
             }
         }
 
+        
         public override void Layout(GraphModel model)
         {
             DagreInputGraph d = new DagreInputGraph();
+            d.VerticalLayout = VerticalLayout;
             updateNodesSizes(model);
 
             model.Nodes = model.Nodes.Where(z => z.LayerType != LayerType.Constant && (z.Childs.Any() || z.Parent != null || z.Parents.Any())).ToArray();

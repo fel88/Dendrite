@@ -24,15 +24,15 @@ namespace Dendrite
         private void WaitDialog_Shown(object sender, EventArgs e)
         {
             Thread th = new Thread(() => {
-                try
+               // try
                 {
                     act();
                 }
-                catch (Exception ex)
+              //  catch (Exception ex)
                 {
-                    Exception = ex;
+               //     Exception = ex;
                 }
-                finally
+               // finally
                 {
                     finished = true;
                 }
