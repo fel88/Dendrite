@@ -229,7 +229,7 @@ namespace Dendrite
                         }
                         else
                         {
-                        vall = item.Ints.Aggregate("", (x, y) => x + y + ", ");
+                            vall = item.Ints.Aggregate("", (x, y) => x + y + ", ");
                         }
                         break;
                     case AttributeInfoDataType.Float32:
@@ -416,7 +416,13 @@ namespace Dendrite
         private void drawNodes(IDrawingContext ctx)
         {
 
-            foreach (var item in Model.Nodes)
+            var list = Model.Nodes.ToList();
+            if (Model.Groups.Any())
+            {
+                list = list.Except(Model.Groups.SelectMany(z => z.Nodes)).ToList();
+                list.AddRange(Model.Groups);
+            }
+            foreach (var item in list)
             {
 
                 var dtag = item.DrawTag as GraphNodeDrawInfo;
@@ -466,6 +472,13 @@ namespace Dendrite
                     case LayerType.Concat:
                         brush = StaticColors.ConcatBrush;
                         break;
+                }
+                var borderPen = Pens.Black;
+                if (item is GroupNode)
+                {
+                    brush = StaticColors.GroupBrush;
+                    borderPen = new Pen(Color.Black, 3);
+                    textBrush = Brushes.Black;
                 }
                 if (item == hovered)
                 {
@@ -527,7 +540,7 @@ namespace Dendrite
                         //FillRoundedRectangle(ctx.Graphics, rr2, cornerRadius, brush);
                     }
                 }
-                ctx.Graphics.DrawPath(Pens.Black, Helpers.RoundedRect(rr2, cornerRadius));
+                ctx.Graphics.DrawPath(borderPen, Helpers.RoundedRect(rr2, cornerRadius));
 
                 //DrawRoundedRectangle(ctx.Graphics, rr, (int)(40 * ctx.zoom), Pens.Black);
 
@@ -546,6 +559,15 @@ namespace Dendrite
                 {
                     var ms = ctx.Graphics.MeasureString($"{item.OpType}", f);
                     ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                }
+
+                if (item is GroupNode gn)
+                {
+                    var ms = ctx.Graphics.MeasureString($"Group: {gn.Prefix}", f);
+                    ctx.Graphics.DrawString($"Group: {gn.Prefix}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    /*ctx.Graphics.DrawPath(new Pen(Color.Blue, 5), Helpers.RoundedRect(new RectangleF(10, 0, 60, 60), (int)(cornerRadius / ctx.Zoom)));
+                    ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 50, 10, 50, 50);
+                    ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 20, 50, 50, 50);*/
                 }
                 if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Conv)
                 {
@@ -713,7 +735,7 @@ namespace Dendrite
         public GraphModel Model;
 
         public List<string> loadedModels = new List<string>();
-        public bool LoadModel(string path)
+        public bool LoadModel(string path, bool _fitAll = true)
         {
             if (ParentForm != null)
             {
@@ -750,35 +772,21 @@ namespace Dendrite
                 //nodes.InsertRange(0, res2.Graph.Input.Select(z => outs[z.Name]));
 
                 updateNodesSizes();
-                CurrentLayout.GetRenderTextWidth = (item) =>
-                {
-                    var str = string.Empty;
-                    if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
-                    {
-                        str = $"{item.Name}:{item.OpType}";                        
-                    }
-                    else
-                    {
-                        str = $"{item.OpType}";
-                    }
-
-                    var ms = ctx.Graphics.MeasureString(str, f);
-                    return ms.Width;
-                };
-              
+                CurrentLayout.GetRenderTextWidth = renderTextWidth;
                 CurrentLayout.Layout(Model);
-               
+
                 //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
                 if (ParentForm != null)
                 {
                     ParentForm.Text = Path.GetFileName(path);
                 }
                 drawEnabled = true;
-                fitAll();
+                if (_fitAll)
+                    fitAll();
                 sw.Stop();
             };
             drawEnabled = false;
-            
+
             wd.Init(loadAct);
             wd.ShowDialog();
             timer1.Enabled = true;
@@ -822,7 +830,7 @@ namespace Dendrite
 
             if (Model == null) return;
 
-            foreach (var item in Model.Nodes)
+            foreach (var item in Model.Nodes.Union(Model.Groups))
             {
                 var dtag = item.DrawTag as GraphNodeDrawInfo;
                 if (dtag == null) continue;
@@ -978,12 +986,33 @@ namespace Dendrite
             MessageBox.Show($"Selected node was appended to outputs. Save model and reload to take effect.", WindowCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        float renderTextWidth(GraphNode item)
+        {
+            var str = string.Empty;
+            if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
+            {
+                str = $"{item.Name}:{item.OpType}";
+            }
+            else
+            {
+                str = $"{item.OpType}";
+            }
+
+            var ms = ctx.Graphics.MeasureString(str, f);
+            return ms.Width;
+        }
         private void dagreToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CurrentLayout = new DagreGraphLayout();
             WaitDialog wd = new WaitDialog();
             drawEnabled = false;
-            wd.Init(() => { CurrentLayout.Layout(Model); drawEnabled = true; });
+            wd.Init(() =>
+            {
+
+                CurrentLayout.GetRenderTextWidth = renderTextWidth;
+                CurrentLayout.Layout(Model);
+                drawEnabled = true;
+            });
             wd.ShowDialog();
             fitAll();
         }
@@ -993,7 +1022,7 @@ namespace Dendrite
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "ONNX files (*.onnx)|*.onnx|All files (*.*)|*.*";
             if (ofd.ShowDialog() != DialogResult.OK) return;
-
+            CurrentLayout.RequestedGroups.Clear();
             LoadModel(ofd.FileName);
             fitAll();
         }
@@ -1094,9 +1123,19 @@ namespace Dendrite
             ExportAsZip(sfd.FileName, Model);
         }
 
+
         void edit()
         {
             if (selected == null) return;
+            if (selected is GroupNode g)
+            {
+                if (Helpers.ShowQuestion($"Expand group {g.Prefix}?", ParentForm.Text) == DialogResult.Yes)
+                {
+                    CurrentLayout.RequestedGroups.RemoveAll(z => z.Prefix == g.Prefix);
+                    LoadModel(_lastPath, false);
+                    return;
+                }
+            }
             bool exit = true;
             if (selected.Tag is NodeProto) exit = false;
             if (selected.Tag is ValueInfoProto) exit = false;
@@ -1107,7 +1146,7 @@ namespace Dendrite
             {
                 if (selected.Tag is NodeProto np)
                 {
-                    ee.Init(gm.ProtoModel, np);
+                    ee.Init(gm.ProtoModel, np, selected);
                     ee.ShowDialog(ParentForm);
                 }
                 if (selected.Tag is ValueInfoProto vip)
@@ -1150,7 +1189,7 @@ namespace Dendrite
             ShowFullNames = fullNamesToolStripMenuItem.Checked;
         }
 
-        public static int ExportImageMaxDim=4000;
+        public static int ExportImageMaxDim = 4000;
         private void exportAsImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -1218,6 +1257,34 @@ namespace Dendrite
                 LoadModel(_lastPath);
                 fitAll();
             }
+        }
+
+        private void collapseGroupsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string[] names = new[] { "enc1.", "enc2.", "enc3.", "dec1.", "dec2.", "dec3." };
+            var ww = Model.Nodes.Where(z => names.Any(u => z.Name.StartsWith(u))).ToArray();
+            if (ww.Any())
+            {
+                CurrentLayout.RequestedGroups.Clear();
+                foreach (var item in ww)
+                {
+                    var fr = names.First(z => item.Name.StartsWith(z));
+                    if (!CurrentLayout.RequestedGroups.Any(z => z.Prefix == fr))
+                    {
+                        CurrentLayout.RequestedGroups.Add(new GroupNode() { Prefix = fr });
+                    }
+                }
+
+                LoadModel(_lastPath, false);
+            }
+        }
+
+        private void showGroupsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            CurrentLayout.RequestedGroups.Clear();
+            LoadModel(_lastPath, false);
+
         }
     }
 }

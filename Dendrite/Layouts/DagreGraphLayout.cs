@@ -1,4 +1,5 @@
 ﻿using Dagre;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -27,6 +28,11 @@ namespace Dendrite.Layouts
                     case LayerType.Conv:
                     case LayerType.Gemm:
                         dd.Width = 220;
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = Math.Max(20 + GetRenderTextWidth(item), 220);
+                        }
+
                         dd.Height = 110;
                         break;
                     case LayerType.Batch:
@@ -40,7 +46,7 @@ namespace Dendrite.Layouts
                         }
                         else
                         {
-                        dd.Width = 150;
+                            dd.Width = 150;
                         }
 
                         dd.Height = 50;
@@ -74,7 +80,7 @@ namespace Dendrite.Layouts
                         }
                         else
                         {
-                        dd.Width = 150;
+                            dd.Width = 150;
                         }
 
                         dd.Height = 50;
@@ -104,7 +110,7 @@ namespace Dendrite.Layouts
                         }
                         else
                         {
-                        dd.Width = 150;
+                            dd.Width = 150;
                         }
                         dd.Height = 50;
                         break;
@@ -113,13 +119,145 @@ namespace Dendrite.Layouts
         }
 
 
-        public override void Layout(GraphModel model)
+        public void ExperimentalGroupLayout(GraphModel model)
         {
             DagreInputGraph d = new DagreInputGraph();
             d.VerticalLayout = VerticalLayout;
             updateNodesSizes(model);
 
             model.Nodes = model.Nodes.Where(z => z.LayerType != LayerType.Constant && (z.Childs.Any() || z.Parent != null || z.Parents.Any())).ToArray();
+            model.Groups.Clear();
+            var list1 = model.Nodes.ToList();
+
+            foreach (var rgrp in RequestedGroups)
+            {
+
+
+                var group1 = model.Nodes.Where(z => z.Name.StartsWith(rgrp.Prefix)).ToArray();
+                //replace group with big rectangle here?
+
+
+                list1 = list1.Except(group1).ToList();
+                var gnode = new GroupNode()
+                {
+                    Prefix = rgrp.Prefix,
+                    Name = "group" + (1 + RequestedGroups.IndexOf(rgrp)),
+                    DrawTag = new GraphNodeDrawInfo() { Width = 800, Height = 800 },
+                    Nodes = group1.ToArray()
+                };
+
+                model.Groups.Add(gnode);
+                list1.Add(gnode);
+
+                foreach (var gg in list1)
+                {
+                    var tag = (gg.DrawTag as GraphNodeDrawInfo);
+                    d.AddNode(gg, tag.Rect.Width, tag.Rect.Height);
+                }
+                foreach (var gg in list1)
+                {
+                    bool add = false;
+                    foreach (var item in gg.Childs)
+                    {
+                        if (group1.Contains(item))
+                        {
+                            add = true;
+                            break;
+                        }
+                    }
+
+                    if (add)
+                    {
+                        gg.Childs.Add(gnode);
+                        gnode.Parents.Add(gg);
+                        gg.Childs.RemoveAll(z => group1.Contains(z));
+                    }
+                }
+                foreach (var gg in list1)
+                {
+                    bool add = false;
+
+                    foreach (var item in gg.Parents)
+                    {
+                        if (group1.Contains(item))
+                        {
+                            add = true;
+                            break;
+                        }
+                    }
+                    if (add)
+                    {
+                        gg.Parents.Add(gnode);
+                        gg.Parents.RemoveAll(z => group1.Contains(z));
+                    }
+                }
+                foreach (var gg in group1)
+                {
+
+                    foreach (var item in gg.Childs)
+                    {
+                        if (!group1.Contains(item))
+                        {
+                            gnode.Childs.Add(item);
+                        }
+                    }
+
+                }
+            }
+            foreach (var gg in list1)
+            {
+                foreach (var item in gg.Childs)
+                {
+                    var nd1 = d.GetNode(gg);
+                    var nd2 = d.GetNode(item);
+                    var minlen = (item.Parents.Count == 0 || item.Childs.Count == 0 || gg.Parents.Count == 0 || gg.Childs.Count == 0) ? 3 : 1;
+                    d.AddEdge(nd1, nd2, minlen);
+                }
+            }
+
+            d.Layout();
+
+            //back
+            foreach (var n in model.Nodes.Union(model.Groups))
+            {
+                var nd = d.GetNode(n);
+                if (nd == null) continue;
+                var tag = (n.DrawTag as GraphNodeDrawInfo);
+                var xx = nd.X;
+                var yy = nd.Y;
+                tag.X = xx;
+                tag.Y = yy;
+            }
+
+
+            List<EdgeNode> enodes = new List<EdgeNode>();
+            foreach (var item in d.Edges())
+            {
+                var pnts = item.Points;
+                List<PointF> rr = new List<PointF>();
+                foreach (var itemz in pnts)
+                {
+                    rr.Add(new PointF(itemz.X, itemz.Y));
+                }
+
+                enodes.Add(new EdgeNode(rr.ToArray()));
+            }
+            model.Edges = enodes.ToArray();
+        }
+        public override void Layout(GraphModel model)
+        {
+            if (RequestedGroups.Any())
+            {
+                ExperimentalGroupLayout(model);
+                return;
+            }
+            DagreInputGraph d = new DagreInputGraph();
+            d.VerticalLayout = VerticalLayout;
+            updateNodesSizes(model);
+
+            model.Nodes = model.Nodes.Where(z => z.LayerType != LayerType.Constant && (z.Childs.Any() || z.Parent != null || z.Parents.Any())).ToArray();
+
+
 
             var list1 = model.Nodes.ToList();
 
@@ -134,12 +272,16 @@ namespace Dendrite.Layouts
             {
                 foreach (var item in gg.Childs)
                 {
+
+
                     var nd1 = d.GetNode(gg);
                     var nd2 = d.GetNode(item);
                     var minlen = (item.Parents.Count == 0 || item.Childs.Count == 0 || gg.Parents.Count == 0 || gg.Childs.Count == 0) ? 3 : 1;
                     d.AddEdge(nd1, nd2, minlen);
+
                 }
             }
+
 
             d.Layout();
 

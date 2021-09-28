@@ -1,5 +1,6 @@
 ﻿using Dagre;
 using System;
+using System.Collections.Generic;
 
 namespace Dendrite
 {
@@ -10,7 +11,9 @@ namespace Dendrite
         public Func<GraphNode, float> GetRenderTextWidth;
         public virtual bool FlashHoveredRelatives { get; set; } = true;
         public virtual bool DrawHeadersAllowed { get; set; } = false;
-        public virtual bool EdgesDrawAllowed { get; set; } = false;        
+        public virtual bool EdgesDrawAllowed { get; set; } = false;
+
+        public List<GroupNode> RequestedGroups = new List<GroupNode>();
 
     }
 }

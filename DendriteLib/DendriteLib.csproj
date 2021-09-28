@@ -66,6 +66,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GraphModel.cs" />
     <Compile Include="GraphNode.cs" />
+    <Compile Include="GroupNode.cs" />
     <Compile Include="IDrawingContext.cs" />
     <Compile Include="InputData.cs" />
     <Compile Include="ITag.cs" />
