@@ -223,7 +223,14 @@ namespace Dendrite
                         vall = item.IntData + "";
                         break;
                     case AttributeInfoDataType.Ints:
+                        if (item.Ints.Count > 20)
+                        {
+                            vall = item.Ints.Take(20).Aggregate("", (x, y) => x + y + ", ");
+                        }
+                        else
+                        {
                         vall = item.Ints.Aggregate("", (x, y) => x + y + ", ");
+                        }
                         break;
                     case AttributeInfoDataType.Float32:
                         vall = item.FloatData + "";
@@ -720,6 +727,8 @@ namespace Dendrite
                 return false;
             }
             Stopwatch sw = new Stopwatch();
+            WaitDialog wd = new WaitDialog();
+            timer1.Enabled = false;
             Action loadAct = () =>
             {
                 sw.Start();
@@ -741,7 +750,24 @@ namespace Dendrite
                 //nodes.InsertRange(0, res2.Graph.Input.Select(z => outs[z.Name]));
 
                 updateNodesSizes();
+                CurrentLayout.GetRenderTextWidth = (item) =>
+                {
+                    var str = string.Empty;
+                    if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
+                    {
+                        str = $"{item.Name}:{item.OpType}";                        
+                    }
+                    else
+                    {
+                        str = $"{item.OpType}";
+                    }
+
+                    var ms = ctx.Graphics.MeasureString(str, f);
+                    return ms.Width;
+                };
+              
                 CurrentLayout.Layout(Model);
+               
                 //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
                 if (ParentForm != null)
                 {
@@ -752,9 +778,10 @@ namespace Dendrite
                 sw.Stop();
             };
             drawEnabled = false;
-            WaitDialog wd = new WaitDialog();
+            
             wd.Init(loadAct);
             wd.ShowDialog();
+            timer1.Enabled = true;
             if (wd.Exception != null)
             {
                 Helpers.ShowError(wd.Exception.Message, Program.MainForm.Text);

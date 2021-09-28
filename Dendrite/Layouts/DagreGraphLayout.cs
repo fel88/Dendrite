@@ -34,7 +34,15 @@ namespace Dendrite.Layouts
                         dd.Height = 170;
                         break;
                     case LayerType.PrimitiveMath:
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
                         dd.Width = 150;
+                        }
+
                         dd.Height = 50;
                         break;
                     case LayerType.MathOperation:
@@ -60,26 +68,50 @@ namespace Dendrite.Layouts
                         break;
                     case LayerType.Output:
                     case LayerType.Input:
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
                         dd.Width = 150;
+                        }
+
                         dd.Height = 50;
                         break;
                     case LayerType.Dropout:
                     case LayerType.Concat:
                     case LayerType.Relu:
                     case LayerType.Pad:
-                        dd.Width = 120;
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
+                            dd.Width = 120;
+                        }
+
                         dd.Height = 50;
                         break;
                     case LayerType.Pool:
                     case LayerType.Transpose:
                     case LayerType.Softmax:
                     case LayerType.Log:
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
                         dd.Width = 150;
+                        }
                         dd.Height = 50;
                         break;
                 }
             }
         }
+
 
         public override void Layout(GraphModel model)
         {

@@ -89,7 +89,8 @@ namespace Dendrite
             {
                 LayerType = LayerType.MathOperation;
             }
-            string[] pmaths = new[] { "add", "sub", "pow", "sqrt", "reduce", "exp", "cast", "shape", "div", "slice", "clip" };
+            string[] pmaths = new[] { "add", "sub", "pow", "sqrt", "reduce", "exp", "cast", "shape", "div", "slice", "ceil", "abs", "sum", "clip", "max", "scan", "compress",
+            "mapper","identity","upsample"};
             if (pmaths.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.PrimitiveMath;
