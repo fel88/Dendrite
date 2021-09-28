@@ -34,7 +34,15 @@ namespace Dendrite.Layouts
                         dd.Height = 170;
                         break;
                     case LayerType.PrimitiveMath:
-                        dd.Width = 150;
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
+                            dd.Width = 150;
+                        }
+
                         dd.Height = 50;
                         break;
                     case LayerType.MathOperation:
@@ -60,28 +68,51 @@ namespace Dendrite.Layouts
                         break;
                     case LayerType.Output:
                     case LayerType.Input:
-                        dd.Width = 150;
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
+                            dd.Width = 150;
+                        }
+
                         dd.Height = 50;
                         break;
                     case LayerType.Dropout:
                     case LayerType.Concat:
                     case LayerType.Relu:
                     case LayerType.Pad:
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
                         dd.Width = 120;
+                        }
+
                         dd.Height = 50;
                         break;
                     case LayerType.Pool:
                     case LayerType.Transpose:
                     case LayerType.Softmax:
                     case LayerType.Log:
-                        dd.Width = 150;
+                        if (GetRenderTextWidth != null)
+                        {
+                            dd.Width = 20 + GetRenderTextWidth(item);
+                        }
+                        else
+                        {
+                            dd.Width = 150;
+                        }
                         dd.Height = 50;
                         break;
                 }
             }
         }
 
-        
+
         public override void Layout(GraphModel model)
         {
             DagreInputGraph d = new DagreInputGraph();
@@ -110,7 +141,11 @@ namespace Dendrite.Layouts
                 }
             }
 
-            d.Layout();
+
+            d.Layout((f) =>
+            {
+                Progress?.Invoke(f);
+            });
 
             //back
             foreach (var n in model.Nodes)

@@ -31,7 +31,7 @@ namespace Dagre
         }*/
 
 
-        public static void _order(DagreGraph g)
+        public static void _order(DagreGraph g, Action<float> progress = null)
         {
             List<DagreGraph> downLayerGraphs = new List<DagreGraph>();
             List<DagreGraph> upLayerGraphs = new List<DagreGraph>();
@@ -41,7 +41,10 @@ namespace Dagre
             {
                 downLayerGraphs.Add(buildLayerGraph(g, i + 1, "inEdges"));
                 upLayerGraphs.Add(buildLayerGraph(g, rank - i - 1, "outEdges"));
+                progress?.Invoke((float)i / rank);
             }
+
+            progress?.Invoke(0.5f);
 
             if (util.DebugCompareEnabled)
             {
@@ -79,15 +82,7 @@ namespace Dagre
             dynamic bestCC = float.PositiveInfinity;
             object[] best = null;
 
-            var t1 = g.node("0");
-            foreach (var item in upLayerGraphs)
-            {
-                var t2 = item.node("0");
-                if (t1 == t2)
-                {
 
-                }
-            }
             for (int i = 0, lastBest = 0; lastBest < 4; ++i, ++lastBest)
             {
                 sweepLayerGraphs((i % 2 != 0) ? downLayerGraphs.ToArray() : upLayerGraphs.ToArray(), i % 4 >= 2);
@@ -138,7 +133,7 @@ namespace Dagre
 
         public static string[] reorderKeys(string[] ret)
         {
-           
+
             var dgts = ret.Where(z => z.All(char.IsDigit)).ToArray();
             Array.Sort(dgts, (x, y) => int.Parse(x) - int.Parse(y));
             var remains = ret.Except(dgts).ToArray();
@@ -155,8 +150,8 @@ namespace Dagre
                 var root = lg.graph()["root"];
                 var sorted = sortSubGraphModule.sortSubraph(lg as DagreGraph, root, cg, biasRight);
                 var vs = sorted["vs"] as List<object>;
-              /*  vs=reorderKeys(vs.Cast<string>().ToArray()).Cast<object>().ToList();
-                sorted["vs"] = vs;*/
+                /*  vs=reorderKeys(vs.Cast<string>().ToArray()).Cast<object>().ToList();
+                  sorted["vs"] = vs;*/
                 var length = vs.Count;
                 for (var i = 0; i < length; i++)
                 {

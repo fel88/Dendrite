@@ -330,49 +330,106 @@ namespace Dagre
             }
         }
 
-        public static void runLayout(DagreGraph g)
+      
+        public static void runLayout(DagreGraph g, Action<ExtProgressInfo> progress = null)
         {
+            ExtProgressInfo ext = new ExtProgressInfo();
+
+            progress?.Invoke(ext);
+
+            ext.Caption = "makeSpaceForEdgeLabels";
             makeSpaceForEdgeLabels(g);
+
+
             removeSelfEdges(g);
+
+
             acyclic.run(g);
+
 
             nestingGraph.run(g);
 
+            ext.Caption = "rank";
             rank(util.asNonCompoundGraph(g));
+
 
             injectEdgeLabelProxies(g);
 
+
             removeEmptyRanks(g);
+
+
             nestingGraph.cleanup(g);
+
 
             util.normalizeRanks(g);
 
+
             assignRankMinMax(g);
+
 
             removeEdgeLabelProxies(g);
 
+            ext.MainProgress = 0.1f;
+            progress?.Invoke(ext);
+            ext.Caption = "normalize.run";
             normalize.run(g);
+
 
             parentDummyChains._parentDummyChains(g);
 
-            addBorderSegments._addBorderSegments(g);
-            order._order(g);
 
+            addBorderSegments._addBorderSegments(g);
+            ext.Caption = "order";
+            ext.MainProgress = 0.3f;
+            progress?.Invoke(ext);
+            order._order(g, (f) =>
+            {
+                ext.AdditionalProgress = f;
+                progress?.Invoke(ext);
+            });
+
+            ext.MainProgress = 0.5f;
+            progress?.Invoke(ext);
             insertSelfEdges(g);
 
+
             coordinateSystem.adjust(g);
+
+
             position(g);
+
+
             positionSelfEdges(g);
+
+
             removeBorderNodes(g);
 
-            normalize.undo(g);
+            ext.Caption = "undo";
+            normalize.undo(g, (f) =>
+            {
+                ext.AdditionalProgress = f;
+                progress?.Invoke(ext);
+            });
+
 
             fixupEdgeLabelCoords(g);
+
             coordinateSystem.undo(g);
+
             translateGraph(g);
+
+
             assignNodeIntersects(g);
+
+
             reversePointsForReversedEdges(g);
+
+
             acyclic.undo(g);
+            ext.AdditionalProgress = 1;
+            ext.MainProgress = 1;
+            progress?.Invoke(ext);
         }
 
         public static void reversePointsForReversedEdges(DagreGraph g)
@@ -568,7 +625,8 @@ namespace Dagre
 
                 prevY += maxHeight + rankSep;
             }
-            foreach (var item in bk.entries(bk.positionX(g)))
+            var list = bk.entries(bk.positionX(g));
+            foreach (var item in list)
             {
                 g.node(item[0])["x"] = item[1];
             }

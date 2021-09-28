@@ -1,4 +1,5 @@
 ﻿using Dagre;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,10 +21,30 @@ namespace Dagre
         {
             return edges.ToArray();
         }
+        public static bool ExceptionOnDuplicateEdge = false;
+        public DagreInputEdge GetEdge(DagreInputNode from, DagreInputNode to)
+        {
+            return edges.First(z => z.From == from && z.To == to);
+        }
         public DagreInputEdge AddEdge(DagreInputNode from, DagreInputNode to, int minLen = 1)
         {
-            if (edges.Any(z => z.From == from && z.To == to)) throw new DagreException("duplicate edge");
-            if (edges.Any(z => z.From == to && z.To == from)) throw new DagreException("duplicate edge");
+            if (edges.Any(z => z.From == from && z.To == to))
+            {
+                var fr = GetEdge(from, to);
+                if (ExceptionOnDuplicateEdge)
+                    throw new DagreException("duplicate edge");
+                else
+                    return fr;
+            }
+            if (edges.Any(z => z.From == to && z.To == from))
+            {
+                var fr = GetEdge(to, from);
+                if (ExceptionOnDuplicateEdge)
+                    throw new DagreException("duplicate edge");
+                else
+                    return fr;
+
+            }
             if (to.Parents.Contains(from)) throw new DagreException("duplciate parent");
             to.Parents.Add(from);
             if (from.Childs.Contains(to)) throw new DagreException("duplciate child");
@@ -62,7 +83,7 @@ namespace Dagre
             }
         }
 
-        public void Layout()
+        public void Layout(Action<ExtProgressInfo> progress = null)
         {
             check();
             DagreGraph dg = new DagreGraph(true);
@@ -107,7 +128,10 @@ namespace Dagre
                 dg.graph()["rankdir"] = "tb";
             else
                 dg.graph()["rankdir"] = "lr";
-            DagreLayout.runLayout(dg);
+            DagreLayout.runLayout(dg, (f) =>
+            {
+                progress?.Invoke(f);
+            });
 
             //back
             for (int i = 0; i < nodes.Count; i++)
@@ -156,6 +180,7 @@ namespace Dagre
         public DagreInputNode To;
         public float MinLen;
         public DagreCurvePoint[] Points;
+        public object Tag;
     }
 
     public struct DagreCurvePoint
@@ -163,5 +188,13 @@ namespace Dagre
         public DagreCurvePoint(float _x, float _y) { X = _x; Y = _y; }
         public float X;
         public float Y;
+    }
+    public class ExtProgressInfo
+    {
+        public float MainProgress;
+        public float AdditionalProgress;
+        public bool UseAdditionalProgress = true;
+        public string Caption;
+        public bool ShowCaption = true;
     }
 }

@@ -23,21 +23,22 @@ namespace Dendrite
         public Exception Exception;
         private void WaitDialog_Shown(object sender, EventArgs e)
         {
-            Thread th = new Thread(() => {
-               // try
+            Thread th = new Thread(() =>
+            {
+                // try
                 {
                     act();
                 }
-              //  catch (Exception ex)
+                //  catch (Exception ex)
                 {
-               //     Exception = ex;
+                    //     Exception = ex;
                 }
-               // finally
+                // finally
                 {
                     finished = true;
                 }
-            
-            });            
+
+            });
             th.IsBackground = true;
             th.Start();
         }
@@ -48,14 +49,31 @@ namespace Dendrite
         }
 
         int cnt = 0;
+        public bool UseCustomProgress = true;
+        public void SetProgress(Dagre.ExtProgressInfo val)
+        {
+            progressBar1.Invoke((Action)(() =>
+            {
+                progressBar1.Value = (int)Math.Round(val.MainProgress * 100);
+                progressBar2.Visible = val.UseAdditionalProgress;
+                progressBar2.Value = (int)Math.Round(val.AdditionalProgress * 100);
+                if (val.ShowCaption)
+                    Text = val.Caption;
+                UseCustomProgress = true;
+            }));
+
+        }
+
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (cnt == 100) { cnt = 0; }
-            progressBar1.Value = cnt++;
             if (finished)
             {
                 Close();
             }
+            if (UseCustomProgress) return;
+            if (cnt == 100) { cnt = 0; }
+            progressBar1.Value = cnt++;
+           
         }
     }
 }

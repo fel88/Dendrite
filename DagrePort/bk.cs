@@ -84,9 +84,9 @@ namespace Dagre
         }
 
 
-        public static dynamic entries(dynamic oo)
+        public static List<object> entries(dynamic oo)
         {
-            dynamic ret = new List<object>();
+            var ret = new List<object>();
             foreach (var item in oo.Keys)
             {
                 ret.Add(new object[] { item, oo[item] });

@@ -34,12 +34,17 @@ namespace Dagre
 
         /*denormalize
          */
-        public static void undo(DagreGraph g)
+        public static void undo(DagreGraph g, Action<float> progress = null)
         {
             var gg = g.graph();
             if (gg.ContainsKey("dummyChains"))
-                foreach (var vv in gg["dummyChains"])
+            {
+                dynamic list = gg["dummyChains"];
+                int i = 0;
+                foreach (var vv in list)
                 {
+                    progress?.Invoke((float)i / list.Count);
+                    i++;
                     var v = vv;
                     var node = g.node(v);
                     var origLabel = node["edgeLabel"];
@@ -74,6 +79,7 @@ namespace Dagre
                         node = g.node(v);
                     }
                 }
+            }
 
         }
 
