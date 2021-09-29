@@ -778,7 +778,11 @@ namespace Dendrite
                 //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
                 if (ParentForm != null)
                 {
-                    ParentForm.Text = Path.GetFileName(path);
+                    ParentForm.Invoke((Action)(() =>
+                    {
+                        ParentForm.Text = Path.GetFileName(path);
+                    }));
+                    
                 }
                 drawEnabled = true;
                 if (_fitAll)
@@ -998,7 +1002,8 @@ namespace Dendrite
                 str = $"{item.OpType}";
             }
 
-            var ms = ctx.Graphics.MeasureString(str, f);
+            var ms = TextRenderer.MeasureText(str, f);
+            //var ms = ctx.Graphics.MeasureString(str, f);
             return ms.Width;
         }
         private void dagreToolStripMenuItem_Click(object sender, EventArgs e)

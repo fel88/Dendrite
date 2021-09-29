@@ -191,13 +191,13 @@ namespace Dendrite
                     //nodes[i].Input = iitem;
                     if (outs.ContainsKey(iitem))
                     {
-                        nodes[i].Parents.Add(outs[iitem]);
+                        /*nodes[i].Parents.Add(outs[iitem]);
                         if (nodes[i].Parents.Count > 1)
                         {
 
-                        }
+                        }*/
                         //nodes[i].Parent = outs[iitem];
-                        outs[iitem].Childs.Add(nodes[i]);
+                        outs[iitem].AttachChild(nodes[i]);
                     }
                 }
                 if (item.Input.Any())
@@ -222,10 +222,8 @@ namespace Dendrite
                 var gn = new GraphNode() { Name = item.Name, LayerType = LayerType.Output };
                 gn.Tag = item;
                 nodes.Add(gn);
-                var pp = outs[gn.Name];
-                gn.Parents.Add(pp);
-                pp.Childs.Add(gn);
-                //  outs.Add(gn.Name, gn);
+                var pp = outs[gn.Name];                
+                pp.AttachChild(gn);                
             }
 
             var cnt2 = res2.Graph.Output[0].Name;

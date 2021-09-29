@@ -168,8 +168,7 @@ namespace Dendrite.Layouts
 
                     if (add)
                     {
-                        gg.Childs.Add(gnode);
-                        gnode.Parents.Add(gg);
+                        gg.AttachChild(gnode);                        
                         gg.Childs.RemoveAll(z => group1.Contains(z));
                     }
                 }

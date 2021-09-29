@@ -106,6 +106,22 @@ namespace Dendrite
 
         public string Name;
         public List<GraphNode> Childs = new List<GraphNode>();
+        public static bool ExceptionOnDuplicateChild = false;
+
+        public void AttachChild(GraphNode child)
+        {
+            if (Childs.Contains(child))
+            {
+                if (ExceptionOnDuplicateChild)
+                    throw new ArgumentException("duplicate child");
+                else
+                    return;
+            }
+            Childs.Add(child);
+            child.Parents.Add(this);
+
+        }
+
         public GraphNode Parent;
         public List<GraphNode> Parents = new List<GraphNode>();
 
