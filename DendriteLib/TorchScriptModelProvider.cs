@@ -269,8 +269,8 @@ namespace Dendrite
                     foreach (var pitem in inpts)
                     {
                         var par = outputs[pitem];
-                        output.Parents.Add(par);
-                        par.Childs.Add(output);
+                        //output.Parents.Add(par);
+                        par.AttachChild(output);
                     }
                     continue;
                 }
@@ -352,8 +352,8 @@ namespace Dendrite
                     {
                         var gn2 = ww1[0];
                         var par = outputs[pitem];
-                        gn2.Parents.Add(par);
-                        par.Childs.Add(gn2);
+                        //gn2.Parents.Add(par);
+                        par.AttachChild(gn2);
                     }
                     if (arr[1].Contains("convolution"))
                     {
@@ -384,8 +384,8 @@ namespace Dendrite
                         foreach (var pitem in inpts)
                         {
                             var par = outputs[pitem];
-                            gn2.Parents.Add(par);
-                            par.Childs.Add(gn2);
+                            //gn2.Parents.Add(par);
+                            par.AttachChild(gn2);
                         }
                         if (arr[1].Contains("cat"))
                         {

@@ -21,7 +21,8 @@ namespace Dagre
         {
             return edges.ToArray();
         }
-        public static bool ExceptionOnDuplicateEdge = false;
+        public static bool ExceptionOnDuplicateEdge = true;
+        public static bool ExceptionOnReverseDuplicateEdge = true;
         public DagreInputEdge GetEdge(DagreInputNode from, DagreInputNode to)
         {
             return edges.First(z => z.From == from && z.To == to);
@@ -39,8 +40,8 @@ namespace Dagre
             if (edges.Any(z => z.From == to && z.To == from))
             {
                 var fr = GetEdge(to, from);
-                if (ExceptionOnDuplicateEdge)
-                    throw new DagreException("duplicate edge");
+                if (ExceptionOnReverseDuplicateEdge)
+                    throw new DagreException("reverse duplicate edge");
                 else
                     return fr;
 

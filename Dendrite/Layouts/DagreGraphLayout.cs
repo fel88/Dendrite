@@ -131,7 +131,7 @@ namespace Dendrite.Layouts
             }
 
             foreach (var gg in list1)
-            {
+            {              
                 foreach (var item in gg.Childs)
                 {
                     var nd1 = d.GetNode(gg);

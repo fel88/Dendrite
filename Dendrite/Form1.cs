@@ -755,14 +755,16 @@ namespace Dendrite
                     var str = string.Empty;
                     if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
                     {
-                        str = $"{item.Name}:{item.OpType}";                        
+                        str = $"{item.Name}:{item.OpType}";
                     }
                     else
                     {
                         str = $"{item.OpType}";
                     }
 
-                    var ms = ctx.Graphics.MeasureString(str, f);
+
+                    //var ms = ctx.Graphics.MeasureString(str, f);
+                    var ms = TextRenderer.MeasureText(str, f);
                     return ms.Width;
                 };
                 CurrentLayout.Progress = (f) =>
@@ -770,20 +772,25 @@ namespace Dendrite
                     wd.SetProgress(f);
                 };
                 CurrentLayout.Layout(Model);
-               
+
                 //Text = $"{WindowCaption}: {Path.GetFileName(path)}";
+
                 if (ParentForm != null)
                 {
-                    ParentForm.Text = Path.GetFileName(path);
+                    ParentForm.Invoke((Action)(() =>
+                    {
+                        ParentForm.Text = Path.GetFileName(path);
+                    }));
+                    
                 }
                 drawEnabled = true;
                 fitAll();
                 sw.Stop();
             };
             drawEnabled = false;
-            
+
             wd.Init(loadAct);
-            wd.ShowDialog(); 
+            wd.ShowDialog();
             timer1.Enabled = true;
             if (wd.Exception != null)
             {

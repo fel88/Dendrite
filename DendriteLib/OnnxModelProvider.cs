@@ -191,13 +191,13 @@ namespace Dendrite
                     //nodes[i].Input = iitem;
                     if (outs.ContainsKey(iitem))
                     {
-                        nodes[i].Parents.Add(outs[iitem]);
+                        //nodes[i].Parents.Add(outs[iitem]);
                         if (nodes[i].Parents.Count > 1)
                         {
 
                         }
                         //nodes[i].Parent = outs[iitem];
-                        outs[iitem].Childs.Add(nodes[i]);
+                        outs[iitem].AttachChild(nodes[i]);
                     }
                 }
                 if (item.Input.Any())
@@ -223,8 +223,8 @@ namespace Dendrite
                 gn.Tag = item;
                 nodes.Add(gn);
                 var pp = outs[gn.Name];
-                gn.Parents.Add(pp);
-                pp.Childs.Add(gn);
+                //gn.Parents.Add(pp);
+                pp.AttachChild(gn);
                 //  outs.Add(gn.Name, gn);
             }
 

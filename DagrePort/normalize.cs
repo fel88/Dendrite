@@ -41,9 +41,16 @@ namespace Dagre
             {
                 dynamic list = gg["dummyChains"];
                 int i = 0;
+                int count = 0;
+                if (list is Array)
+                {
+                    count = list.Length;
+                }
+                else { count = list.Count; }
                 foreach (var vv in list)
                 {
-                    progress?.Invoke((float)i / list.Count);
+                    var perc = (float)i / count;
+                    progress?.Invoke(perc);
                     i++;
                     var v = vv;
                     var node = g.node(v);

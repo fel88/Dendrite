@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="acyclic.cs" />
     <Compile Include="addBorderSegments.cs" />
+    <Compile Include="BERTTester.cs" />
     <Compile Include="bk.cs" />
     <Compile Include="coordinateSystem.cs" />
     <Compile Include="DagreGraph.cs" />

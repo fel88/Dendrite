@@ -29,9 +29,9 @@ namespace Dagre
             foreach (var item in ar1)
             {
                 _parent.Remove(item);
-            }
-
+            }            
         }
+
         public void CompareNodes(DagreGraph gr)
         {
             if (gr._nodeCount != _nodeCount) throw new DagreException();
@@ -475,21 +475,19 @@ namespace Dagre
             ret.LoadJson(json);
             return ret;
         }
-        public static DagreGraph FromJson(object json)
+        public static DagreGraph FromJson(object json, bool clearNulls = true)
         {
             DagreGraph ret = new DagreGraph(false);
-            ret.LoadJson(json);
+            ret.LoadJson(json, clearNulls);
             return ret;
         }
         public void LoadJson(string json)
         {
             JavaScriptSerializer jss = new JavaScriptSerializer();
-
             var des = jss.Deserialize<dynamic>(json);
-
             LoadJson(des);
         }
-        public void LoadJson(object des)
+        public void LoadJson(object des, bool clearNulls = true)
         {
 
 
@@ -654,7 +652,8 @@ namespace Dagre
                         }
                 }
             }
-            ClearNulls();
+            if (clearNulls)
+                ClearNulls();
         }
 
         public void UpdateAttributeEdgesTo(DagreGraph gr)
@@ -953,7 +952,7 @@ namespace Dagre
         }
 
         public object setEdge(object[] args)
-        {            
+        {
             object value = null;
             dynamic arg0 = args[0];
             object v = null;
@@ -1307,7 +1306,7 @@ namespace Dagre
 
         public Func<object, dynamic> _defaultNodeLabelFn = (t) => { return null; };
 
-        
+
         public DagreGraph setNode(object v, object o2 = null)
         {
             if (_nodesRaw.ContainsKey(v as string))
