@@ -709,6 +709,7 @@ namespace Dendrite
 
         public bool ShowFullNames { get; set; } = false;
         Thread drawThread;
+        AutoResetEvent reset = new AutoResetEvent(true);
         public void StartDrawThread()
         {
             if (drawThread != null) return;
@@ -716,6 +717,8 @@ namespace Dendrite
             {
                 while (true)
                 {
+                    if (!drawEnabled)
+                        reset.WaitOne();
                     Redraw();
                     Thread.Sleep(15);
                 }
@@ -785,6 +788,7 @@ namespace Dendrite
                     
                 }
                 drawEnabled = true;
+                reset.Set();
                 if (_fitAll)
                     fitAll();
                 sw.Stop();

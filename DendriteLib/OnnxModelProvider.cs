@@ -132,6 +132,7 @@ namespace Dendrite
                         nodes[i].Data.Add(id);
                         var initer = inits[iitem];
 
+                        
                         if (initer.HasRawData)
                         {
                             var bts = initer.RawData.ToByteArray();
@@ -141,11 +142,14 @@ namespace Dendrite
                             p.RawData = Google.Protobuf.ByteString.FromBase64(b64);
 
                             List<float> ret = new List<float>();
+                            if (bts.Length % 4 == 0)
+                            {
                             for (int j = 0; j < bts.Length; j += 4)
                             {
                                 ret.Add(BitConverter.ToSingle(bts, j));
                             }
                             id.Weights = ret.ToArray();
+                        }
                         }
                         else if (initer.Int64Data != null && initer.Int64Data.Count > 0)
                         {
