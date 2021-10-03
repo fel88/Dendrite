@@ -21,7 +21,11 @@ namespace Dagre
         {
             return edges.ToArray();
         }
-        public static bool ExceptionOnDuplicateEdge = true;
+        public DagreInputNode[] Nodes()
+        {
+            return nodes.ToArray();
+        }
+        public static bool ExceptionOnDuplicateEdge = false;
         public static bool ExceptionOnReverseDuplicateEdge = true;
         public DagreInputEdge GetEdge(DagreInputNode from, DagreInputNode to)
         {

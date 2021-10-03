@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Dendrite
 {
@@ -14,5 +15,13 @@ namespace Dendrite
         public ModelProvider Provider;
         public GraphNode[] Nodes;
         public EdgeNode[] Edges;
+        public List<GroupNode> Groups = new List<GroupNode>();
+
+    }
+    public class GroupNode : GraphNode
+    {
+        //public bool ExpandRequest = false;
+        public string Prefix;
+        public GraphNode[] Nodes;
     }
 }

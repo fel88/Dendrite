@@ -15,13 +15,13 @@ namespace Dagre
 
         public static bool HasResource(string resourceName)
         {
-            var assembly = Assembly.GetEntryAssembly();
+            var assembly = Assembly.GetAssembly(typeof(util));
             var fr1 = assembly.GetManifestResourceNames().FirstOrDefault(z => z.Contains(resourceName));
             return fr1 != null;
         }
         public static string ReadResourceTxt(string resourceName)
         {
-            var assembly = Assembly.GetEntryAssembly();
+            var assembly = Assembly.GetAssembly(typeof(util));
             var fr1 = assembly.GetManifestResourceNames().First(z => z.Contains(resourceName));
 
             using (Stream stream = assembly.GetManifestResourceStream(fr1))
@@ -114,7 +114,7 @@ namespace Dagre
 
         public static int maxRank(DagreGraph g)
         {
-            return g.nodes().Where(z => g.node(z)["rank"] != null).Select(z => g.node(z)["rank"]).Max();
+            return g.nodes().Where(z => g.node(z).ContainsKey("rank")).Select(z => g.node(z)["rank"]).Max();
 
         }
         /*
@@ -181,9 +181,10 @@ namespace Dagre
             foreach (var v in nd)
             {
                 var node = g.node(v);
-                var rank1 = node["rank"];
-                if (rank1 != null)
+                
+                if (node.ContainsKey("rank"))
                 {
+                    var rank1 = node["rank"];
                     /*while (layering[rank].Count < node["order"])
                     {
                         layering[rank].Add(null);

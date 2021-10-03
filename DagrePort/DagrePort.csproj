@@ -321,6 +321,30 @@
     <EmbeddedResource Include="JsonsDebug\sample2\beforeAssignOrder2.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeRun.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeRank.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeNestingRun.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeAsNonCompoundGraph.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterRank.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeRemoveEmptyRanks.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterCleanup.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeCleanup.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterNormalizeRanks.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterNormalize.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforePosition.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeOrder.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterOrder.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\downLayerGraphs.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\upLayerGraphs.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterSweep1.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterAssignOrder1.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeAssignOrder2.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterPosition.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforePositionX.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterPositionAsNonCompound.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\afterDenormalize.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeDenormalize.txt" />
+    <EmbeddedResource Include="JsonsDebug\cluster\beforeRemoveBorderNodes.txt" />
     <Content Include="JsonsDebug\sample2\beforeAssignOrder2Best.txt" />
     <EmbeddedResource Include="JsonsDebug\upLayerGraphs1.txt" />
     <EmbeddedResource Include="JsonsDebug\sample3\upLayerGraphs.txt" />

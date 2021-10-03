@@ -804,6 +804,192 @@ namespace Dendrite
             var bmp = DrawGraph(dg);
             Clipboard.SetImage(bmp);
         }
+
+        public static void TestCluster2()
+        {
+            util.DebugCompareEnabled = false;
+
+            //            // Create the input graph
+            //            var g = new dagreD3.graphlib.Graph({ compound:true})
+            //  .setGraph({ })
+            //  .setDefaultEdgeLabel(function() { return { }; });
+
+            //// Here we're setting the nodes
+            //g.setNode('a', {label: 'A'});
+            //g.setNode('b', {label: 'B'});
+            //g.setNode('c', {label: 'C'});
+            //g.setNode('d', {label: 'D'});
+            //g.setNode('e', {label: 'E'});
+            //g.setNode('f', {label: 'F'});
+            //g.setNode('g', {label: 'G'});
+
+            DagreGraph dg = new DagreGraph(true);
+            dg.setNode("a", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "A" }));
+            dg.setNode("b", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "B" }));
+            dg.setNode("c", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "C" }));
+            dg.setNode("d", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "D" }));
+            dg.setNode("e", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "E" }));
+            dg.setNode("f", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "F" }));
+            dg.setNode("g", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "G" }));
+            dg.setNode("group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Group", clusterLabelPos = "top" }));
+            dg.setNode("top_group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Top Group", clusterLabelPos = "bottom" }));
+            dg.setNode("bottom_group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Bottom Group" }));
+
+            //g.setNode('group', {label: 'Group', clusterLabelPos: 'top', style: 'fill: #d3d7e8'});
+            //g.setNode('top_group', {label: 'Top Group', clusterLabelPos: 'bottom', style: 'fill: #ffd47f'});
+            //g.setNode('bottom_group', {label: 'Bottom Group', style: 'fill: #5f9488'});
+
+            dg.setParent("top_group", "group");
+            dg.setParent("bottom_group", "group");
+            dg.setParent("b", "top_group");
+            dg.setParent("c", "bottom_group");
+            dg.setParent("d", "bottom_group");
+            dg.setParent("e", "bottom_group");
+            dg.setParent("f", "bottom_group");
+
+            //// Set the parents to define which nodes belong to which cluster
+            //g.setParent('top_group', 'group');
+            //g.setParent('bottom_group', 'group');
+            //g.setParent('b', 'top_group');
+            //g.setParent('c', 'bottom_group');
+            //g.setParent('d', 'bottom_group');
+            //g.setParent('e', 'bottom_group');
+            //g.setParent('f', 'bottom_group');
+            List<string[]> edgesToAdd = new List<string[]>();
+            edgesToAdd.Add(new[] { "a", "b" });
+            edgesToAdd.Add(new[] { "b", "c" });
+            edgesToAdd.Add(new[] { "b", "d" });
+            edgesToAdd.Add(new[] { "b", "e" });
+            edgesToAdd.Add(new[] { "b", "f" });
+            edgesToAdd.Add(new[] { "b", "g" });
+
+            foreach (var item in edgesToAdd)
+            {
+                JavaScriptLikeObject jj = new JavaScriptLikeObject();
+
+                jj["minlen"] = 1;
+
+                jj.Add("weight", 1);
+                jj.Add("width", 0);
+                jj.Add("height", 0);
+                jj.Add("labeloffset", 10);
+                jj.Add("labelpos", "r");
+                dg.setEdge(new object[] { item[0], item[1], jj });
+            }
+
+
+
+            //// Set up edges, no special attributes.
+            //g.setEdge('a', 'b');
+            //g.setEdge('b', 'c');
+            //g.setEdge('b', 'd');
+            //g.setEdge('b', 'e');
+            //g.setEdge('b', 'f');
+            //g.setEdge('b', 'g');
+            dg.graph()["ranksep"] = 50;
+            dg.graph()["edgesep"] = 20;
+            dg.graph()["nodesep"] = 50;
+
+            dg.graph()["rankdir"] = "tb";
+
+            DagreLayout.runLayout(dg);
+
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
+        }
+        public static void TestCluster()
+        {
+            var dl = new DagreLayout();
+            DagreGraph dg = DagreGraph.FromJson(ReadResourceTxt("cluster.beforeRun.txt"));
+
+            util.DebugCompareEnabled = true;
+            util.DebugResourcesPrefix = "cluster.";
+            DagreLayout.makeSpaceForEdgeLabels(dg);
+
+            DagreLayout.removeSelfEdges(dg);
+            acyclic.run(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeNestingRun.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            nestingGraph.run(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeAsNonCompoundGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var ncg = util.asNonCompoundGraph(dg);
+
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeRank.txt")).Compare(ncg)) throw new DagreException("wrong");
+            DagreLayout.rank(ncg);
+
+
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.afterRank.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.injectEdgeLabelProxies(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeRemoveEmptyRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+            DagreLayout.removeEmptyRanks(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeCleanup.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            nestingGraph.cleanup(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.afterCleanup.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            util.normalizeRanks(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.afterNormalizeRanks.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.assignRankMinMax(dg);
+
+            DagreLayout.removeEdgeLabelProxies(dg);
+
+            //if (!DagreGraph.FromJson(ReadResourceTxt("sample3.beforeNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+            normalize.run(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("cluster.afterNormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            parentDummyChains._parentDummyChains(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterParentDummies.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            addBorderSegments._addBorderSegments(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+            order._order(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.afterOrder.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.insertSelfEdges(dg);
+
+            coordinateSystem.adjust(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforePosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.position(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.afterPosition.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.positionSelfEdges(dg);
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeRemoveBorderNodes.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.removeBorderNodes(dg);
+
+            if (!DagreGraph.FromJson(ReadResourceTxt("cluster.beforeDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            normalize.undo(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("cluster.afterDenormalize.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.fixupEdgeLabelCoords(dg);
+
+            //  if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterFixupEdgeLabels.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            coordinateSystem.undo(dg);
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.beforeTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.translateGraph(dg);
+            // if (!DagreGraph.FromJson(ReadResourceTxt("Mnist_1.afterTranslateGraph.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            DagreLayout.assignNodeIntersects(dg);
+            DagreLayout.reversePointsForReversedEdges(dg);
+            acyclic.undo(dg);
+            //if (!DagreGraph.FromJson(ReadResourceTxt("afterAcyclicUndo.txt")).Compare(dg)) throw new DagreException("wrong");
+
+            var bmp = DrawGraph(dg);
+            Clipboard.SetImage(bmp);
+        }
         public static void Test8()
         {
             var dl = new DagreLayout();

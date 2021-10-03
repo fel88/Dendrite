@@ -1,5 +1,6 @@
 ﻿using Dagre;
 using System;
+using System.Collections.Generic;
 
 namespace Dendrite
 {
@@ -13,6 +14,9 @@ namespace Dendrite
         public virtual bool EdgesDrawAllowed { get; set; } = false;
 
         public Action<ExtProgressInfo> Progress;
+        public List<GroupNode> RequestedGroups = new List<GroupNode>();
+
+
 
     }
 }

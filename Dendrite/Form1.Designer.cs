@@ -66,10 +66,16 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.fullNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.horizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.showVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.horizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.collapseGroupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showGroupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.clusterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -399,7 +405,12 @@
             this.fullNamesToolStripMenuItem,
             this.toolStripSeparator4,
             this.showVerticalToolStripMenuItem,
-            this.horizontalToolStripMenuItem});
+            this.horizontalToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.collapseGroupsToolStripMenuItem,
+            this.showGroupsToolStripMenuItem,
+            this.toolStripSeparator6,
+            this.toolStripMenuItem1});
             this.toolStripDropDownButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton4.Image")));
             this.toolStripDropDownButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton4.Name = "toolStripDropDownButton4";
@@ -414,19 +425,6 @@
             this.fullNamesToolStripMenuItem.Text = "full names";
             this.fullNamesToolStripMenuItem.Click += new System.EventHandler(this.fullNamesToolStripMenuItem_Click);
             // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 50;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // horizontalToolStripMenuItem
-            // 
-            this.horizontalToolStripMenuItem.Name = "horizontalToolStripMenuItem";
-            this.horizontalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.horizontalToolStripMenuItem.Text = "show horizontal";
-            this.horizontalToolStripMenuItem.Click += new System.EventHandler(this.horizontalToolStripMenuItem_Click);
-            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -438,6 +436,58 @@
             this.showVerticalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.showVerticalToolStripMenuItem.Text = "show vertical";
             this.showVerticalToolStripMenuItem.Click += new System.EventHandler(this.showVerticalToolStripMenuItem_Click);
+            // 
+            // horizontalToolStripMenuItem
+            // 
+            this.horizontalToolStripMenuItem.Name = "horizontalToolStripMenuItem";
+            this.horizontalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.horizontalToolStripMenuItem.Text = "show horizontal";
+            this.horizontalToolStripMenuItem.Click += new System.EventHandler(this.horizontalToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(177, 6);
+            // 
+            // collapseGroupsToolStripMenuItem
+            // 
+            this.collapseGroupsToolStripMenuItem.Name = "collapseGroupsToolStripMenuItem";
+            this.collapseGroupsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.collapseGroupsToolStripMenuItem.Text = "collapse groups";
+            this.collapseGroupsToolStripMenuItem.Click += new System.EventHandler(this.collapseGroupsToolStripMenuItem_Click);
+            // 
+            // showGroupsToolStripMenuItem
+            // 
+            this.showGroupsToolStripMenuItem.Name = "showGroupsToolStripMenuItem";
+            this.showGroupsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showGroupsToolStripMenuItem.Text = "show groups";
+            this.showGroupsToolStripMenuItem.Click += new System.EventHandler(this.showGroupsToolStripMenuItem_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 50;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clusterToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem1.Text = "debug";
+            // 
+            // clusterToolStripMenuItem
+            // 
+            this.clusterToolStripMenuItem.Name = "clusterToolStripMenuItem";
+            this.clusterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clusterToolStripMenuItem.Text = "cluster";
+            this.clusterToolStripMenuItem.Click += new System.EventHandler(this.clusterToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -503,6 +553,12 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem horizontalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showVerticalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem collapseGroupsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showGroupsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem clusterToolStripMenuItem;
     }
 }
 

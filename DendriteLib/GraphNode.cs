@@ -39,11 +39,11 @@ namespace Dendrite
             {
                 LayerType = LayerType.Gather;
             }
-            if (OpType.ToLower().Contains("batch"))
+            if (OpType.ToLower().Contains("batch") || OpType.ToLower().Contains("instancenormalization"))
             {
                 LayerType = LayerType.Batch;
             }
-            if (OpType.ToLower().Contains("relu") || OpType.ToLower().Contains("tanh") || OpType.ToLower().Contains("sigmoid"))
+            if (OpType.ToLower().Contains("relu") || OpType.ToLower().Contains("tanh") || OpType.ToLower().Contains("sigmoid") || OpType.ToLower().Contains("elu"))
             {
                 LayerType = LayerType.Relu;
             }
@@ -84,19 +84,19 @@ namespace Dendrite
                 LayerType = LayerType.Constant;
             }
 
-            string[] maths = new[] { "matmul", "mul" };
+            string[] maths = new[] { "matmul", "mul", "resize", "loop" };
             if (maths.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.MathOperation;
             }
-            string[] pmaths = new[] { "add", "sub", "pow", "sqrt", "reduce", "exp", "cast", "shape", "div", "slice", "ceil", "abs", "sum", "clip", "max", "scan", "compress",
-            "mapper","identity","upsample"};
+            string[] pmaths = new[] { "add", "sub", "pow", "sqrt","floor" ,"neg", "topk","nonzero", "reduce", "exp", "cast", "shape", "div", "slice", "ceil", "abs", "sum", "clip", "max", "scan", "compress",
+            "mapper","identity","upsample","round"};
             if (pmaths.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.PrimitiveMath;
             }
 
-            string[] concats = new[] { "concat", "reshape" };
+            string[] concats = new[] { "concat", "reshape", "tile", "flatten", "split" };
             if (concats.Any(z => OpType.ToLower().Contains(z)))
             {
                 LayerType = LayerType.Concat;

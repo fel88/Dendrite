@@ -238,6 +238,7 @@
     </Compile>
     <Compile Include="BitmapDrawingContext.cs" />
     <Compile Include="ComboBoxItem.cs" />
+    <Compile Include="GraphDrawer.cs" />
     <Compile Include="Layouts\DagreGraphLayout.cs" />
     <Compile Include="Edit.cs">
       <SubType>Form</SubType>

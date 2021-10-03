@@ -262,7 +262,7 @@ namespace Dagre
                 if (util.HasResource($"{util.DebugResourcesPrefix}afterFeasibleTree"))
                 {
                     var test3 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}afterFeasibleTree"));
-                    test3.PreserveOrder = true;
+                    //test3.PreserveOrder = true;
                     if (!tree.Compare(test3)) throw new DagreException();
                 }
             }

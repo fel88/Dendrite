@@ -279,21 +279,30 @@ namespace Dagre
         {
             if (v is Array) return v;
             List<object> ret = new List<object>();
-            foreach (var item in v)
+            if (v is IDictionary<string, object>)
             {
-                if (item is Array)
+                foreach (var item in v.Values)
                 {
-                    List<object> ff = new List<object>();
-                    foreach (var zz in item)
-                    {
-                        ff.Add(zz);
-                    }
-                    ret.Add(ff.ToArray());
-
+                    ret.Add(item);
                 }
-                else
-                    ret.Add(item.Value);
             }
+            else
+                foreach (var item in v)
+                {
+
+                    if (item is Array)
+                    {
+                        List<object> ff = new List<object>();
+                        foreach (var zz in item)
+                        {
+                            ff.Add(zz);
+                        }
+                        ret.Add(ff.ToArray());
+
+                    }
+                    else
+                        ret.Add(item);
+                }
             return ret;
         }
 
@@ -406,6 +415,14 @@ namespace Dagre
 
         public static dynamic positionX(DagreGraph g)
         {
+            if (util.DebugCompareEnabled)
+            {
+                if (util.HasResource($"{util.DebugResourcesPrefix}beforePositionX"))
+                {
+                    var ret1 = DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforePositionX"));
+                    ret1.Compare(g);
+                }
+            }
             dynamic layering = util.buildLayerMatrix(g);
             ////// Dic-> Array
             List<object> toArr = new List<object>();
@@ -482,7 +499,7 @@ namespace Dagre
             }
             if (util.DebugCompareEnabled)
                 if (util.HasResource($"{util.DebugResourcesPrefix}beforeSmallest"))
-                DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeSmallest")).Compare(g);
+                    DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeSmallest")).Compare(g);
             dynamic smallestWidth = findSmallestWidthAlignment(g, xss);
 
             alignCoordinates(xss, smallestWidth);
@@ -493,63 +510,63 @@ namespace Dagre
             }
             if (util.DebugCompareEnabled)
                 if (util.HasResource($"{util.DebugResourcesPrefix}beforeBalance1"))
-                DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeBalance1")).Compare(g);
+                    DagreGraph.FromJson(util.ReadResourceTxt($"{util.DebugResourcesPrefix}beforeBalance1")).Compare(g);
             if (util.DebugCompareEnabled)
                 if (util.HasResource($"{util.DebugResourcesPrefix}xss1"))
-            {
-                JavaScriptSerializer jss = new JavaScriptSerializer();
-
-                var des = jss.Deserialize<dynamic>(util.ReadResourceTxt($"{util.DebugResourcesPrefix}xss1"));
-
-                foreach (var item in des)
                 {
-                    var v1 = item.Value;
-                    var v2 = xss[item.Key];
+                    JavaScriptSerializer jss = new JavaScriptSerializer();
 
-                    if (v1 is IDictionary<string, object>)
+                    var des = jss.Deserialize<dynamic>(util.ReadResourceTxt($"{util.DebugResourcesPrefix}xss1"));
+
+                    foreach (var item in des)
                     {
-                        foreach (var key1 in v1.Keys)
-                        {
-                            dynamic ee1 = v1[key1];
-                            dynamic ee2 = v2[key1];
-                            if (ee1 != ee2) throw new DagreException();
-                        }
-                    }
-                    else { if (v1 != v2) throw new DagreException(); }
+                        var v1 = item.Value;
+                        var v2 = xss[item.Key];
 
+                        if (v1 is IDictionary<string, object>)
+                        {
+                            foreach (var key1 in v1.Keys)
+                            {
+                                dynamic ee1 = v1[key1];
+                                dynamic ee2 = v2[key1];
+                                if (ee1 != ee2) throw new DagreException();
+                            }
+                        }
+                        else { if (v1 != v2) throw new DagreException(); }
+
+                    }
                 }
-            }
             if (util.DebugCompareEnabled)
                 if (util.HasResource($"{util.DebugResourcesPrefix}smallestWidth1"))
-            {
-                JavaScriptSerializer jss = new JavaScriptSerializer();
-
-                var des = jss.Deserialize<dynamic>(util.ReadResourceTxt($"{util.DebugResourcesPrefix}smallestWidth1"));
-
-                foreach (var item in des)
                 {
-                    var v1 = item.Value;
-                    var v2 = smallestWidth[item.Key];
+                    JavaScriptSerializer jss = new JavaScriptSerializer();
 
-                    if (v1 is IDictionary<string, object>)
+                    var des = jss.Deserialize<dynamic>(util.ReadResourceTxt($"{util.DebugResourcesPrefix}smallestWidth1"));
+
+                    foreach (var item in des)
                     {
-                        foreach (var key1 in v1.Keys)
-                        {
-                            dynamic ee1 = v1[key1];
-                            dynamic ee2 = v2[key1];
-                            if (ee1 != ee2) throw new DagreException();
-                        }
-                    }
-                    else { if (v1 != v2) throw new DagreException(); }
+                        var v1 = item.Value;
+                        var v2 = smallestWidth[item.Key];
 
+                        if (v1 is IDictionary<string, object>)
+                        {
+                            foreach (var key1 in v1.Keys)
+                            {
+                                dynamic ee1 = v1[key1];
+                                dynamic ee2 = v2[key1];
+                                if (ee1 != ee2) throw new DagreException();
+                            }
+                        }
+                        else { if (v1 != v2) throw new DagreException(); }
+
+                    }
                 }
-            }
 
             return balance(xss, _align);
         }
         public static bool hasConflict(dynamic conflicts, dynamic v, dynamic w)
         {
-            if (string.CompareOrdinal(v, w) == 1)
+            if (string.CompareOrdinal(v, w) > 0)//v>w
             {
                 var tmp = v;
                 v = w;
@@ -652,7 +669,7 @@ namespace Dagre
                                    var uLabel = g.node(u);
                                    var uPos = uLabel["order"];
                                    if ((uPos < k0 || k1 < uPos) &&
-                                   !(uLabel.ContainsKey("dummy") && g.node(scanNode).ContainsKey("dummy") != null))
+                                   !(uLabel.ContainsKey("dummy") && g.node(scanNode).ContainsKey("dummy")))
                                    {
                                        addConflict(conflicts, u, scanNode);
                                    }
@@ -735,7 +752,7 @@ namespace Dagre
                         var predecessors = g.predecessors(v);
                         if (predecessors.Length != 0)
                         {
-                            nextNorthPos = g.node(predecessors[0]).order;
+                            nextNorthPos = g.node(predecessors[0])["order"];
                             scan(south, southPos, southLookahead, prevNorthPos, nextNorthPos);
                             southPos = southLookahead;
                             prevNorthPos = nextNorthPos;
@@ -763,10 +780,10 @@ namespace Dagre
                     toArr.Add(arr2.ToArray());
                 }*/
                 dynamic prev = layering[0];
-                bool first = true;
+                // bool first = true;
                 foreach (var item in layering)
                 {
-                    if (first) { first = false; continue; }
+                    //if (first) { first = false; continue; }
                     prev = visitLayer(prev, item);
                 }
             }

@@ -12,5 +12,6 @@ namespace Dendrite
         public static Brush MathBrush = Brushes.Black;
         public static Brush PoolBrush = new SolidBrush(Color.FromArgb(51, 85, 51));
         public static Brush EndpointBrush = new SolidBrush(Color.FromArgb(238, 238, 238));
+        public static Brush GroupBrush = new SolidBrush(Color.LightBlue);
     }
 }

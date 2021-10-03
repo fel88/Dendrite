@@ -34,10 +34,10 @@ namespace Dagre
             }
         }
 
-        List<string> commonKeys = new List<string>();
-        List<int> digitsKeys = new List<int>();
+        public List<string> commonKeys = new List<string>();
+        public List<int> digitsKeys = new List<int>();
         //List<string> digitsKeysStr = new List<string>();
-        List<string> otherKeys = new List<string>();
+        public List<string> otherKeys = new List<string>();
 
         void deleteKey(string key)
         {
@@ -62,7 +62,7 @@ namespace Dagre
                 //binsearch
                 int index = binSearchInsertIndex(v);
                 digitsKeys.Insert(index, v);
-               // digitsKeysStr.Insert(index, key);
+                // digitsKeysStr.Insert(index, key);
                 commonKeys.Insert(index, key);
             }
             else
@@ -74,7 +74,7 @@ namespace Dagre
 
         private int binSearchInsertIndex(int key)
         {
-            
+
             int low = 0;
 
             int high = digitsKeys.Count;
@@ -92,17 +92,19 @@ namespace Dagre
                 }
                 else if (digitsKeys[m] == key)
                 {
-                    throw new DagreException("duplicate key");
+                    return m;
+                    //throw new DagreException("duplicate key");
                 }
                 else
                 {
-                    if (high == m) {
+                    if (high == m)
+                    {
                         throw new DagreException("err");
 
                     }
                     high = m;
                 }
-                
+
             }
             return low;
 
@@ -142,9 +144,24 @@ namespace Dagre
         {
             _isFreezed = true;
         }
+        public object Tag;
+        public RankTag RankTag;
         public void AddOrUpdate(string key, object val)
         {
             if (_isFreezed) throw new DagreException("can't add to frozen object");
+           /* if (key == "rank")
+            {
+                RankTag.Rank = (int)val;
+            }
+            else if (key == "minRank")
+            {
+                RankTag.MinRank = (int)val;
+            }
+            else if (key == "maxRank")
+            {
+                RankTag.MaxRank = (int)val;
+            }*/
+
             if (dic.ContainsKey(key))
             {
                 dic[key] = val;
@@ -186,6 +203,18 @@ namespace Dagre
             //orderedListIndexes.Add(key, orderedList.Count - 1);
             dic.Add(key, value);
             //if (dic.Keys.Count != commonKeys.Count) throw new DagreException();
+            /*if (key == "rank")
+            {
+                RankTag.Rank = (int)value;
+            }
+            else if (key == "minRank")
+            {
+                RankTag.MinRank = (int)value;
+            }
+            else if (key == "maxRank")
+            {
+                RankTag.MaxRank = (int)value;
+            }*/
         }
 
         public bool Remove(string key)
@@ -204,7 +233,7 @@ namespace Dagre
             }
 
             var ret = dic.Remove(key);
-          //  if (dic.Keys.Count != commonKeys.Count) throw new DagreException();
+            //  if (dic.Keys.Count != commonKeys.Count) throw new DagreException();
             return ret;
         }
 
@@ -222,6 +251,20 @@ namespace Dagre
             insertKey(item.Key);
             //orderedListIndexes.Add(item.Key, orderedList.Count - 1);
             //if (dic.Keys.Count != orderedList.Count) throw new DagreException();
+            var key = item.Key;
+            var val = item.Value;
+            /*if (key == "rank")
+            {
+                RankTag.Rank = (int)val;
+            }
+            else if (key == "minRank")
+            {
+                RankTag.MinRank = (int)val;
+            }
+            else if (key == "maxRank")
+            {
+                RankTag.MaxRank = (int)val;
+            }*/
         }
 
         public void Clear()
@@ -230,6 +273,7 @@ namespace Dagre
             otherKeys.Clear();
             digitsKeys.Clear();
             commonKeys.Clear();
+
             //digitsKeysStr.Clear();
             //orderedList.Clear();
             //dirty = true;
@@ -254,13 +298,50 @@ namespace Dagre
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
+            //throw new NotImplementedException();
+
             return dic.GetEnumerator();
 
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
+            //return new JavaDicEnumerator(this);
+            throw new NotImplementedException();
             return dic.GetEnumerator();
         }
+
+        internal static JavaScriptLikeObject FromObject(object p)
+        {
+            JavaScriptLikeObject ret = new JavaScriptLikeObject();
+            foreach (var item in p.GetType().GetProperties())
+            {
+                ret.Add(item.Name, item.GetValue(p));
+            }
+            return ret;
+        }
     }
+
+    /*public class JavaDicEnumerator : IEnumerator
+    {
+        public JavaDicEnumerator(JavaScriptLikeObject j)
+        {
+            obj = j;
+        }
+        JavaScriptLikeObject obj;
+        int position = 0;
+        public object Current => obj[]
+
+        public bool MoveNext()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
+    }*/
+
+
 }

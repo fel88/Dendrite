@@ -24,7 +24,7 @@ namespace Dendrite
         NodeProto node;
 
 
-
+        
         void updateList()
         {
             listView1.Items.Clear();
@@ -53,13 +53,17 @@ namespace Dendrite
         }
 
         ModelProto model;
-        public void Init(ModelProto model, NodeProto proto)
+        public void Init(ModelProto model, NodeProto proto, GraphNode gnode)
+
         {
             this.model = model;
             Text = "Edit node: " + proto.Name;
             this.node = proto;
             updateList();
+            textBox3.Text = proto.Name;
+            this.gnode = gnode;
         }
+        GraphNode gnode;
 
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -163,6 +167,12 @@ namespace Dendrite
             var ind = node.Input.IndexOf(name);
             node.Input[ind] = string.Empty;
             updateList();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            node.Name = textBox3.Text;
+            this.gnode.Name = node.Name;
         }
     }
 }

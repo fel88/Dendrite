@@ -290,47 +290,68 @@ namespace Dagre
 
         public static void removeEmptyRanks(DagreGraph g)
         {
-            Dictionary<int, List<string>> layers = new Dictionary<int, List<string>>();
+            Dictionary<int, object> layers = new Dictionary<int, object>();
 
             // Ranks may not start at 0, so we need to offset them
             if (g.nodesRaw().Length > 0)
             {
-                var offset = g.nodesRaw().Select(v => g.nodeRaw(v)["rank"]).Min();
+                var offset = g.nodesRaw().Where(z => g.nodeRaw(z).ContainsKey("rank")).Select(v => g.nodeRaw(v)["rank"]).Min();
                 //var offset = _.min(_.map(g.nodes(), function(v) { return g.node(v).rank; }));
 
                 foreach (var v in g.nodesRaw())
                 {
-                    var rank = (g.nodeRaw(v)["rank"] - offset);
+                    if (!g.nodeRaw(v).ContainsKey("rank")) continue;
+                    var rank = -offset;
+
+                    rank += g.nodeRaw(v)["rank"];
                     if (!layers.ContainsKey(rank))
                     {
                         layers.Add(rank, new List<string>());
                     }
-                    layers[rank].Add(v);
+                    ((dynamic)layers[rank]).Add(v);
                 }
             }
 
             var delta = 0;
             var nodeRankFactor = g.graph()["nodeRankFactor"];
-            foreach (var pair in layers.OrderBy(z => z.Key))
+            for (int i = 0; i <= layers.Keys.Max(); i++)
             {
-
-                var vs = pair.Value;
-                var i = pair.Key;
-                if (vs == null && i % nodeRankFactor != 0)
+                if (!layers.ContainsKey(i) && i % nodeRankFactor != 0)
                 {
                     --delta;
                 }
                 else if (delta != 0)
                 {
-                    foreach (var v in vs)
+                    if (layers.ContainsKey(i))
                     {
-                        g.nodeRaw(v)["rank"] += delta;
+                        dynamic vs = layers[i];
+                        foreach (var v in vs)
+                        {
+                            g.nodeRaw(v)["rank"] += delta;
+                        }
                     }
                 }
             }
+            /* foreach (var pair in layers.OrderBy(z => z.Key))
+             {
+
+                 dynamic vs = pair.Value;
+                 var i = pair.Key;
+                 if (vs == null && i % nodeRankFactor != 0)
+                 {
+                     --delta;
+                 }
+                 else if (delta != 0)
+                 {
+                     foreach (var v in vs)
+                     {
+                         g.nodeRaw(v)["rank"] += delta;
+                     }
+                 }
+             }*/
         }
 
-      
+
         public static void runLayout(DagreGraph g, Action<ExtProgressInfo> progress = null)
         {
             ExtProgressInfo ext = new ExtProgressInfo();
@@ -612,15 +633,15 @@ namespace Dagre
             foreach (var layer in layering)
             {
                 List<dynamic> oo = new List<dynamic>();
-                foreach (var item in layer)
+                foreach (var item in layer.Values)
                 {
-                    oo.Add((float)(g.node(item.Value)["height"]));
+                    oo.Add((float)(g.node(item)["height"]));
                 }
                 //var maxHeight = (layer as IEnumerable<object>).Select(v => g.node(v)["height"]).Max().Value;
                 var maxHeight = oo.Max();
-                foreach (var v in layer)
+                foreach (var v in layer.Values)
                 {
-                    g.node(v.Value)["y"] = prevY + maxHeight / 2f;
+                    g.node(v)["y"] = prevY + maxHeight / 2f;
                 }
 
                 prevY += maxHeight + rankSep;
@@ -644,12 +665,14 @@ namespace Dagre
                     var node = g.node(v);
                     var t = g.node(node["borderTop"]);
                     var b = g.node(node["borderBottom"]);
-                    var l = g.node(node["borderLeft"][node["borderLeft"].Count - 1]);
-                    var r = g.node(node["borderRight"][node["borderRight"].Count - 1]);
-                    node.width = Math.Abs(r.x - l.x);
-                    node.height = Math.Abs(b.y - t.y);
-                    node.x = l.x + node.width / 2;
-                    node.y = t.y + node.height / 2;
+                    var lastKey1 = node["borderLeft"].Keys[node["borderLeft"].Keys.Count - 1];
+                    var l = g.node(node["borderLeft"][lastKey1]);
+                    var lastKey2 = node["borderRight"].Keys[node["borderRight"].Keys.Count - 1];
+                    var r = g.node(node["borderRight"][lastKey2]);
+                    node["width"] = Math.Abs(r["x"] - l["x"]);
+                    node["height"] = Math.Abs(b["y"] - t["y"]);
+                    node["x"] = l["x"] + node["width"] / 2;
+                    node["y"] = t["y"] + node["height"] / 2;
                 }
             }
 
@@ -716,8 +739,18 @@ namespace Dagre
                 var node = g.nodeRaw(v);
                 if (node.ContainsKey("borderTop"))
                 {
+                    /*(node as JavaScriptLikeObject).AddOrUpdate("minRank", g.nodeRaw(node["borderTop"])["rank"]);
+                    (node as JavaScriptLikeObject).AddOrUpdate("maxRank", g.nodeRaw(node["borderLeft"])["rank"]);*/
+                    /*if (!node.ContainsKey("minRank"))
+                    {
+                        node.Add("minRank", 0);
+                    }
+                    if (!node.ContainsKey("maxRank"))
+                    {
+                        node.Add("maxRank", 0);
+                    }*/
                     node["minRank"] = g.nodeRaw(node["borderTop"])["rank"];
-                    //node.maxRank = g.node(node.borderLeft).rank;
+                    node["maxRank"] = g.nodeRaw(node["borderBottom"])["rank"];
                     maxRank = Math.Max(maxRank, node["maxRank"]);
                 }
             }
