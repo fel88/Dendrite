@@ -16,6 +16,12 @@ namespace Dendrite
             {
                 list = list.Except(model.Groups.SelectMany(z => z.Nodes)).ToList();
                 list.AddRange(model.Groups);
+
+            }
+            if (model.Clusters.Any())
+            {
+
+                //list.InsertRange(0, model.Clusters);
             }
             foreach (var item in list)
             //foreach (var item in model.Nodes)
@@ -131,7 +137,10 @@ namespace Dendrite
                     }
                     else
                     {
-                        ctx.Graphics.FillPath(brush, Helpers.RoundedRect(rr2, cornerRadius));
+                        if (!model.Clusters.Contains(item))
+                            ctx.Graphics.FillPath(brush, Helpers.RoundedRect(rr2, cornerRadius));
+                        else
+                            ctx.Graphics.FillPath(StaticColors.ClusterBrush, Helpers.RoundedRect(rr2, cornerRadius));
 
                         //FillRoundedRectangle(ctx.Graphics, rr2, cornerRadius, brush);
                     }
@@ -154,12 +163,318 @@ namespace Dendrite
                 else
                 {
                     var ms = ctx.Graphics.MeasureString($"{item.OpType}", f);
-                    ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+
+                    if (!model.Clusters.Contains(item))
+                    {
+
+                        ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    }
+                    else
+                    {
+                        ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, 5, 0);
+
+                    }
                 }
                 if (item is GroupNode gn)
                 {
-                    var ms = ctx.Graphics.MeasureString($"Group: {gn.Prefix}", f);
-                    ctx.Graphics.DrawString($"Group: {gn.Prefix}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    var ms = ctx.Graphics.MeasureString($"Group: {gn.Prefix}", f); if (!model.Clusters.Contains(item))
+                    {
+
+                        ctx.Graphics.DrawString($"Group: {gn.Prefix}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    }
+                    else
+                    {
+                        ctx.Graphics.DrawString($"{gn.Prefix}", f, textBrush, 5, 0);
+
+                    }
+                    /*ctx.Graphics.DrawPath(new Pen(Color.Blue, 5), Helpers.RoundedRect(new RectangleF(10, 0, 60, 60), (int)(cornerRadius / ctx.Zoom)));
+                    ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 50, 10, 50, 50);
+                    ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 20, 50, 50, 50);*/
+                }
+                if (currentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Conv)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("W:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                    }
+                }
+                if (currentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Gather)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Attributes.Count > 0)
+                    {
+                        ctx.Graphics.DrawString("Indicies = ", f, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Attributes[0].IntData)})", f, Brushes.Black, 120, 35);
+                    }
+
+                }
+                if (currentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Gemm)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("C:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                    }
+                }
+                if (currentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Lstm)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("W:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("R:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                    }
+                    if (item.Data.Count > 2)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 95);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 45, 95);
+                    }
+                }
+                if (currentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Batch)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+
+                        ctx.Graphics.DrawString("scale:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 85, 35);
+                    }
+                    if (item.Data.Count > 1)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 65);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 85, 65);
+                    }
+                    if (item.Data.Count > 2)
+                    {
+                        ctx.Graphics.DrawString("mean:", fb, Brushes.Black, 5, 95);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 85, 95);
+                    }
+                    if (item.Data.Count > 3)
+                    {
+                        ctx.Graphics.DrawString("var:", fb, Brushes.Black, 5, 125);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[3].Dims)})", f, Brushes.Black, 85, 125);
+                    }
+                }
+                if (currentLayout.DrawHeadersAllowed && item.LayerType == LayerType.MathOperation)
+                {
+                    var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
+                    if (item.Data.Count > 0)
+                    {
+                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 35);
+                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                    }
+
+                }
+                var ms2 = ctx.Graphics.MeasureString(item.OpType, f);
+                //ctx.Graphics.DrawString(item.OpType, f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 30);
+                if (currentLayout.FlashHoveredRelatives)
+                {
+                    if (item.Parents.Contains(hovered))
+                    {
+                        ctx.Graphics.DrawString("child", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                    }
+                    if (item.Childs.Contains(hovered))
+                    {
+                        ctx.Graphics.DrawString("parent", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                    }
+                }
+
+
+                ctx.Graphics.ResetTransform();
+            }
+        }
+
+        public static void DrawClusters(IDrawingContext ctx, GraphModel model, GraphLayout currentLayout, Brush textBrush, Font f, GraphNode selected, GraphNode hovered,
+           bool ShowFullNames)
+        {
+
+
+            var list = model.Clusters.ToList();
+
+            foreach (var item in list)            
+            {
+
+                var dtag = item.DrawTag as GraphNodeDrawInfo;
+                if (dtag == null) continue;
+                var rr = ctx.Transform(dtag.Rect);
+                var rr2 = ctx.Transform(new RectangleF(dtag.Rect.Left, dtag.Rect.Top, dtag.Rect.Width, dtag.Rect.Height));
+
+                textBrush = Brushes.Black;
+
+                int cornerRadius = (int)(15 * ctx.Zoom);
+                Brush brush = Brushes.LightGray;
+                textBrush = Brushes.White;
+                switch (item.LayerType)
+                {
+                    case LayerType.Gemm:
+                    case LayerType.Conv:
+                    case LayerType.Lstm:
+                        brush = StaticColors.ConvBrush;
+                        break;
+                    case LayerType.Dropout:
+                        brush = StaticColors.DropoutBrush;
+                        break;
+                    case LayerType.Gather:
+                    case LayerType.Squeeze:
+                    case LayerType.Batch:
+                        brush = StaticColors.BatchNormBrush;
+                        break;
+                    case LayerType.Log:
+                    case LayerType.Softmax:
+                    case LayerType.Relu:
+                        brush = StaticColors.ReluBrush;
+                        break;
+                    case LayerType.PrimitiveMath:
+                    case LayerType.MathOperation:
+                        brush = StaticColors.MathBrush;
+                        break;
+                    case LayerType.Transpose:
+                    case LayerType.Pool:
+                        brush = StaticColors.PoolBrush;
+                        break;
+                    case LayerType.Input:
+                    case LayerType.Output:
+                        brush = StaticColors.EndpointBrush;
+                        textBrush = Brushes.Black;
+                        break;
+                    case LayerType.Pad:
+                    case LayerType.Concat:
+                        brush = StaticColors.ConcatBrush;
+                        break;
+                }
+                var borderPen = Pens.Black;
+                if (item is GroupNode)
+                {
+                    brush = StaticColors.GroupBrush;
+                    borderPen = new Pen(Color.Black, 3);
+                    textBrush = Brushes.Black;
+                }
+                if (item == hovered)
+                {
+                    textBrush = Brushes.Black;
+                    if (currentLayout.DrawHeadersAllowed && item.DrawHeader)
+                    {
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+
+                    }
+                    else
+                    {
+                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightYellow);
+
+                    }
+                }
+                else if (currentLayout.FlashHoveredRelatives && item.Parents.Contains(hovered))
+                {
+                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightPink);
+                }
+                else if (currentLayout.FlashHoveredRelatives && item.Childs.Contains(hovered))
+                {
+                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightBlue);
+                }
+                else
+                if (item == selected)
+                {
+                    textBrush = Brushes.Black;
+
+                    if (currentLayout.DrawHeadersAllowed && item.DrawHeader)
+                    {
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
+                        ctx.Graphics.FillPath(Brushes.LightGreen, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                    }
+                    else
+                    {
+                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightGreen);
+                    }
+                }
+                else
+                {
+                    if (currentLayout.DrawHeadersAllowed && item.DrawHeader)
+                    {
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
+                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
+
+                        ctx.Graphics.FillPath(brush, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+
+                    }
+                    else
+                    {
+                        if (!model.Clusters.Contains(item))
+                            ctx.Graphics.FillPath(brush, Helpers.RoundedRect(rr2, cornerRadius));
+                        else
+                            ctx.Graphics.FillPath(StaticColors.ClusterBrush, Helpers.RoundedRect(rr2, cornerRadius));
+
+                        //FillRoundedRectangle(ctx.Graphics, rr2, cornerRadius, brush);
+                    }
+                }
+                ctx.Graphics.DrawPath(borderPen, Helpers.RoundedRect(rr2, cornerRadius));
+
+                //DrawRoundedRectangle(ctx.Graphics, rr, (int)(40 * ctx.zoom), Pens.Black);
+
+
+                ctx.Graphics.ResetTransform();
+                var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Top + 10);
+                ctx.Graphics.TranslateTransform(sh.X, sh.Y);
+                ctx.Graphics.ScaleTransform(ctx.Zoom, ctx.Zoom);
+                //ctx.Graphics.DrawString($"{item.Name}: ({item.OpType})", f, Brushes.Black, 0, 0);
+                if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
+                {
+                    var ms = ctx.Graphics.MeasureString($"{item.Name}:{item.OpType}", f);
+                    ctx.Graphics.DrawString($"{item.Name}:{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                }
+                else
+                {
+                    var ms = ctx.Graphics.MeasureString($"{item.OpType}", f);
+
+                    if (!model.Clusters.Contains(item))
+                    {
+
+                        ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    }
+                    else
+                    {
+                        ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, 5, 0);
+
+                    }
+                }
+                if (item is GroupNode gn)
+                {
+                    var ms = ctx.Graphics.MeasureString($"Group: {gn.Prefix}", f); if (!model.Clusters.Contains(item))
+                    {
+
+                        ctx.Graphics.DrawString($"Group: {gn.Prefix}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    }
+                    else
+                    {
+                        ctx.Graphics.DrawString($"{gn.Prefix}", f, textBrush, 5, 0);
+
+                    }
                     /*ctx.Graphics.DrawPath(new Pen(Color.Blue, 5), Helpers.RoundedRect(new RectangleF(10, 0, 60, 60), (int)(cornerRadius / ctx.Zoom)));
                     ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 50, 10, 50, 50);
                     ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 20, 50, 50, 50);*/

@@ -60,6 +60,7 @@ namespace Dagre
 
         }
 
+
         public void AddNode(DagreInputNode node)
         {
             if (nodes.Contains(node)) throw new DagreException("duplciate node");
@@ -76,7 +77,14 @@ namespace Dagre
             AddNode(ret);
             return ret;
         }
+        public DagreInputGroup AddGroup(object tag = null)
+        {
+            var ret = new DagreInputGroup();
+            ret.Tag = tag;
 
+            AddNode(ret);
+            return ret;
+        }
         void check()
         {
             foreach (var item in nodes)
@@ -93,9 +101,9 @@ namespace Dagre
             check();
             DagreGraph dg = new DagreGraph(true);
 
-            var list1 = nodes.Where(z => z.Childs.Any() || z.Parents.Any()).ToList();
+            var list1 = nodes.Where(z => z is DagreInputGroup || z.Childs.Any() || z.Parents.Any()).ToList();
 
-            foreach (var gg in list1)
+            foreach (var gg in list1.Where(z => !(z is DagreInputGroup)))
             {
                 var ind = list1.IndexOf(gg);
                 dg.setNode(ind + "", new JavaScriptLikeObject());
@@ -104,8 +112,31 @@ namespace Dagre
                 nd["source"] = gg;
                 nd["width"] = gg.Width;
                 nd["height"] = gg.Height;
+            }
+
+            foreach (var gg in list1.Where(z => (z is DagreInputGroup)))
+            {
+                var ind = list1.IndexOf(gg);
+                dg.setNode(ind + "", new JavaScriptLikeObject());
+                var nd = dg.node(ind + "");
+
+                nd["source"] = gg;
+
+
+                nd["isGroup"] = true;
+                nd["width"] = 0;
+                nd["height"] = 0;
+
 
             }
+            foreach (var gg in list1.Where(z => z.Group != null && !(z is DagreInputGroup)))
+            {
+                var ind = list1.IndexOf(gg);
+                var nd = dg.node(ind.ToString());
+                var ind2 = list1.IndexOf(gg.Group);
+                dg.setParent(ind.ToString(), ind2.ToString());
+            }
+
             foreach (var gg in list1)
             {
                 var ind = list1.IndexOf(gg);
@@ -149,6 +180,8 @@ namespace Dagre
                 dynamic hh = node["height"];
                 n.X = (float)xx - (float)ww / 2;
                 n.Y = (float)yy - (float)hh / 2;
+                n.Width = (float)ww;
+                n.Height = (float)hh;
 
             }
 
@@ -166,10 +199,21 @@ namespace Dagre
                 src.Points = rr.ToArray();
             }
         }
+
+        public void SetGroup(DagreInputNode node, DagreInputNode dagreInputNode)
+        {
+            node.Group = dagreInputNode;
+        }
     }
 
+
+    public class DagreInputGroup : DagreInputNode
+    {
+
+    }
     public class DagreInputNode
     {
+        public DagreInputNode Group;
         public List<DagreInputNode> Childs = new List<DagreInputNode>();
         public List<DagreInputNode> Parents = new List<DagreInputNode>();
         public object Tag;

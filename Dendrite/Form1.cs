@@ -347,6 +347,7 @@ namespace Dendrite
 
                 if (Model != null && drawEnabled)
                 {
+                    GraphDrawer.DrawClusters(ctx, Model, CurrentLayout, textBrush, f, selected, hovered, ShowFullNames);
                     GraphDrawer.DrawEdges(ctx, Model, CurrentLayout);
                     GraphDrawer.DrawLabels(ctx, Model, f2, textBrush);
                     GraphDrawer.DrawNodes(ctx, Model, CurrentLayout, textBrush, f, selected, hovered, ShowFullNames);
@@ -885,7 +886,7 @@ namespace Dendrite
                 fitAll();
             }
         }
-                
+
         private void collapseGroupsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<string> names = new List<string>  { "enc1.", "enc2.", "enc3.", "enc4.", "enc5.", "enc6.", "dec1.", "dec2.", "dec3.",
@@ -901,11 +902,11 @@ namespace Dendrite
             }
             for (int i = 0; i <= 11; i++)
             {
-                
+
                 //names.Add("bert/encoder/layer_" + i );
-                 names.Add("bert/encoder/layer_" + i + "/attention");
-                 names.Add("bert/encoder/layer_" + i + "/output");
-                 names.Add("bert/encoder/layer_" + i + "/intermediate");
+                names.Add("bert/encoder/layer_" + i + "/attention");
+                names.Add("bert/encoder/layer_" + i + "/output");
+                names.Add("bert/encoder/layer_" + i + "/intermediate");
             }
             //string[] names = new[] { "enc1.","enc2."};
             var ww = Model.Nodes.Where(z => names.Any(u => z.Name.StartsWith(u))).ToArray();
@@ -921,6 +922,7 @@ namespace Dendrite
                     }
                 }
 
+                (CurrentLayout as DagreGraphLayout).ExperimentalMode = 0;
                 LoadModel(_lastPath, false);
             }
         }
@@ -933,7 +935,40 @@ namespace Dendrite
 
         private void clusterToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            List<string> names = new List<string>  { "enc1.","enc3.","enc2.","enc4."
+            };
+            names.Add("bert/encoder/layer_0/attention");
+            names.Add("bert/encoder/layer_0/output");
+            names.Add("bert/encoder/layer_0/intermediate");
 
+            //for (int i = 0; i <= 11; i++)
+            {
+
+                //names.Add("bert/encoder/layer_" +i );
+                /*names.Add("bert/encoder/layer_" + i + "/attention");
+                names.Add("bert/encoder/layer_" + i + "/output");
+                names.Add("bert/encoder/layer_" + i + "/intermediate");*/
+            }
+            //string[] names = new[] { "enc1.","enc2."};
+            var ww = Model.Nodes.Where(z => names.Any(u => z.Name.StartsWith(u))).ToArray();
+            if (ww.Any())
+            {
+                CurrentLayout.RequestedGroups.Clear();
+                foreach (var item in ww)
+                {
+                    var fr = names.First(z => item.Name.StartsWith(z));
+
+
+                    if (!CurrentLayout.RequestedGroups.Any(z => z.Prefix == fr))
+                    {
+                        var ww2 = Model.Nodes.Where(z => z.Name.StartsWith(fr)).ToArray();
+                        CurrentLayout.RequestedGroups.Add(new GroupNode() { Nodes = ww2.ToArray(), Prefix = fr });
+                    }
+                }
+                (CurrentLayout as DagreGraphLayout).ExperimentalMode = 1;
+
+                LoadModel(_lastPath, false);
+            }
         }
     }
 }

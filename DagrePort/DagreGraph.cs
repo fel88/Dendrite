@@ -442,7 +442,7 @@ namespace Dagre
                 var res = neighbors(key);
                 if (res1 == null && res == null) continue;
                 for (int j = 0; j < res1.Length; j++)
-                {                    
+                {
                     if (res1[j] != res[j])
                     {
                         throw new DagreException();
@@ -625,7 +625,7 @@ namespace Dagre
                                     _in.Add(edg.Key, js);
                                 }
                                 else
-                                    _in.Add(edg.Key, edg.Value);                                
+                                    _in.Add(edg.Key, edg.Value);
                             }
                             break;
                         }
@@ -668,7 +668,7 @@ namespace Dagre
                                 else
                                     _parent.Add(edg.Key, edg.Value);
 
-                                
+
                             }
                             break;
                         }
@@ -866,11 +866,11 @@ namespace Dagre
             return v + EDGE_KEY_DELIM + w + EDGE_KEY_DELIM + (name == null ? DEFAULT_EDGE_NAME : name);
         }
 
-      
+
         public static string EDGE_KEY_DELIM = "\x01";//\x01
         public static string DEFAULT_EDGE_NAME = "\x00";//\x00
 
-        
+
         public DagreLabel edge(DagreEdgeIndex v)
         {
             return edge(v.v, v.w, v.name);
@@ -1119,10 +1119,7 @@ namespace Dagre
 
         public JavaScriptLikeObject _edgeObjs = new JavaScriptLikeObject();
 
-        private Func<object, object, object, object> _defaultEdgeLabelFn;
-
-
-
+        private Func<object, object, object, object> _defaultEdgeLabelFn = (x, y, z) => { return new JavaScriptLikeObject(); };
 
         //int _edgesCount = 0;
 
@@ -1350,14 +1347,14 @@ namespace Dagre
             {
                 if (o2 != null)
                 {
-                    _nodesRaw[v as string] = o2 ;
+                    _nodesRaw[v as string] = o2;
 
                 }
                 return this;
             }
             else
             {
-                _nodesRaw.Add(v as string, o2 );
+                _nodesRaw.Add(v as string, o2);
             }
 
 

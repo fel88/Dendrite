@@ -16,6 +16,7 @@ namespace Dendrite
         public GraphNode[] Nodes;
         public EdgeNode[] Edges;
         public List<GroupNode> Groups = new List<GroupNode>();
+        public List<GroupNode> Clusters = new List<GroupNode>();
 
     }
     public class GroupNode : GraphNode

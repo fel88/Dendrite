@@ -39,23 +39,9 @@ namespace Dendrite
             var concatColor = new SolidBrush(Color.FromArgb(89, 66, 59));
 
             var inputColor = new SolidBrush(Color.FromArgb(238, 238, 238));
-            foreach (dynamic d in dg._edgeLabels)
-            {
-                dynamic pnts = d.Value["points"];
-                List<PointF> rr = new List<PointF>();
-                foreach (dynamic item in pnts)
-                {
-                    rr.Add(new PointF((float)item["x"], (float)item["y"]));
-                }
-                AdjustableArrowCap bigArrow = new AdjustableArrowCap(3, 3);
-                Pen pen1 = new Pen(Color.Black);
-                pen1.CustomEndCap = bigArrow;
-                //gr.DrawLines(pen1, rr.ToArray());
-                var curve = new Curve(rr.ToArray());
 
-                gr.DrawPath(pen1, curve.Path);
 
-            }
+
             int gap = 5;
 
             foreach (dynamic d in dg._nodesRaw)
@@ -64,6 +50,11 @@ namespace Dendrite
                 var yy = (float)d.Value["y"];
                 var ww = (float)d.Value["width"];
                 var hh = (float)d.Value["height"];
+                bool isCluster = false;
+                if (d.Value.ContainsKey("isGroup"))
+                {
+                    isCluster = true;
+                }
                 var cornerRadius = 8;
                 if (d.Value.ContainsKey("source"))
                 {
@@ -140,7 +131,7 @@ namespace Dendrite
                 }
                 else
                 {
-                    if (hh > 50)
+                    if (hh > 50 /*&& !isCluster*/)
                     {
                         using (GraphicsPath path = DrawHelpers.RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
                         {
@@ -158,14 +149,34 @@ namespace Dendrite
                     {
                         using (GraphicsPath path = DrawHelpers.RoundedRect(new RectangleF(xx - ww / 2, yy - hh / 2, ww, hh), cornerRadius))
                         {
-                            gr.FillPath(poolColor, path);
+                            //if (!isCluster)
+                                gr.FillPath(poolColor, path);
                             gr.DrawPath(Pens.Black, path);
                         }
 
                     }
-                    gr.DrawString(d.Key + "", SystemFonts.DefaultFont, Brushes.White, new RectangleF(xx - ww / 2 + gap, yy - hh / 2 + gap, ww - gap * 2, hh - gap * 2));
+                    //gr.DrawString(d.Key + "", SystemFonts.DefaultFont, isCluster ? Brushes.Black : Brushes.White, new RectangleF(xx - ww / 2 + gap, yy - hh / 2 + gap, ww - gap * 2, hh - gap * 2));
+                    gr.DrawString(d.Key + "", SystemFonts.DefaultFont,  Brushes.White, new RectangleF(xx - ww / 2 + gap, yy - hh / 2 + gap, ww - gap * 2, hh - gap * 2));
 
                 }
+
+            }
+
+            foreach (dynamic d in dg._edgeLabels)
+            {
+                dynamic pnts = d.Value["points"];
+                List<PointF> rr = new List<PointF>();
+                foreach (dynamic item in pnts)
+                {
+                    rr.Add(new PointF((float)item["x"], (float)item["y"]));
+                }
+                AdjustableArrowCap bigArrow = new AdjustableArrowCap(3, 3);
+                Pen pen1 = new Pen(Color.Black);
+                pen1.CustomEndCap = bigArrow;
+                //gr.DrawLines(pen1, rr.ToArray());
+                var curve = new Curve(rr.ToArray());
+
+                gr.DrawPath(pen1, curve.Path);
 
             }
             return bmp;
@@ -831,9 +842,9 @@ namespace Dendrite
             dg.setNode("e", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "E" }));
             dg.setNode("f", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "F" }));
             dg.setNode("g", JavaScriptLikeObject.FromObject(new { width = 30, height = 37, label = "G" }));
-            dg.setNode("group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Group", clusterLabelPos = "top" }));
-            dg.setNode("top_group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Top Group", clusterLabelPos = "bottom" }));
-            dg.setNode("bottom_group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Bottom Group" }));
+            dg.setNode("group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Group", clusterLabelPos = "top", isGroup = true }));
+            dg.setNode("top_group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Top Group", clusterLabelPos = "bottom", isGroup = true }));
+            dg.setNode("bottom_group", JavaScriptLikeObject.FromObject(new { width = 0, height = 0, label = "Bottom Group", isGroup = true }));
 
             //g.setNode('group', {label: 'Group', clusterLabelPos: 'top', style: 'fill: #d3d7e8'});
             //g.setNode('top_group', {label: 'Top Group', clusterLabelPos: 'bottom', style: 'fill: #ffd47f'});

@@ -311,7 +311,7 @@ namespace Dagre
             return dic.GetEnumerator();
         }
 
-        internal static JavaScriptLikeObject FromObject(object p)
+        public static JavaScriptLikeObject FromObject(object p)
         {
             JavaScriptLikeObject ret = new JavaScriptLikeObject();
             foreach (var item in p.GetType().GetProperties())
