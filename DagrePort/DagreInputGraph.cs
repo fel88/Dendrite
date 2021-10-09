@@ -205,45 +205,4 @@ namespace Dagre
             node.Group = dagreInputNode;
         }
     }
-
-
-    public class DagreInputGroup : DagreInputNode
-    {
-
-    }
-    public class DagreInputNode
-    {
-        public DagreInputNode Group;
-        public List<DagreInputNode> Childs = new List<DagreInputNode>();
-        public List<DagreInputNode> Parents = new List<DagreInputNode>();
-        public object Tag;
-        public float Width = 300;
-        public float Height = 100;
-        public float X;
-        public float Y;
-    }
-
-    public class DagreInputEdge
-    {
-        public DagreInputNode From;
-        public DagreInputNode To;
-        public float MinLen;
-        public DagreCurvePoint[] Points;
-        public object Tag;
-    }
-
-    public struct DagreCurvePoint
-    {
-        public DagreCurvePoint(float _x, float _y) { X = _x; Y = _y; }
-        public float X;
-        public float Y;
-    }
-    public class ExtProgressInfo
-    {
-        public float MainProgress;
-        public float AdditionalProgress;
-        public bool UseAdditionalProgress = true;
-        public string Caption;
-        public bool ShowCaption = true;
-    }
 }

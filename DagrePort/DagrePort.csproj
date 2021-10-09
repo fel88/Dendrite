@@ -49,11 +49,16 @@
     <Compile Include="BERTTester.cs" />
     <Compile Include="bk.cs" />
     <Compile Include="coordinateSystem.cs" />
+    <Compile Include="DagreCurvePoint.cs" />
     <Compile Include="DagreGraph.cs" />
+    <Compile Include="DagreInputEdge.cs" />
     <Compile Include="DagreInputGraph.cs" />
+    <Compile Include="DagreInputGroup.cs" />
+    <Compile Include="DagreInputNode.cs" />
     <Compile Include="DagreLayout.cs" />
     <Compile Include="DagreTester.cs" />
     <Compile Include="DrawHelpers.cs" />
+    <Compile Include="ExtProgressInfo.cs" />
     <Compile Include="JavaScriptLikeObject.cs" />
     <Compile Include="nestingGraph.cs" />
     <Compile Include="networkSimplexModule.cs" />
