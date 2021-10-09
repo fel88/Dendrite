@@ -785,7 +785,7 @@ namespace Dendrite
                     {
                         ParentForm.Text = Path.GetFileName(path);
                     }));
-                    
+
                 }
                 drawEnabled = true;
                 reset.Set();
@@ -1270,7 +1270,7 @@ namespace Dendrite
 
         private void collapseGroupsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string[] names = new[] { "enc1.", "enc2.", "enc3.", "dec1.", "dec2.", "dec3." };
+            string[] names = new[] { "enc1.", "enc2.", "enc3.", "dec1.", "dec2.", "dec3.", "bert/encoder/layer_1"};
             var ww = Model.Nodes.Where(z => names.Any(u => z.Name.StartsWith(u))).ToArray();
             if (ww.Any())
             {
