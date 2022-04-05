@@ -1,4 +1,5 @@
-﻿using Dendrite.Preprocessors;
+﻿using Dendrite.Dialogs;
+using Dendrite.Preprocessors;
 using Microsoft.ML.OnnxRuntime;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
@@ -444,32 +445,58 @@ namespace Dendrite
             currentNode = (NodeInfo)((listView2.SelectedItems[0] as ListViewItem).Tag);
             if (currentNode.Dims.Any(z => z < 0))
             {
-
-
                 if (InputDatas.ContainsKey(currentNode.Name) && InputDatas[currentNode.Name] is InputInfo ii && ii.Data is Mat mt)
                 {
                     Mat zmt = new Mat(mt.Height, mt.Width, mt.Type(), new Scalar(1));
-
                     InputDatas[currentNode.Name] = new InputInfo() { Data = zmt };
+                }
+                else
+                {
+                    //set sizes                    
+                    ShapeSizeDialog ss = new ShapeSizeDialog();
+                    ss.Init(currentNode);
+                    ss.ShowDialog();
+                    if (currentNode.Dims.All(z => z > 0))
+                        fillData(1, currentNode);
                 }
             }
             else
             {
-                int size = 1;
-                for (int i = 0; i < currentNode.Dims.Length; i++)
-                {
-                    size *= currentNode.Dims[i];
-                }
-                var fl = new float[size];
-                for (int i = 0; i < fl.Length; i++)
-                {
-                    fl[i] = 1;
-                }
+                fillData(1, currentNode);
+            }
+        }
 
-                if (InputDatas.ContainsKey(currentNode.Name) && InputDatas[currentNode.Name] is InputInfo ii)
-                {
+        private void fillData(int v, NodeInfo currentNode, bool outputAsInternalArray = true)
+        {
+            int size = 1;
+            for (int i = 0; i < currentNode.Dims.Length; i++)
+            {
+                size *= currentNode.Dims[i];
+            }
+            var fl = new float[size];
+            for (int i = 0; i < fl.Length; i++)
+            {
+                fl[i] = v;
+            }
 
+            if (InputDatas.ContainsKey(currentNode.Name) && InputDatas[currentNode.Name] is InputInfo ii)
+            {
+                if (outputAsInternalArray)
+                {
+                    var intar = new InternalArray(currentNode.Dims);
+                    intar.Data = fl.Select(z => (double)z).ToArray();
+                    ii.Data = intar;
+                }
+                else
                     ii.Data = fl;
+            }
+            else
+            {
+                if (outputAsInternalArray)
+                {
+                    var intar = new InternalArray(currentNode.Dims);
+                    intar.Data = fl.Select(z => (double)z).ToArray();
+                    InputDatas[currentNode.Name] = new InputInfo() { Data = intar };
                 }
                 else
                 {
@@ -481,28 +508,28 @@ namespace Dendrite
         private void all0ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView2.SelectedItems.Count == 0) return;
-            currentNode = (NodeInfo)((listView2.SelectedItems[0] as ListViewItem).Tag);
-            int size = 1;
-            for (int i = 0; i < currentNode.Dims.Length; i++)
+            currentNode = (NodeInfo)(listView2.SelectedItems[0].Tag);
+            if (currentNode.Dims.Any(z => z < 0))
             {
-                size *= currentNode.Dims[i];
-            }
-            var fl = new float[size];
-            for (int i = 0; i < fl.Length; i++)
-            {
-                fl[i] = 0;
-            }
-
-            if (InputDatas.ContainsKey(currentNode.Name) && InputDatas[currentNode.Name] is InputInfo ii)
-            {
-
-                ii.Data = fl;
+                if (InputDatas.ContainsKey(currentNode.Name) && InputDatas[currentNode.Name] is InputInfo ii && ii.Data is Mat mt)
+                {
+                    Mat zmt = new Mat(mt.Height, mt.Width, mt.Type(), new Scalar(1));
+                    InputDatas[currentNode.Name] = new InputInfo() { Data = zmt };
+                }
+                else
+                {
+                    //set sizes                    
+                    ShapeSizeDialog ss = new ShapeSizeDialog();
+                    ss.Init(currentNode);
+                    ss.ShowDialog();
+                    if (currentNode.Dims.All(z => z > 0))
+                        fillData(0, currentNode);
+                }
             }
             else
             {
-                InputDatas[currentNode.Name] = new InputInfo() { Data = fl };
+                fillData(0, currentNode);
             }
-
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -1956,6 +1983,58 @@ namespace Dendrite
 
             MessageBox.Show($"size: {dd.Length}", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+        }
+
+        private void randomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) return;
+            currentNode = (NodeInfo)(listView2.SelectedItems[0].Tag);
+            bool good = true;
+            if (currentNode.Dims.Any(z => z < 1))
+            {
+                good = false;
+                ShapeSizeDialog ss = new ShapeSizeDialog();
+                ss.Init(currentNode);
+                ss.ShowDialog();
+                if (currentNode.Dims.All(z => z > 0))
+                    good = true;
+
+            }
+
+            if (!good) return;
+            int size = 1;
+            for (int i = 0; i < currentNode.Dims.Length; i++)
+            {
+                size *= currentNode.Dims[i];
+            }
+            var fl = new float[size];
+
+            Random r = new Random(123);
+
+            for (int i = 0; i < fl.Length; i++)
+            {
+                fl[i] = (float)r.NextDouble();
+            }
+
+            if (InputDatas.ContainsKey(currentNode.Name) && InputDatas[currentNode.Name] is InputInfo ii)
+            {
+
+                ii.Data = fl;
+            }
+            else
+            {
+                InputDatas[currentNode.Name] = new InputInfo() { Data = fl };
+            }
+        }
+
+        private void setShapeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) return;
+            currentNode = (NodeInfo)(listView2.SelectedItems[0].Tag);
+            
+            ShapeSizeDialog ss = new ShapeSizeDialog();
+            ss.Init(currentNode, false);
+            ss.ShowDialog();            
         }
     }
 }

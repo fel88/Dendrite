@@ -39,19 +39,15 @@ namespace Dendrite
             }
         }
 
-
-
         public Dictionary<string, InputInfo> InputDatas = new Dictionary<string, InputInfo>();
         public Dictionary<string, object> OutputDatas = new Dictionary<string, object>();
 
         public bool FetchNextFrame = true;
         public float[] inputData;        
+
         public Mat prepareData(List<NamedOnnxValue> container, InferenceSession session1)
         {
-
-
             var inputMeta = session1.InputMetadata;
-
 
             Mat mat2 = null;
             foreach (var name in inputMeta.Keys)
@@ -59,8 +55,6 @@ namespace Dendrite
                 var data = InputDatas[name];
                 if (data.Data is InternalArray intar)
                 {
-
-
                     for (int i = 0; i < inputMeta[name].Dimensions.Length; i++)
                     {
                         if (inputMeta[name].Dimensions[i] == -1)
@@ -68,9 +62,6 @@ namespace Dendrite
                             inputMeta[name].Dimensions[i] = intar.Shape[i];
                         }
                     }
-                    
-                    
-
 
                     inputData = intar.Data.Select(z => (float)z).ToArray();
                     var tensor = new DenseTensor<float>(inputData, inputMeta[name].Dimensions);

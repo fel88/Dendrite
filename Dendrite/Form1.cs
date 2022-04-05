@@ -960,9 +960,23 @@ namespace Dendrite
             }
         }
 
+        bool hided = false;
+        float tempHeight = 0;
         private void button1_Click(object sender, EventArgs e)
         {
-            tableLayoutPanel1.RowStyles[0].Height = groupBox1.Height;
+            if (hided)
+            {
+                hided = false;
+                tableLayoutPanel1.RowStyles[0].Height = tempHeight;
+                button1.Text = "hide";
+            }
+            else
+            {
+                tempHeight = tableLayoutPanel1.RowStyles[0].Height;
+                tableLayoutPanel1.RowStyles[0].Height = groupBox1.Height;
+                button1.Text = "show";
+                hided = true;
+            }
         }
 
         private void tableToolStripMenuItem_Click(object sender, EventArgs e)

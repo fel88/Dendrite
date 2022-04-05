@@ -1,11 +1,9 @@
-﻿using Google.Protobuf;
-using Onnx;
+﻿using Onnx;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Dendrite
 {
@@ -15,8 +13,8 @@ namespace Dendrite
 
         public override void AppendToOutput(GraphModel model, GraphNode node)
         {
-            var proto = (model as OnnxGraphModel).ProtoModel;
-            var fr2 = (model as OnnxGraphModel).ProtoModel.Graph.Node.First(z => z.Name.ToLower().Contains(node.Name.ToLower()));
+            var proto = (model as OnnxGraphModel).ProtoModel;            
+            var fr2 = node.Tag as NodeProto;
 
             proto.Graph.Output.Add(new ValueInfoProto() { Name = fr2.Output[0] });
         }
@@ -30,8 +28,6 @@ namespace Dendrite
         {
             var bb = File.ReadAllBytes(path);
             var res2 = Onnx.ModelProto.Parser.ParseFrom(bb);
-
-
 
             var nodes = new List<GraphNode>();
             nodes.AddRange(res2.Graph.Node.Select(z =>

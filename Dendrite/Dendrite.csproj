@@ -241,6 +241,12 @@
     </Compile>
     <Compile Include="BitmapDrawingContext.cs" />
     <Compile Include="ComboBoxItem.cs" />
+    <Compile Include="Dialogs\ShapeSizeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ShapeSizeDialog.Designer.cs">
+      <DependentUpon>ShapeSizeDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Layouts\DagreGraphLayout.cs" />
     <Compile Include="Edit.cs">
       <SubType>Form</SubType>
@@ -423,6 +429,9 @@
     </Compile>
     <EmbeddedResource Include="ArrayComparer.resx">
       <DependentUpon>ArrayComparer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ShapeSizeDialog.resx">
+      <DependentUpon>ShapeSizeDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Edit.resx">
       <DependentUpon>Edit.cs</DependentUpon>
