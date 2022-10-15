@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Dendrite")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Dendrite: neural nets viewer")]
+[assembly: AssemblyDescription("Neural networks viewer/editor/inference")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("https://github.com/fel88")]
 [assembly: AssemblyProduct("Dendrite")]
-[assembly: AssemblyCopyright("Copyright ©  2020")]
+[assembly: AssemblyCopyright("Copyleft ©  2020-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

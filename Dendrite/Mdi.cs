@@ -239,7 +239,8 @@ namespace Dendrite
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            AboutBox1 ab = new AboutBox1();
+            ab.ShowDialog();
         }
     }
 }
