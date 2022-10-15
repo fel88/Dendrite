@@ -23,19 +23,31 @@ namespace Dendrite
             //  Text = "Processing: " + lastPath;
             _netPath = lastPath;
             var session1 = new InferenceSession(_netPath);
+            Prepare(session1);
+        }
+
+        InferenceSession session;
+        internal void Init(string path, byte[] model)
+        {
+            //  Text = "Processing: " + lastPath;
+            _netPath = path;
+            session = new InferenceSession(model);
+            Prepare(session);
+
+        }
+
+        void Prepare(InferenceSession session1)
+        {
             foreach (var item in session1.OutputMetadata.Keys)
             {
                 var dims = session1.OutputMetadata[item].Dimensions;
                 _nodes.Add(new NodeInfo() { Name = item, Dims = dims, ElementType = session1.OutputMetadata[item].ElementType });
-                //listView1.Items.Add(new ListViewItem(new string[] { item, string.Join("x", session1.OutputMetadata[item].Dimensions), "" }) { Tag = _nodes.Last() });
             }
 
             foreach (var name in session1.InputMetadata.Keys)
             {
                 var dims = session1.InputMetadata[name].Dimensions;
-                var s1 = string.Join("x", dims);
                 _nodes.Add(new NodeInfo() { Name = name, Dims = dims, IsInput = true, ElementType = session1.InputMetadata[name].ElementType });
-                // listView2.Items.Add(new ListViewItem(new string[] { name, s1, session1.InputMetadata[name].ElementType.Name }) { Tag = _nodes.Last() });
             }
         }
 
@@ -43,7 +55,7 @@ namespace Dendrite
         public Dictionary<string, object> OutputDatas = new Dictionary<string, object>();
 
         public bool FetchNextFrame = true;
-        public float[] inputData;        
+        public float[] inputData;
 
         public Mat prepareData(List<NamedOnnxValue> container, InferenceSession session1)
         {
@@ -173,8 +185,13 @@ namespace Dendrite
 
             if (session1 == null)
             {
+                session1 = session;
+            }
+            if (session1 == null)
+            {
                 session1 = new InferenceSession(_netPath);
             }
+
             var container = new List<NamedOnnxValue>();
 
             var mat2 = prepareData(container, session1);
@@ -239,9 +256,10 @@ namespace Dendrite
             //  toolStripStatusLabel1.Text = $"{sw.ElapsedMilliseconds}ms";
 
         }
+                
+
         public Mat lastReadedMat;
         public List<IInputPreprocessor> Postprocessors = new List<IInputPreprocessor>();
-
     }
 
     public class PrepareDataException : Exception

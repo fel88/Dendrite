@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Dendrite.Preprocessors
 {
+    [XmlName(XmlKey = "nchw")]
     public class NCHWPreprocessor : AbstractPreprocessor
     {
+        public override string Name => "NCHW";
         public override object Process(object inp)
         {
             var input = inp as Mat;
@@ -35,5 +38,10 @@ namespace Dendrite.Preprocessors
 
             return inputData;
         }
-    }    
+
+        public override void StoreXml(StringBuilder sb)
+        {
+            sb.AppendLine($"<nchw/>");
+        }
+    }
 }

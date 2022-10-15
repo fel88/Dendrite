@@ -264,7 +264,6 @@
       <DependentUpon>Edit.cs</DependentUpon>
     </Compile>
     <Compile Include="ExpandSubItem.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="GraphLayout.cs" />
     <Compile Include="Decoders.cs" />
     <Compile Include="InputInfo.cs" />
@@ -375,6 +374,7 @@
     <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
     <Compile Include="Preprocessors\ResizePreprocessor.cs" />
     <Compile Include="Preprocessors\TransposePreprocessor.cs" />
+    <Compile Include="Preprocessors\XmlNameAttribute.cs" />
     <Compile Include="Preprocessors\YoloDecodePreprocessor.cs" />
     <Compile Include="Processing.cs">
       <SubType>Form</SubType>

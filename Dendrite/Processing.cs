@@ -10,9 +10,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Dendrite
 {
@@ -93,6 +97,7 @@ namespace Dendrite
         {
             if (listView2.SelectedItems.Count == 0) return;
             currentNode = (NodeInfo)((listView2.SelectedItems[0] as ListViewItem).Tag);
+            UpdatePreprocessorsList();
             if (InputDatas.ContainsKey(currentNode.Name))
             {
                 if (InputDatas[currentNode.Name].Data is Mat mat)
@@ -183,13 +188,23 @@ namespace Dendrite
             listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
         }
 
+        void UpdatePreprocessorsList()
+        {
+            if (currentNode == null) return;
+            listView3.Items.Clear();
+            if (!InputDatas.ContainsKey(currentNode.Name)) return;
+
+            foreach (var item in InputDatas[currentNode.Name].Preprocessors)
+            {
+                listView3.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+            }            
+        }
         private void nCHWToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (currentNode == null) return;
-
-            var r = new NCHWPreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "NCHW" }) { Tag = r });
+            
+            InputDatas[currentNode.Name].Preprocessors.Add(new NCHWPreprocessor());
+            UpdatePreprocessorsList();            
         }
 
         private void meanstdToolStripMenuItem_Click(object sender, EventArgs e)
@@ -581,17 +596,17 @@ namespace Dendrite
 
         private void confToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count == 0) return;
-            currentNode = (NodeInfo)((listView1.SelectedItems[0] as ListViewItem).Tag);
-            if (OutputDatas.ContainsKey(currentNode.Name))
-            {
-                if (!currentNode.Tags.Contains("conf"))
-                {
-                    currentNode.Tags.Add("conf");
-                    listView1.SelectedItems[0].SubItems[2].Text = string.Join(", ", currentNode.Tags);
-                }
-            }
-
+            /*  if (listView1.SelectedItems.Count == 0) return;
+              currentNode = (NodeInfo)((listView1.SelectedItems[0] as ListViewItem).Tag);
+              if (OutputDatas.ContainsKey(currentNode.Name))
+              {
+                  if (!currentNode.Tags.Contains("conf"))
+                  {
+                      currentNode.Tags.Add("conf");
+                      listView1.SelectedItems[0].SubItems[2].Text = string.Join(", ", currentNode.Tags);
+                  }
+              }
+            */
         }
 
         public static Dictionary<string, float[][]> allPriorBoxes = new Dictionary<string, float[][]>();
@@ -870,6 +885,20 @@ namespace Dendrite
 
             Text = "Inference: " + lastPath;
             var _netPath = lastPath;
+            UpdateNodesList();
+        }
+
+        internal void Init(string path, byte[] model)
+        {
+            net.Init(path, model);
+            Text = "Inference: " + path;
+            UpdateNodesList();
+        }
+
+        void UpdateNodesList()
+        {
+            listView1.Items.Clear();
+            listView2.Items.Clear();
 
             foreach (var item in net.Nodes.Where(z => !z.IsInput))
             {
@@ -887,7 +916,7 @@ namespace Dendrite
 
         private void locationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count == 0) return;
+            /*if (listView1.SelectedItems.Count == 0) return;
             currentNode = (NodeInfo)((listView1.SelectedItems[0] as ListViewItem).Tag);
             if (OutputDatas.ContainsKey(currentNode.Name))
             {
@@ -896,7 +925,7 @@ namespace Dendrite
                     currentNode.Tags.Add("loc");
                     listView1.SelectedItems[0].SubItems[2].Text = string.Join(", ", currentNode.Tags);
                 }
-            }
+            }*/
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -2031,10 +2060,189 @@ namespace Dendrite
         {
             if (listView2.SelectedItems.Count == 0) return;
             currentNode = (NodeInfo)(listView2.SelectedItems[0].Tag);
-            
+
             ShapeSizeDialog ss = new ShapeSizeDialog();
             ss.Init(currentNode, false);
-            ss.ShowDialog();            
+            ss.ShowDialog();
+        }
+
+        private void confToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+
+            currentNode = (NodeInfo)((listView1.SelectedItems[0] as ListViewItem).Tag);
+            if (OutputDatas.ContainsKey(currentNode.Name))
+            {
+                if (confToolStripMenuItem.Checked)
+                {
+                    if (!currentNode.Tags.Contains("conf"))
+                    {
+                        currentNode.Tags.Add("conf");
+                    }
+                }
+                else
+                {
+                    currentNode.Tags.Remove("conf");
+                }
+                listView1.SelectedItems[0].SubItems[2].Text = string.Join(", ", currentNode.Tags);
+
+            }
+        }
+
+        private void locationToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            currentNode = (NodeInfo)((listView1.SelectedItems[0] as ListViewItem).Tag);
+            if (OutputDatas.ContainsKey(currentNode.Name))
+            {
+                if (locationToolStripMenuItem.Checked)
+                {
+                    if (!currentNode.Tags.Contains("loc"))
+                    {
+                        currentNode.Tags.Add("loc");
+                    }
+                }
+                else
+                {
+                    currentNode.Tags.Remove("loc");
+                }
+                listView1.SelectedItems[0].SubItems[2].Text = string.Join(", ", currentNode.Tags);
+            }
+        }
+
+        public void LoadEnvironment(string epath)
+        {
+            using (ZipArchive zip = ZipFile.Open(epath, ZipArchiveMode.Read))
+            {
+                foreach (ZipArchiveEntry entry in zip.Entries)
+                {
+                    if (entry.Name.EndsWith(".xml"))
+                    {
+                        using (var stream2 = entry.Open())
+                        {
+                            using (var reader = new StreamReader(stream2))
+                            {
+                                var config = reader.ReadToEnd();
+                                LoadConfig(config);
+                            }
+                        }
+                    }
+                    if (entry.Name.EndsWith(".onnx"))
+                    {
+                        net = new Nnet();
+                        using (var stream1 = entry.Open())
+                        {
+                            var model = stream1.ReadFully();
+                            Init(epath, model);
+                        }
+                    }
+                }
+            }            
+        }
+
+        private void LoadConfig(string config)
+        {
+            var doc = XDocument.Parse(config);
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(z => z.GetCustomAttribute(typeof(XmlNameAttribute)) != null).ToArray();
+
+            foreach (var item in doc.Descendants("inputNode"))
+            {
+                var key = item.Attribute("key").Value;
+                foreach (var pitem in item.Descendants("preprocessors"))
+                {
+                    foreach (var eitem in pitem.Elements())
+                    {
+                        var fr = types.FirstOrDefault(z => ((XmlNameAttribute)z.GetCustomAttribute(typeof(XmlNameAttribute))).XmlKey == eitem.Name.LocalName);
+                        if (fr != null)
+                        {
+                            if (!net.InputDatas.ContainsKey(key))                            
+                                net.InputDatas.Add(key, new InputInfo());
+
+                            var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
+                            net.InputDatas[key].Preprocessors.Add(proc);
+                            proc.ParseXml(eitem);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void loadToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Dendrite inference environment (*.den)|*.den";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            LoadEnvironment(ofd.FileName);
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Dendrite inference environment (*.den)|*.den";
+            //zip arch
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+
+            using (var fileStream = new FileStream(sfd.FileName, FileMode.Create))
+            {
+                using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true))
+                {
+                    var netName = new FileInfo(net.NetPath).Name;
+                    var demoFile = archive.CreateEntry(netName);
+
+                    using (var entryStream = demoFile.Open())
+                    //using (var streamWriter = new StreamWriter(entryStream))
+                    {
+                        using (var stream1 = File.OpenRead(net.NetPath))
+                        {
+                            stream1.CopyTo(entryStream);
+                        }
+                    }
+
+                    var configFile = archive.CreateEntry("config.xml");
+
+                    var configXml = GetConfigXml();
+                    using (var entryStream = configFile.Open())
+                    using (var streamWriter = new StreamWriter(entryStream))
+                    {
+                        streamWriter.WriteLine(configXml);
+                    }
+                }
+            }
+        }
+
+        private StringBuilder GetConfigXml()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            sb.AppendLine("<pipeline>");
+            foreach (var item in net.InputDatas.Keys)
+            {
+                sb.AppendLine($"<inputNode key=\"{item}\">");
+                sb.AppendLine("<preprocessors>");
+
+                foreach (var pp in net.InputDatas[item].Preprocessors)
+                {
+                    pp.StoreXml(sb);
+                }
+                sb.AppendLine("</preprocessors>");
+                sb.AppendLine("</inputNode>");
+            }
+            sb.AppendLine("<postprocessors>");
+            foreach (var item in net.Postprocessors)
+            {
+                item.StoreXml(sb);
+            }
+            sb.AppendLine("</postprocessors>");
+
+            sb.AppendLine("</pipeline>");
+
+            sb.AppendLine("</root>");
+            return sb;
         }
     }
 }
+
+

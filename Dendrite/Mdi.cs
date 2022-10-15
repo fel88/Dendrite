@@ -12,7 +12,7 @@ namespace Dendrite
         public Mdi()
         {
             InitializeComponent();
-            
+
             try
             {
                 LoadSettings();
@@ -214,12 +214,18 @@ namespace Dendrite
         private void inferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "onnx|*.onnx";
+            ofd.Filter = "All available formats|*.den;*.onnx|onnx|*.onnx|Environment (*.den)|*.den";
             if (ofd.ShowDialog() != DialogResult.OK) return;
-
             Processing p = new Processing();
             p.MdiParent = this;
-            p.Init(ofd.FileName);
+            if (ofd.FileName.EndsWith(".den"))
+            {
+                p.LoadEnvironment(ofd.FileName);
+            }
+            else
+            {                
+                p.Init(ofd.FileName);
+            }
             p.Show();
         }
 

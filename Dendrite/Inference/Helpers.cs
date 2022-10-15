@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -100,6 +101,11 @@ namespace Dendrite
                             HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
             }
             return mat;
+        }
+
+        public static double ParseDouble(string str)
+        {
+            return double.Parse(str.Replace(",", "."), CultureInfo.InvariantCulture);
         }
 
         public static Mat drawKeypoints(Mat mat1, KeypointsDetectionInfo[] detections, float visTresh)
