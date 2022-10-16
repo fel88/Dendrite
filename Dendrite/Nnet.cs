@@ -166,6 +166,11 @@ namespace Dendrite
                             inputMeta[name].Dimensions[2] = mat.Height;
                             inputMeta[name].Dimensions[3] = mat.Width;
                         }
+                        if (node.SourceDims[2] == -1 && node.SourceDims[3] == -1)
+                        {
+                            inputMeta[name].Dimensions[2] = mat.Height;
+                            inputMeta[name].Dimensions[3] = mat.Width;
+                        }
                         //  pictureBox1.Image = BitmapConverter.ToBitmap(mat);
                         mat2 = mat.Clone();
                         mat.ConvertTo(mat, MatType.CV_32F);

@@ -125,5 +125,21 @@ namespace Dendrite
                 Run();
             }
         }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            // lastPath = ofd.FileName;
+            VideoProcessor vp = new VideoProcessor();
+            
+            if (ofd.FileName.EndsWith("mp4") || ofd.FileName.EndsWith("avi") || ofd.FileName.EndsWith("mkv"))
+            {
+                vp.Init(env, ofd.FileName); 
+                vp.ShowDialog();
+                
+            }
+        }
     }
 }
