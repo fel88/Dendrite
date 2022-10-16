@@ -61,21 +61,21 @@ namespace Dendrite
                 if (!Net.InputDatas.ContainsKey(nitem.Name)) continue;
                 var item = Net.InputDatas[nitem.Name];
 
-             
+
                 List<Node> prepnodes = new List<Node>();
                 foreach (var pp in item.Preprocessors)
                 {
                     var node = new Node() { Name = pp.Name, Tag = pp };
                     node.Inputs.Add(new NodePin(node) { });
                     node.Outputs.Add(new NodePin(node) { });
-                    if(prepnodes.Count>0)
+                    if (prepnodes.Count > 0)
                     {
-                        PinLink pl = new PinLink();                        
+                        PinLink pl = new PinLink();
                         prepnodes.Last().Outputs[0].OutputLinks.Add(pl);
                         pl.Input = prepnodes.Last().Outputs[0];
                         pl.Output = node.Inputs[0];
                         node.Inputs[0].InputLinks.Add(pl);
-                    }                    
+                    }
                     prepnodes.Add(node);
 
                     Pipeline.Nodes.Add(node);
@@ -89,12 +89,30 @@ namespace Dendrite
                     netNode.Inputs.Last().InputLinks.Add(pl);
                 }
             }
-            
-            foreach (var item in Net.Nodes.Where(z=>z.IsOutput))
+
+            foreach (var item in Net.Nodes.Where(z => z.IsOutput))
             {
                 netNode.Outputs.Add(new NodePin(netNode) { Name = item.Name });
             }
-            
+            List<Node> postnodes = new List<Node>();
+
+            foreach (var pp in Net.Postprocessors)
+            {
+                var node = new Node() { Name = pp.Name, Tag = pp };
+                node.Inputs.Add(new NodePin(node) { });
+                node.Outputs.Add(new NodePin(node) { });
+                if (postnodes.Count > 0)
+                {
+                    PinLink pl = new PinLink();
+                    postnodes.Last().Outputs[0].OutputLinks.Add(pl);
+                    pl.Input = postnodes.Last().Outputs[0];
+                    pl.Output = node.Inputs[0];
+                    node.Inputs[0].InputLinks.Add(pl);
+                }
+                postnodes.Add(node);
+
+                Pipeline.Nodes.Add(node);
+            }
         }
 
         internal void Process()
@@ -126,6 +144,17 @@ namespace Dendrite
                         }
                     }
                 }
+            }
+
+            var postp = doc.Descendants("postprocessors").FirstOrDefault();
+            foreach (var eitem in postp.Elements())
+            {
+                var fr = types.FirstOrDefault(z => ((XmlNameAttribute)z.GetCustomAttribute(typeof(XmlNameAttribute))).XmlKey == eitem.Name.LocalName);
+                if (fr == null) continue;
+
+                var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
+                Net.Postprocessors.Add(proc);
+                proc.ParseXml(eitem);
             }
         }
     }

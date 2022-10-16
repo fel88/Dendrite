@@ -256,6 +256,7 @@
     <Compile Include="Dialogs\ShapeSizeDialog.Designer.cs">
       <DependentUpon>ShapeSizeDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions.cs" />
     <Compile Include="Inference.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -303,6 +304,7 @@
     <Compile Include="PipelineUI.cs" />
     <Compile Include="Preprocessors\AbstractPreprocessor.cs" />
     <Compile Include="Preprocessors\AspectResizePreprocessor.cs" />
+    <Compile Include="Preprocessors\BoxesDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

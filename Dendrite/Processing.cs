@@ -45,21 +45,19 @@ namespace Dendrite
             e.Graphics.Clear(Color.DarkGray);
             //draw grid
             DrawGrid();
-            foreach (var item in pipelineUI.Elements)
-            {
-                item.Draw(ctx);
-            }
+            pipelineUI.Draw(ctx);
+
         }
 
         private void DrawGrid()
         {
-
             int cw = 50;
             int ch = 50;
+            int sz = 50;
             Pen gridPen = new Pen(Color.Gray, 1f);
-            for (int i = -25; i <= 25; i++)
+            for (int i = -sz; i <= sz; i++)
             {
-                for (int j = -25; j <= 25; j++)
+                for (int j = -sz; j <= sz; j++)
                 {
                     float xx = i * cw;
                     float yy = j * ch;
@@ -241,6 +239,7 @@ namespace Dendrite
             pipelineUI.Init(env.Pipeline);
             Text = "Inference: " + fileName;
             UpdateNodesList();
+            UpdatePostProcessorsList();
         }
 
         void UpdatePreprocessorsList()
@@ -664,7 +663,6 @@ namespace Dendrite
             */
         }
 
-        public static Dictionary<string, float[][]> allPriorBoxes = new Dictionary<string, float[][]>();
         private void boxesToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Stopwatch sw2 = Stopwatch.StartNew();
@@ -677,37 +675,10 @@ namespace Dendrite
                 MessageBox.Show("Set conf and loc outputs first.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             }
-            var mm = drawBoxes(InputDatas.First().Value.Data as Mat, ret.Item1, ret.Item2, visTresh, ret.Item3);
+            var mm = Helpers.DrawBoxes(InputDatas.First().Value.Data as Mat, ret.Item1, ret.Item2, visTresh, ret.Item3);
             pictureBox1.Image = BitmapConverter.ToBitmap(mm);
         }
         float visTresh = 0.5f;
-
-        public static Mat drawBoxes(Mat mat1, Rect[] detections, float[] oscores, float visTresh, int[] classes = null)
-        {
-
-            Mat mat = mat1.Clone();
-
-
-            for (int i = 0; i < detections.Length; i++)
-            {
-                if (oscores[i] < visTresh) continue;
-                mat.Rectangle(detections[i], new OpenCvSharp.Scalar(255, 0, 0), 2);
-
-                var text = Math.Round(oscores[i], 4).ToString();
-                if (classes != null)
-                {
-                    int cls = classes[i];
-                    text += $"(cls: {cls})";
-                }
-                var cx = detections[i].X;
-                var cy = detections[i].Y + 12;
-                mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 120, cy - 15), new Scalar(0, 0, 0), -1);
-                mat.PutText(text, new OpenCvSharp.Point(cx, cy),
-                            HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
-            }
-            return mat;
-        }
-
 
 
         public Tuple<Rect[], float[], int[]> boxesDecode(Mat mat1)
@@ -728,210 +699,14 @@ namespace Dendrite
                 sz.Width = mat1.Width;
             }
             string key = $"{sz.Width}x{sz.Height}";
-            if (!allPriorBoxes.ContainsKey(key))
+            if (!Decoders.allPriorBoxes.ContainsKey(key))
             {
                 var pd = Decoders.PriorBoxes2(sz.Width, sz.Height); ;
-                allPriorBoxes.Add(key, pd);
+                Decoders.allPriorBoxes.Add(key, pd);
             }
-            var prior_data = allPriorBoxes[key];
-            return boxesDecode(mat1.Size(), rets3, rets1, sz, prior_data, visTresh);
+            var prior_data = Decoders.allPriorBoxes[key];
+            return Decoders.BoxesDecode(mat1.Size(), rets3, rets1, sz, prior_data, visTresh);
 
-        }
-
-        public static Tuple<Rect[], float[], int[]> boxesDecode(OpenCvSharp.Size matSize, float[] confd, float[] locd, System.Drawing.Size sz, float[][] prior_data, float vis_thresh = 0.5f)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-
-            if (confd == null || locd == null)
-            {
-                return null;
-            }
-
-
-
-
-            List<float[]> loc = new List<float[]>();
-            List<float> scores = new List<float>();
-            List<int> winners = new List<int>();
-
-            float[] variances = new float[] { 0.1f, 0.2f };
-            var nnInputWidth = sz.Width;
-            var nnInputHeight = sz.Height;
-            float wz1 = nnInputWidth;
-            float hz1 = nnInputHeight;
-            float[] scale = new float[] { (float)nnInputWidth, (float)nnInputHeight, (float)nnInputWidth, (float)nnInputHeight };
-            float koef = wz1 / (float)(matSize.Width);
-            float koef2 = hz1 / (float)(matSize.Height);
-
-
-            float[] resize = new float[] { koef, koef2 };
-
-            var rets3 = confd;
-            var rets1 = locd;
-
-
-            for (var i = 0; i < rets1.Length; i += 4)
-            {
-                loc.Add(new float[] { rets1[i + 0], rets1[i + 1], rets1[i + 2], rets1[i + 3] });
-            }
-            int numClasses = rets3.Length / (rets1.Length / 4);
-
-            for (var i = 0; i < rets3.Length; i += numClasses)
-            {
-                if (numClasses > 2)
-                {
-                    //first class - background usually
-                    float maxj = rets3[i + 1];
-                    int mind = 1;
-                    for (int j = 2; j < numClasses; j++)
-                    {
-                        if (rets3[i + j] > maxj)
-                        {
-                            maxj = rets3[i + j];
-                            mind = j;
-                        }
-                    }
-
-                    //var sub = rets3.Skip(i + 1).Take(numClasses - 1).Select((v, ii) => new Tuple<int, float>(ii, v)).OrderByDescending(z => z.Item2).First();
-                    winners.Add(mind - 1);
-                    scores.Add(maxj);
-                }
-                else
-                {
-                    scores.Add(rets3[i + 1]);
-                }
-            }
-
-            var boxes = Decoders.decode(loc, prior_data, variances);
-            for (var i = 0; i < boxes.Count(); i++)
-            {
-                boxes[i][0] = (boxes[i][0] * scale[0]) / resize[0];
-                boxes[i][1] = (boxes[i][1] * scale[1]) / resize[1];
-                boxes[i][2] = (boxes[i][2] * scale[2]) / resize[0];
-                boxes[i][3] = (boxes[i][3] * scale[3]) / resize[1];
-            }
-
-            float[] scale1 = new float[] { wz1, hz1, wz1, hz1, wz1, hz1, wz1, hz1, wz1, hz1 };
-
-            float confidence_threshold = 0.2f;
-            List<int> inds = new List<int>();
-
-            for (var i = 0; i < scores.Count(); i++)
-            {
-                if (scores[i] > confidence_threshold)
-                {
-                    inds.Add(i);
-                }
-            }
-
-            List<float[]> boxes2 = new List<float[]>();
-            for (var i = 0; i < inds.Count(); i++)
-            {
-                boxes2.Add(boxes[inds[i]]);
-            }
-            boxes = boxes2.ToArray();
-
-            List<float> scores2 = new List<float>();
-            for (var i = 0; i < inds.Count(); i++)
-            {
-                scores2.Add(scores[inds[i]]);
-            }
-            scores = scores2;
-
-            List<int> winners2 = new List<int>();
-            if (numClasses > 2)
-            {
-                for (var i = 0; i < inds.Count(); i++)
-                {
-                    winners2.Add(winners[inds[i]]);
-                }
-                winners = winners2;
-            }
-
-            var order = Decoders.sort_indexes(scores);
-            List<float[]> boxes3 = new List<float[]>();
-            for (var i = 0; i < order.Count(); i++)
-            {
-                boxes3.Add(boxes[order[i]]);
-
-            }
-
-            boxes = boxes3.ToArray();
-
-            List<float> scores3 = new List<float>();
-            for (var i = 0u; i < order.Count(); i++)
-            {
-                scores3.Add(scores[order[i]]);
-
-            }
-            scores = scores3;
-
-            if (numClasses > 2)
-            {
-                List<int> winners3 = new List<int>();
-
-                for (var i = 0; i < inds.Count(); i++)
-                {
-                    winners3.Add(winners[order[i]]);
-                }
-                winners = winners3;
-            }
-            //2. nms
-            List<float[]> dets = new List<float[]>();
-            for (var i = 0; i < boxes.Count(); i++)
-            {
-                if (numClasses > 2)
-                {
-                    dets.Add(new float[] { boxes[i][0], boxes[i][1], boxes[i][2], boxes[i][3], scores[i], winners[i] });
-                }
-                else
-                {
-                    dets.Add(new float[] { boxes[i][0], boxes[i][1], boxes[i][2], boxes[i][3], scores[i] });
-                }
-            }
-            var keep = Decoders.nms(dets, 0.4f);
-
-            List<float[]> dets2 = new List<float[]>();
-
-            for (var i = 0u; i < keep.Count(); i++)
-            {
-                dets2.Add(dets[keep[i]]);
-            }
-            dets = dets2;
-
-            List<Rect> detections = new List<Rect>();
-
-            //float vis_thresh = 0.2f;
-
-            List<int> indexMap = new List<int>();
-
-            //List<float[]> odets = new List<float[]>();
-            List<float> oscores = new List<float>();
-            List<int> owin = new List<int>();
-
-            for (var i = 0; i < dets.Count(); i++)
-            {
-                var aa = dets[i];
-                if (aa[4] < vis_thresh) continue;
-                detections.Add(new Rect((int)(aa[0]), (int)(aa[1]), (int)(aa[2] - aa[0]), (int)(aa[3] - aa[1])));
-                indexMap.Add(i);
-
-                //oscores.Add(scores3[i]);
-                oscores.Add(aa[4]);
-                if (numClasses > 2)
-                {
-                    owin.Add((int)aa[5]);
-                }
-            }
-
-            /* for (var i = 0; i < dets.Count(); i++)
-             {
-                 odets.Add(dets[i]);
-             }*/
-            sw.Stop();
-
-            var ret = new Tuple<Rect[], float[], int[]>(detections.ToArray(), oscores.ToArray(), numClasses > 2 ? owin.ToArray() : null);
-            return ret;
         }
 
         internal void Init(string path)
@@ -1667,7 +1442,7 @@ namespace Dendrite
 
             if (ret != null)
             {
-                var mm = Helpers.drawBoxes(mat1, ret, visTresh);
+                var mm = Helpers.DrawBoxes(mat1, ret, visTresh);
                 pictureBox1.Image = BitmapConverter.ToBitmap(mm);
             }
         }
@@ -1681,6 +1456,14 @@ namespace Dendrite
             listView3.Items.Add(new ListViewItem(new string[] { "bgr2rgb" }) { Tag = r });
         }
 
+        public void UpdatePostProcessorsList()
+        {
+            listView6.Items.Clear();
+            foreach (var item in net.Postprocessors)
+            {
+                listView6.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
+            }
+        }
 
         private void yoloDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -2188,14 +1971,26 @@ namespace Dendrite
                 using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true))
                 {
                     var netName = new FileInfo(net.NetPath).Name;
+                    if (net.NetPath.EndsWith(".den"))
+                    {
+                        netName = net.GetModelName();
+                    }
                     var demoFile = archive.CreateEntry(netName);
 
                     using (var entryStream = demoFile.Open())
                     //using (var streamWriter = new StreamWriter(entryStream))
                     {
-                        using (var stream1 = File.OpenRead(net.NetPath))
+                        if (net.NetPath.EndsWith(".den"))
                         {
-                            stream1.CopyTo(entryStream);
+                            var bytes = net.GetModelBytes();
+                            entryStream.Write(bytes, 0, bytes.Length);
+                        }
+                        else
+                        {
+                            using (var stream1 = File.OpenRead(net.NetPath))
+                            {
+                                stream1.CopyTo(entryStream);
+                            }
                         }
                     }
 
@@ -2246,6 +2041,19 @@ namespace Dendrite
         {
             ctx.Update();
             pictureBox3.Invalidate();
+        }
+
+        private void boxesDecoderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new BoxesDecodePostProcessor();
+            net.Postprocessors.Add(r);
+            listView6.Items.Add(new ListViewItem(new string[] { "boxes decoder" }) { Tag = r });
+        }
+
+        private void showImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Image.Save("temp.jpg");
+            Process.Start("temp.jpg");
         }
     }
 }

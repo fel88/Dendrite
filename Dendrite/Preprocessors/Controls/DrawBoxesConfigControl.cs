@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Dendrite.Preprocessors.Controls
 {
-    public partial class DrawBoxesConfigControl : UserControl,IProcessorConfigControl
+    public partial class DrawBoxesConfigControl : UserControl, IProcessorConfigControl
     {
         public DrawBoxesConfigControl()
         {
@@ -29,7 +29,18 @@ namespace Dendrite.Preprocessors.Controls
         public void Init(IInputPreprocessor proc)
         {
             Proc = proc as DrawBoxesPostProcessor;
-            textBox1.Text = Proc.VisThreshold.ToString();            
+            textBox1.Text = Proc.VisThreshold.ToString();
+            checkBox1.Checked = Proc.DrawLabels;
+        }
+
+        private void DrawBoxesConfigControl_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            Proc.DrawLabels = checkBox1.Checked;
         }
     }
 }

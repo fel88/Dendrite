@@ -94,12 +94,12 @@ namespace Dendrite
                     sz.Width = mat.Width;
                 }
                 string key = $"{sz.Width}x{sz.Height}";
-                if (!Processing.allPriorBoxes.ContainsKey(key))
+                if (!Decoders.allPriorBoxes.ContainsKey(key))
                 {
                     var pd = Decoders.PriorBoxes2(sz.Width, sz.Height); ;
-                    Processing.allPriorBoxes.Add(key, pd);
+                    Decoders.allPriorBoxes.Add(key, pd);
                 }
-                var prior_data = Processing.allPriorBoxes[key];
+                var prior_data = Decoders.allPriorBoxes[key];
                 var ofps = cap.Get(VideoCaptureProperties.Fps);
                 VideoWriter vid = null;
                 if (checkBox1.Checked)
@@ -151,10 +151,10 @@ namespace Dendrite
 
 
                     Stopwatch sw2 = Stopwatch.StartNew();
-                    var ret = Processing.boxesDecode(orig.Size(), confd, locd, new System.Drawing.Size(sz.Width, sz.Height), prior_data, visTresh);
+                    var ret = Decoders.BoxesDecode(orig.Size(), confd, locd, new System.Drawing.Size(sz.Width, sz.Height), prior_data, visTresh);
                     if (checkBox1.Checked)
                     {
-                        var out1 = Processing.drawBoxes(orig, ret.Item1, ret.Item2, visTresh, ret.Item3);
+                        var out1 = Helpers.DrawBoxes(orig, ret.Item1, ret.Item2, visTresh, ret.Item3);
                         vid.Write(out1);
                     }
                     sw2.Stop();

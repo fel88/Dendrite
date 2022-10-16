@@ -79,7 +79,33 @@ namespace Dendrite
             path.CloseFigure();
             return path;
         }
-        public static Mat drawBoxes(Mat mat1, ObjectDetectionInfo[] detections, float visTresh)
+
+        public static Mat DrawBoxes(Mat mat1, Rect[] detections, float[] oscores, float visTresh, int[] classes = null)
+        {
+
+            Mat mat = mat1.Clone();
+
+
+            for (int i = 0; i < detections.Length; i++)
+            {
+                if (oscores[i] < visTresh) continue;
+                mat.Rectangle(detections[i], new OpenCvSharp.Scalar(255, 0, 0), 2);
+
+                var text = Math.Round(oscores[i], 4).ToString();
+                if (classes != null)
+                {
+                    int cls = classes[i];
+                    text += $"(cls: {cls})";
+                }
+                var cx = detections[i].X;
+                var cy = detections[i].Y + 12;
+                mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 120, cy - 15), new Scalar(0, 0, 0), -1);
+                mat.PutText(text, new OpenCvSharp.Point(cx, cy),
+                            HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
+            }
+            return mat;
+        }
+        public static Mat DrawBoxes(Mat mat1, ObjectDetectionInfo[] detections, float visTresh, bool printLabels = true)
         {
             Mat mat = mat1.Clone();
 
@@ -96,9 +122,12 @@ namespace Dendrite
                 }
                 var cx = detections[i].Rect.X;
                 var cy = detections[i].Rect.Y + 12;
-                mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 250, cy - 15), new Scalar(0, 0, 0), -1);
-                mat.PutText(text, new OpenCvSharp.Point(cx, cy),
-                            HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
+                if (printLabels)
+                {
+                    mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 250, cy - 15), new Scalar(0, 0, 0), -1);
+                    mat.PutText(text, new OpenCvSharp.Point(cx, cy),
+                                HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
+                }
             }
             return mat;
         }

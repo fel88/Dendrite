@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Linq;
 
 namespace Dendrite
@@ -260,6 +261,45 @@ namespace Dendrite
 
         public Mat lastReadedMat;
         public List<IInputPreprocessor> Postprocessors = new List<IInputPreprocessor>();
+        
+        internal byte[] GetModelBytes()
+        {
+            using (ZipArchive zip = ZipFile.Open(NetPath, ZipArchiveMode.Read))
+            {
+                foreach (ZipArchiveEntry entry in zip.Entries)
+                {
+                  
+                    if (entry.Name.EndsWith(".onnx"))
+                    {
+                        
+                        using (var stream1 = entry.Open())
+                        {
+                            var model = stream1.ReadFully();
+                            return model;
+                        }
+                    }
+                }
+            }
+            return null;
+
+        }
+        internal string GetModelName()
+        {
+            using (ZipArchive zip = ZipFile.Open(NetPath, ZipArchiveMode.Read))
+            {
+                foreach (ZipArchiveEntry entry in zip.Entries)
+                {
+
+                    if (entry.Name.EndsWith(".onnx"))
+                    {
+                        return entry.Name;
+                       
+                    }
+                }
+            }
+            return null;
+
+        }
     }
 
     public class PrepareDataException : Exception
