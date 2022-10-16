@@ -6,6 +6,7 @@ namespace Dendrite
     public class NodeInfo
     {
         public bool IsInput;
+        public bool IsOutput=>!IsInput;
         public string Name;
         public int[] Dims;
         public Type ElementType;

@@ -728,7 +728,7 @@ namespace Dendrite
         }
 
 
-        DrawingContext ctx = new DrawingContext();
+        DoubleBufferedDrawingContext ctx = new DoubleBufferedDrawingContext();
 
         public List<ModelProvider> Providers = new List<ModelProvider>();
 

@@ -61,6 +61,7 @@
     <Compile Include="AttributeInfoDataType.cs" />
     <Compile Include="Caffe2Proto.cs" />
     <Compile Include="Curve.cs" />
+    <Compile Include="DoubleBufferedDrawingContext.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="EdgeNode.cs" />
     <Compile Include="Extensions.cs" />

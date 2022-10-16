@@ -213,20 +213,7 @@ namespace Dendrite
 
         private void inferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "All available formats|*.den;*.onnx|onnx|*.onnx|Environment (*.den)|*.den";
-            if (ofd.ShowDialog() != DialogResult.OK) return;
-            Processing p = new Processing();
-            p.MdiParent = this;
-            if (ofd.FileName.EndsWith(".den"))
-            {
-                p.LoadEnvironment(ofd.FileName);
-            }
-            else
-            {                
-                p.Init(ofd.FileName);
-            }
-            p.Show();
+
         }
 
         private void gatherStatisticToolStripMenuItem_Click(object sender, EventArgs e)
@@ -247,6 +234,32 @@ namespace Dendrite
         {
             AboutBox1 ab = new AboutBox1();
             ab.ShowDialog();
+        }
+
+        private void managerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "All available formats|*.den;*.onnx|onnx|*.onnx|Environment (*.den)|*.den";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            Processing p = new Processing();
+            p.MdiParent = this;
+
+            p.Init(ofd.FileName);
+
+            p.Show();
+        }
+
+        private void simpleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Inference Environment (*.den)|*.den";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            Inference p = new Inference();
+            p.MdiParent = this;
+            InferenceEnvironment env = new InferenceEnvironment();
+            env.Load(ofd.FileName);
+            p.Init(env);
+            p.Show();
         }
     }
 }

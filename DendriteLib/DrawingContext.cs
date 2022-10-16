@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
 namespace Dendrite
 {
+
     public class DrawingContext : IDrawingContext
     {
         public DrawingContext()
@@ -26,35 +26,23 @@ namespace Dendrite
                 return new PointF(sx, sy);
             }
         }
-        public Bitmap Bmp
+        public virtual Bitmap Bmp
         {
-            get
-            {
-                return blist[CurrentIndex];
-            }
+            get;set;
         }
-        public Graphics Graphics
+        public virtual Graphics Graphics
         {
-            get
-            {
-                return glist[CurrentIndex];
-            }
+            get;set;
         }
         public PictureBox Box;
-        List<Graphics> glist = new List<Graphics>();
-        List<Bitmap> blist = new List<Bitmap>();
+        
 
-        int CurrentIndex;
+        
         float startx, starty;
         float origsx, origsy;
         bool isDrag = false;
 
-        public void Swap()
-        {
-            Box.Image = blist[CurrentIndex];
-            CurrentIndex++;
-            CurrentIndex %= blist.Count;
-        }
+        
 
         public float sx, sy;
         public float zoom = 1;
@@ -70,14 +58,10 @@ namespace Dendrite
             return new PointF(((float)(x) + sx) * zoom, (InvertY ? (-1) : 1) * ((float)(y) + sy) * zoom);
         }
 
-        public void Init(PictureBox pictureBox1)
+        public virtual void Init(PictureBox pictureBox1)
         {
             Box = pictureBox1;
-            for (int i = 0; i < 2; i++)
-            {
-                blist.Add(new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
-                glist.Add(Graphics.FromImage(blist.Last()));
-            }
+            
 
             Box.Image = Bmp;
             Box.SizeChanged += Box_SizeChanged;
@@ -192,7 +176,7 @@ namespace Dendrite
             var test = Transform(new PointF(x, y));
 
         }
-        
+
     }
 
 }

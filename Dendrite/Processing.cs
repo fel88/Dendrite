@@ -12,11 +12,9 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace Dendrite
 {
@@ -25,14 +23,63 @@ namespace Dendrite
         public Processing()
         {
             InitializeComponent();
+            ctx.Init(pictureBox3);
+            pictureBox3.SetDoubleBuffered(true);
+            pictureBox3.Paint += PictureBox3_Paint;
+            Load += Processing_Load;
         }
 
-        Nnet net = new Nnet();
+        private void Processing_Load(object sender, EventArgs e)
+        {
+            mf = new MessageFilter();
+            Application.AddMessageFilter(mf);
+        }
+
+        MessageFilter mf = null;
+
+        PipelineUI pipelineUI = new PipelineUI();
+        private void PictureBox3_Paint(object sender, PaintEventArgs e)
+        {
+            ctx.Graphics = e.Graphics;
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.Clear(Color.DarkGray);
+            //draw grid
+            DrawGrid();
+            foreach (var item in pipelineUI.Elements)
+            {
+                item.Draw(ctx);
+            }
+        }
+
+        private void DrawGrid()
+        {
+
+            int cw = 50;
+            int ch = 50;
+            Pen gridPen = new Pen(Color.Gray, 1f);
+            for (int i = -25; i <= 25; i++)
+            {
+                for (int j = -25; j <= 25; j++)
+                {
+                    float xx = i * cw;
+                    float yy = j * ch;
+                    var pp = ctx.Transform(xx, yy);
+                    xx = pp.X;
+                    yy = pp.Y;
+                    ctx.Graphics.DrawRectangle(gridPen, xx, yy, cw * ctx.zoom, ch * ctx.zoom);
+                }
+            }
+
+        }
+
+        InferenceEnvironment env = new InferenceEnvironment();
+        Nnet net => env.Net;
         private void button1_Click(object sender, EventArgs e)
         {
             net.run();
         }
 
+        DrawingContext ctx = new DrawingContext();
 
 
         string lastPath;
@@ -188,6 +235,14 @@ namespace Dendrite
             listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
         }
 
+        internal void LoadEnvironment(string fileName)
+        {
+            env.Load(fileName);
+            pipelineUI.Init(env.Pipeline);
+            Text = "Inference: " + fileName;
+            UpdateNodesList();
+        }
+
         void UpdatePreprocessorsList()
         {
             if (currentNode == null) return;
@@ -197,14 +252,14 @@ namespace Dendrite
             foreach (var item in InputDatas[currentNode.Name].Preprocessors)
             {
                 listView3.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
-            }            
+            }
         }
         private void nCHWToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (currentNode == null) return;
-            
+
             InputDatas[currentNode.Name].Preprocessors.Add(new NCHWPreprocessor());
-            UpdatePreprocessorsList();            
+            UpdatePreprocessorsList();
         }
 
         private void meanstdToolStripMenuItem_Click(object sender, EventArgs e)
@@ -879,21 +934,20 @@ namespace Dendrite
             return ret;
         }
 
-        internal void Init(string lastPath)
+        internal void Init(string path)
         {
-            net.Init(lastPath);
+            if (path.EndsWith(".den"))
+            {
+                LoadEnvironment(path);
+                return;
+            }
 
-            Text = "Inference: " + lastPath;
-            var _netPath = lastPath;
-            UpdateNodesList();
-        }
+            net.Init(path);
 
-        internal void Init(string path, byte[] model)
-        {
-            net.Init(path, model);
             Text = "Inference: " + path;
             UpdateNodesList();
         }
+
 
         void UpdateNodesList()
         {
@@ -2110,62 +2164,7 @@ namespace Dendrite
             }
         }
 
-        public void LoadEnvironment(string epath)
-        {
-            using (ZipArchive zip = ZipFile.Open(epath, ZipArchiveMode.Read))
-            {
-                foreach (ZipArchiveEntry entry in zip.Entries)
-                {
-                    if (entry.Name.EndsWith(".xml"))
-                    {
-                        using (var stream2 = entry.Open())
-                        {
-                            using (var reader = new StreamReader(stream2))
-                            {
-                                var config = reader.ReadToEnd();
-                                LoadConfig(config);
-                            }
-                        }
-                    }
-                    if (entry.Name.EndsWith(".onnx"))
-                    {
-                        net = new Nnet();
-                        using (var stream1 = entry.Open())
-                        {
-                            var model = stream1.ReadFully();
-                            Init(epath, model);
-                        }
-                    }
-                }
-            }            
-        }
 
-        private void LoadConfig(string config)
-        {
-            var doc = XDocument.Parse(config);
-            var types = Assembly.GetExecutingAssembly().GetTypes().Where(z => z.GetCustomAttribute(typeof(XmlNameAttribute)) != null).ToArray();
-
-            foreach (var item in doc.Descendants("inputNode"))
-            {
-                var key = item.Attribute("key").Value;
-                foreach (var pitem in item.Descendants("preprocessors"))
-                {
-                    foreach (var eitem in pitem.Elements())
-                    {
-                        var fr = types.FirstOrDefault(z => ((XmlNameAttribute)z.GetCustomAttribute(typeof(XmlNameAttribute))).XmlKey == eitem.Name.LocalName);
-                        if (fr != null)
-                        {
-                            if (!net.InputDatas.ContainsKey(key))                            
-                                net.InputDatas.Add(key, new InputInfo());
-
-                            var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
-                            net.InputDatas[key].Preprocessors.Add(proc);
-                            proc.ParseXml(eitem);
-                        }
-                    }
-                }
-            }
-        }
 
         private void loadToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -2241,6 +2240,12 @@ namespace Dendrite
 
             sb.AppendLine("</root>");
             return sb;
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            ctx.Update();
+            pictureBox3.Invalidate();
         }
     }
 }
