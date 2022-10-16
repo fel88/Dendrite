@@ -74,7 +74,7 @@ namespace Dendrite
         Nnet net => env.Net;
         private void button1_Click(object sender, EventArgs e)
         {
-            net.run();
+            net.Run();
         }
 
         DrawingContext ctx = new DrawingContext();
@@ -84,7 +84,7 @@ namespace Dendrite
         private void button2_Click(object sender, EventArgs e)
         { }
 
-        private void loadImage(NodeInfo node)
+        private void LoadImage(NodeInfo node)
         {
             try
             {
@@ -832,7 +832,7 @@ namespace Dendrite
                     }
                     try
                     {
-                        net.run(session);
+                        net.Run(session);
                         if (vid != null)
                         {
                             var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
@@ -918,7 +918,7 @@ namespace Dendrite
             try
             {
                 rewindVideo();
-                net.run();
+                net.Run();
                 if (vid != null)
                 {
                     var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
@@ -1015,8 +1015,8 @@ namespace Dendrite
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             rewindVideo();
-            var sw = Stopwatch.StartNew();
-            net.run();
+            var sw = Stopwatch.StartNew();            
+            env.Process();            
             sw.Stop();
             toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
         }
@@ -1191,7 +1191,7 @@ namespace Dendrite
             if (listView2.SelectedItems.Count == 0) return;
 
             var nd = (NodeInfo)((listView2.SelectedItems[0] as ListViewItem).Tag);
-            loadImage(nd);
+            LoadImage(nd);
         }
 
         private void nyToolStripMenuItem_Click(object sender, EventArgs e)

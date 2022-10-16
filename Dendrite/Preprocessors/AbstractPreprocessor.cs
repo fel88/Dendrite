@@ -10,6 +10,8 @@ namespace Dendrite.Preprocessors
         public AbstractPreprocessor()
         {
             Name = GetType().Name;
+            InputSlots = new DataSlot[1] { new DataSlot() { Name = "input" } };
+            OutputSlots = new DataSlot[1] { new DataSlot() { Name = "output" } };
         }
         public virtual Type ConfigControl => null;
 
@@ -18,7 +20,8 @@ namespace Dendrite.Preprocessors
 
         }
 
-        public virtual List<DataSlot> InputSlots { get; set; } = new List<DataSlot>();
+        public DataSlot[] InputSlots { get; set; }
+        public DataSlot[] OutputSlots { get; set; }
 
         public virtual string Name { get; set; }
 

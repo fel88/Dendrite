@@ -10,7 +10,13 @@ namespace Dendrite.Preprocessors
 {
     [XmlName(XmlKey = "drawBoxes")]
     public class DrawBoxesPostProcessor : AbstractPreprocessor, IPostDrawer
-    {
+   {
+
+        public DrawBoxesPostProcessor()
+        {
+            OutputSlots[0].Name = "img";
+        }
+
         public float VisThreshold = 0.4f;
         public bool DrawLabels = true;
         public PictureBox Pbox;
@@ -33,7 +39,7 @@ namespace Dendrite.Preprocessors
             var net = list.First(z => z is Nnet) as Nnet;
             var ret = Helpers.DrawBoxes(net.lastReadedMat, dets, VisThreshold, DrawLabels);
             LastMat = ret;
-
+            OutputSlots[0].Data = ret;
             if (Pbox != null)
             {
                 Pbox.Invoke((Action)(() =>

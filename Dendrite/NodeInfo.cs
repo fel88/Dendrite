@@ -9,6 +9,7 @@ namespace Dendrite
         public bool IsOutput=>!IsInput;
         public string Name;
         public int[] Dims;
+        public int[] SourceDims;
         public Type ElementType;
         public List<string> Tags = new List<string>();
     }

@@ -20,6 +20,8 @@ namespace Dendrite
         public void Load(string epath)
         {
             Path = epath;
+            Net = new Nnet();
+            Net.Init(epath);
             using (ZipArchive zip = ZipFile.Open(epath, ZipArchiveMode.Read))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)
@@ -35,18 +37,10 @@ namespace Dendrite
                             }
                         }
                     }
-                    if (entry.Name.EndsWith(".onnx"))
-                    {
-                        Net = new Nnet();
-                        using (var stream1 = entry.Open())
-                        {
-                            var model = stream1.ReadFully();
-                            Net.Init(epath, model);
-                        }
-                    }
+                    //if (entry.Name.EndsWith(".onnx")) {  }
                 }
             }
-
+         
             InitPipeline();
         }
 
@@ -99,8 +93,15 @@ namespace Dendrite
             foreach (var pp in Net.Postprocessors)
             {
                 var node = new Node() { Name = pp.Name, Tag = pp };
-                node.Inputs.Add(new NodePin(node) { });
-                node.Outputs.Add(new NodePin(node) { });
+                foreach (var zitem in pp.InputSlots)
+                {
+                    node.Inputs.Add(new NodePin(node) { Name = zitem.Name });
+                }
+                foreach (var zitem in pp.OutputSlots)
+                {
+                    node.Outputs.Add(new NodePin(node) { Name = zitem.Name });
+                }
+
                 if (postnodes.Count > 0)
                 {
                     PinLink pl = new PinLink();
@@ -117,7 +118,7 @@ namespace Dendrite
 
         internal void Process()
         {
-            Net.run();
+            Net.Run();
         }
 
         private void LoadConfig(string config)

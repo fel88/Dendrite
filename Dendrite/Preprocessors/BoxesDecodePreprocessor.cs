@@ -15,8 +15,9 @@ namespace Dendrite.Preprocessors
 
         public BoxesDecodePostProcessor()
         {
-            InputSlots.Add(new DataSlot() { Name = "conf" });
-            InputSlots.Add(new DataSlot() { Name = "loc" });
+            InputSlots = new DataSlot[2];
+            InputSlots[0] = (new DataSlot() { Name = "conf" });
+            InputSlots[1] = (new DataSlot() { Name = "loc" });
         }
 
         public override string Name => "boxes decoder";
@@ -32,8 +33,8 @@ namespace Dendrite.Preprocessors
         public List<string> AllowedClasses = new List<string>();
         public ObjectDetectionInfo[] BoxesDecode(Nnet net, Mat mat1)
         {
-            
-            
+
+
             var rets1 = InputSlots[0].Data as float[];
             var rets3 = InputSlots[1].Data as float[];
 
@@ -85,7 +86,12 @@ namespace Dendrite.Preprocessors
                 var f1 = net.Nodes.FirstOrDefault(z => z.Tags.Contains("conf"));
                 var f2 = net.Nodes.FirstOrDefault(z => z.Tags.Contains("loc"));
                 if (f1 == null || f2 == null)
-                    return null;
+                {
+                    f2 = net.Nodes.FirstOrDefault(z => z.IsOutput && z.Dims.Last() == 4);
+                    f1 = net.Nodes.FirstOrDefault(z => z != f2 && z.IsOutput);
+                    if (f1 == null || f2 == null)
+                        return null;
+                }
 
                 InputSlots[0].Data = net.OutputDatas[f2.Name];
                 InputSlots[1].Data = net.OutputDatas[f1.Name];

@@ -19,26 +19,22 @@ namespace Dendrite
         public NodeInfo[] Nodes => _nodes.ToArray();
 
         List<NodeInfo> _nodes = new List<NodeInfo>();
-        internal void Init(string lastPath)
-        {
-            //  Text = "Processing: " + lastPath;
-            _netPath = lastPath;
-            var session1 = new InferenceSession(_netPath);
-            Prepare(session1);
-        }
 
         InferenceSession session;
-        internal void Init(string path, byte[] model)
+        internal void Init(string path)
         {
-            //  Text = "Processing: " + lastPath;
             _netPath = path;
-            session = new InferenceSession(model);
-            Prepare(session);
+            if (path.EndsWith(".den"))
+                session = new InferenceSession(GetModelBytes());
+            else
+                session = new InferenceSession(_netPath);
 
+            Prepare(session);
         }
 
         void Prepare(InferenceSession session1)
         {
+            _nodes.Clear();
             foreach (var item in session1.OutputMetadata.Keys)
             {
                 var dims = session1.OutputMetadata[item].Dimensions;
@@ -48,7 +44,14 @@ namespace Dendrite
             foreach (var name in session1.InputMetadata.Keys)
             {
                 var dims = session1.InputMetadata[name].Dimensions;
-                _nodes.Add(new NodeInfo() { Name = name, Dims = dims, IsInput = true, ElementType = session1.InputMetadata[name].ElementType });
+                _nodes.Add(new NodeInfo()
+                {
+                    Name = name,
+                    SourceDims = (int[])dims.Clone(),
+                    Dims = dims,
+                    IsInput = true,
+                    ElementType = session1.InputMetadata[name].ElementType
+                });
             }
         }
 
@@ -65,12 +68,21 @@ namespace Dendrite
             Mat mat2 = null;
             foreach (var name in inputMeta.Keys)
             {
+                var node = Nodes.First(z => z.Name == name);
                 var data = InputDatas[name];
                 if (data.Data is InternalArray intar)
                 {
                     for (int i = 0; i < inputMeta[name].Dimensions.Length; i++)
                     {
                         if (inputMeta[name].Dimensions[i] == -1)
+                        {
+                            inputMeta[name].Dimensions[i] = intar.Shape[i];
+                        }
+                    }
+                  
+                    for (int i = 0; i < node.SourceDims.Length; i++)
+                    {
+                        if (node.SourceDims[i] == -1)
                         {
                             inputMeta[name].Dimensions[i] = intar.Shape[i];
                         }
@@ -92,8 +104,11 @@ namespace Dendrite
                         inputMeta[name].Dimensions[2] = mat.Height;
                         inputMeta[name].Dimensions[3] = mat.Width;
                     }
-
-
+                    if (node.SourceDims[2] == -1 && node.SourceDims[3] == -1)
+                    {
+                        inputMeta[name].Dimensions[2] = mat.Height;
+                        inputMeta[name].Dimensions[3] = mat.Width;
+                    }
 
                     mat2 = mat.Clone();
                     mat.ConvertTo(mat, MatType.CV_32F);
@@ -180,7 +195,7 @@ namespace Dendrite
             }
             return mat2;
         }
-        public void run(InferenceSession session1 = null)
+        public void Run(InferenceSession session1 = null)
         {
             Stopwatch sw = Stopwatch.StartNew();
 
@@ -257,21 +272,21 @@ namespace Dendrite
             //  toolStripStatusLabel1.Text = $"{sw.ElapsedMilliseconds}ms";
 
         }
-                
+
 
         public Mat lastReadedMat;
         public List<IInputPreprocessor> Postprocessors = new List<IInputPreprocessor>();
-        
+
         internal byte[] GetModelBytes()
         {
             using (ZipArchive zip = ZipFile.Open(NetPath, ZipArchiveMode.Read))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
-                  
+
                     if (entry.Name.EndsWith(".onnx"))
                     {
-                        
+
                         using (var stream1 = entry.Open())
                         {
                             var model = stream1.ReadFully();
@@ -293,7 +308,7 @@ namespace Dendrite
                     if (entry.Name.EndsWith(".onnx"))
                     {
                         return entry.Name;
-                       
+
                     }
                 }
             }
