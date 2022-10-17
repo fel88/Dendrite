@@ -6,6 +6,7 @@ namespace Dendrite
     {
         PointF Position { get; set; }
         void Draw(DrawingContext ctx);
+        bool ContainsPoint(PointF p);
     }
 }
 

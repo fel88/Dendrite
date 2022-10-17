@@ -97,7 +97,9 @@ namespace Dendrite
         {
             var sw = Stopwatch.StartNew();
             env.Process();
-            if (env.Net.Postprocessors.Last().OutputSlots[0].Data is Mat m)
+            var outps = env.Pipeline.GetOutputs();
+            
+            if (outps[0] is Mat m)
             {
                 pictureBox2.Image = m.ToBitmap();
             }

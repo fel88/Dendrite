@@ -257,6 +257,7 @@
       <DependentUpon>ShapeSizeDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions.cs" />
+    <Compile Include="ImageSourceNode.cs" />
     <Compile Include="Inference.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -291,6 +292,7 @@
       <DependentUpon>MdiChildForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MessageFilter.cs" />
+    <Compile Include="NetNode.cs" />
     <Compile Include="Nnet.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="NodeInfo.cs" />
@@ -365,6 +367,7 @@
     <Compile Include="Preprocessors\Controls\ZeroImageConfigControl.Designer.cs">
       <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Preprocessors\DataSlot.cs" />
     <Compile Include="Preprocessors\DepthmapDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\DrawBoxesPostProcessor.cs" />
     <Compile Include="Preprocessors\DrawInstanceSegmentationPostProcessor.cs" />
@@ -389,6 +392,7 @@
     <Compile Include="Preprocessors\NCHWPreprocessor.cs" />
     <Compile Include="Preprocessors\NmsPostProcessors.cs" />
     <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
+    <Compile Include="Preprocessors\ObjectDetectionContext.cs" />
     <Compile Include="Preprocessors\ResizePreprocessor.cs" />
     <Compile Include="Preprocessors\TransposePreprocessor.cs" />
     <Compile Include="Preprocessors\XmlNameAttribute.cs" />

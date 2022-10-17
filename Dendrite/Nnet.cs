@@ -61,6 +61,22 @@ namespace Dendrite
         public bool FetchNextFrame = true;
         public float[] inputData;
 
+        public void SetDims(string inputKey, int[] dims)
+        {
+            var inputMeta = session.InputMetadata;
+            for (int i = 0; i < inputMeta[inputKey].Dimensions.Length; i++)
+            {
+                inputMeta[inputKey].Dimensions[i] = dims[i];
+            }
+        }
+
+
+        public void SetInputArray(string name, float[] data)
+        {
+            var inputMeta = session.InputMetadata;
+            var tensor = new DenseTensor<float>(data, inputMeta[name].Dimensions);
+            container.Add(NamedOnnxValue.CreateFromTensor<float>(name, tensor));
+        }
         public Mat prepareData(List<NamedOnnxValue> container, InferenceSession session1)
         {
             var inputMeta = session1.InputMetadata;
@@ -79,7 +95,7 @@ namespace Dendrite
                             inputMeta[name].Dimensions[i] = intar.Shape[i];
                         }
                     }
-                  
+
                     for (int i = 0; i < node.SourceDims.Length; i++)
                     {
                         if (node.SourceDims[i] == -1)
@@ -113,7 +129,7 @@ namespace Dendrite
                     mat2 = mat.Clone();
                     mat.ConvertTo(mat, MatType.CV_32F);
                     object param = mat;
-                    foreach (var pitem in data.Preprocessors)
+                    /*foreach (var pitem in data.Preprocessors)
                     {
                         param = pitem.Process(param);
                         if (pitem is ZeroImagePreprocessor && param is Mat mt2)
@@ -138,7 +154,7 @@ namespace Dendrite
                                 inputMeta[name].Dimensions[3] = mt.Width;
                             }
                         }
-                    }
+                    }*/
 
                     inputData = param as float[];
                     var tensor = new DenseTensor<float>(param as float[], inputMeta[name].Dimensions);
@@ -175,11 +191,11 @@ namespace Dendrite
                         mat2 = mat.Clone();
                         mat.ConvertTo(mat, MatType.CV_32F);
                         object param = mat;
-                        foreach (var pitem in data.Preprocessors)
+                        /*foreach (var pitem in data.Preprocessors)
                         {
                             param = pitem.Process(param);
                         }
-
+                        */
                         inputData = param as float[];
                         var tensor = new DenseTensor<float>(param as float[], inputMeta[name].Dimensions);
 
@@ -200,6 +216,12 @@ namespace Dendrite
             }
             return mat2;
         }
+        List<NamedOnnxValue> container = new List<NamedOnnxValue>();
+
+        public void ResetContainer()
+        {
+            container = new List<NamedOnnxValue>();
+        }
         public void Run(InferenceSession session1 = null)
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -213,9 +235,9 @@ namespace Dendrite
                 session1 = new InferenceSession(_netPath);
             }
 
-            var container = new List<NamedOnnxValue>();
+            //var container = new List<NamedOnnxValue>();
 
-            var mat2 = prepareData(container, session1);
+            //var mat2 = prepareData(container, session1);
             OutputDatas.Clear();
             using (var results = session1.Run(container))
             {
@@ -267,12 +289,14 @@ namespace Dendrite
             object inp = this;
             List<object> objs = new List<object>();
             objs.Add(inp);
+
+            /*
             foreach (var v in Postprocessors)
             {
                 var r = v.Process(objs.ToArray());
                 objs.Add(r);
             }
-
+            */
             sw.Stop();
             //  toolStripStatusLabel1.Text = $"{sw.ElapsedMilliseconds}ms";
 
@@ -280,7 +304,7 @@ namespace Dendrite
 
 
         public Mat lastReadedMat;
-        public List<IInputPreprocessor> Postprocessors = new List<IInputPreprocessor>();
+        //public List<IInputPreprocessor> Postprocessors = new List<IInputPreprocessor>();
 
         internal byte[] GetModelBytes()
         {

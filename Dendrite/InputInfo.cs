@@ -5,7 +5,7 @@ namespace Dendrite
 {
     public class InputInfo
     {
-        public List<IInputPreprocessor> Preprocessors = new List<IInputPreprocessor>();
+        //public List<IInputPreprocessor> Preprocessors = new List<IInputPreprocessor>();
         public object Data;
     }
 }

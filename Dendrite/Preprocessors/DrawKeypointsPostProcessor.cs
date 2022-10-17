@@ -35,5 +35,9 @@ namespace Dendrite.Preprocessors
     public interface IPostDrawer
     {
         Mat LastMat { get; }
-    }    
+    }
+    public interface IImageContainer
+    {
+        Mat Image { get; }
+    }
 }

@@ -108,6 +108,8 @@ namespace Dendrite
         public static Mat DrawBoxes(Mat mat1, ObjectDetectionInfo[] detections, float visTresh, bool printLabels = true)
         {
             Mat mat = mat1.Clone();
+            if (mat.Type() != MatType.CV_8UC3)
+                mat.ConvertTo(mat, MatType.CV_8UC3);
 
             for (int i = 0; i < detections.Length; i++)
             {

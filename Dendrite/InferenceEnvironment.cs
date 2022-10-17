@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Dendrite
@@ -16,6 +17,15 @@ namespace Dendrite
         public string Path;
         public Nnet Net = new Nnet();
         public PipelineGraph Pipeline = new PipelineGraph();
+        public StringBuilder GetConfigXml()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            Pipeline.StoreXml(sb);
+            sb.AppendLine("</root>");
+            return sb;
+        }
 
         public void Load(string epath)
         {
@@ -40,86 +50,58 @@ namespace Dendrite
                     //if (entry.Name.EndsWith(".onnx")) {  }
                 }
             }
-         
-            InitPipeline();
         }
 
-        private void InitPipeline()
+        public static Node GenerateNodeFromProcessor(IInputPreprocessor pp)
         {
-            var netNode = new Node() { Name = "net", Tag = Net };
-            Pipeline.Nodes.Add(netNode);
-
-            foreach (var nitem in Net.Nodes.Where(z => z.IsInput))
+            var node = new Node() { Name = pp.Name, Tag = pp };
+            foreach (var zitem in pp.InputSlots)
             {
-                netNode.Inputs.Add(new NodePin(netNode) { Name = nitem.Name });
-                if (!Net.InputDatas.ContainsKey(nitem.Name)) continue;
-                var item = Net.InputDatas[nitem.Name];
-
-
-                List<Node> prepnodes = new List<Node>();
-                foreach (var pp in item.Preprocessors)
-                {
-                    var node = new Node() { Name = pp.Name, Tag = pp };
-                    node.Inputs.Add(new NodePin(node) { });
-                    node.Outputs.Add(new NodePin(node) { });
-                    if (prepnodes.Count > 0)
-                    {
-                        PinLink pl = new PinLink();
-                        prepnodes.Last().Outputs[0].OutputLinks.Add(pl);
-                        pl.Input = prepnodes.Last().Outputs[0];
-                        pl.Output = node.Inputs[0];
-                        node.Inputs[0].InputLinks.Add(pl);
-                    }
-                    prepnodes.Add(node);
-
-                    Pipeline.Nodes.Add(node);
-                }
-                if (prepnodes.Any())
-                {
-                    PinLink pl = new PinLink();
-                    pl.Input = prepnodes.Last().Outputs[0];
-                    pl.Output = netNode.Inputs.Last();
-                    prepnodes.Last().Outputs[0].OutputLinks.Add(pl);
-                    netNode.Inputs.Last().InputLinks.Add(pl);
-                }
+                node.Inputs.Add(new NodePin(node, zitem) { Name = zitem.Name });
+            }
+            foreach (var zitem in pp.OutputSlots)
+            {
+                node.Outputs.Add(new NodePin(node, zitem) { Name = zitem.Name });
             }
 
-            foreach (var item in Net.Nodes.Where(z => z.IsOutput))
+            return node;
+        }
+        public static Node GenerateNodeFromNet(Nnet net)
+        {
+            var node = new NetNode() { Name = net.GetModelName(), Tag = net, ModelPath = net.NetPath };
+            foreach (var nitem in net.Nodes.Where(z => z.IsInput))
             {
-                netNode.Outputs.Add(new NodePin(netNode) { Name = item.Name });
-            }
-            List<Node> postnodes = new List<Node>();
+                var ds = new DataSlot() { Name = nitem.Name };
+                node.Inputs.Add(new NodePin(node, ds) { Name = nitem.Name });
 
-            foreach (var pp in Net.Postprocessors)
+                if (nitem.SourceDims.Contains(-1))//check dynamic axes
+                {
+                    node.Inputs.Add(new NodePin(node, new DataSlot() { Name = nitem.Name + "_dims" }) { Name = nitem.Name + "_dims" });
+                }
+                if (!net.InputDatas.ContainsKey(nitem.Name)) continue;
+                var item = net.InputDatas[nitem.Name];
+            }
+
+            foreach (var item in net.Nodes.Where(z => z.IsOutput))
             {
-                var node = new Node() { Name = pp.Name, Tag = pp };
-                foreach (var zitem in pp.InputSlots)
-                {
-                    node.Inputs.Add(new NodePin(node) { Name = zitem.Name });
-                }
-                foreach (var zitem in pp.OutputSlots)
-                {
-                    node.Outputs.Add(new NodePin(node) { Name = zitem.Name });
-                }
-
-                if (postnodes.Count > 0)
-                {
-                    PinLink pl = new PinLink();
-                    postnodes.Last().Outputs[0].OutputLinks.Add(pl);
-                    pl.Input = postnodes.Last().Outputs[0];
-                    pl.Output = node.Inputs[0];
-                    node.Inputs[0].InputLinks.Add(pl);
-                }
-                postnodes.Add(node);
-
-                Pipeline.Nodes.Add(node);
+                var ds = new DataSlot() { Name = item.Name };
+                node.Outputs.Add(new NodePin(node, ds) { Name = item.Name });
             }
+
+            return node;
         }
 
         internal void Process()
         {
-            Net.Run();
+            var nodes = Pipeline.Toposort();
+            foreach (var item in nodes)
+            {
+                item.Process();
+                if (item.LastException != null) break;
+            }
+            //Net.Run();
         }
+
 
         private void LoadConfig(string config)
         {
@@ -140,7 +122,7 @@ namespace Dendrite
                                 Net.InputDatas.Add(key, new InputInfo());
 
                             var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
-                            Net.InputDatas[key].Preprocessors.Add(proc);
+                            //Net.InputDatas[key].Preprocessors.Add(proc);
                             proc.ParseXml(eitem);
                         }
                     }
@@ -154,7 +136,8 @@ namespace Dendrite
                 if (fr == null) continue;
 
                 var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
-                Net.Postprocessors.Add(proc);
+                Pipeline.Nodes.Add(GenerateNodeFromProcessor(proc));
+                //Net.Postprocessors.Add(proc);
                 proc.ParseXml(eitem);
             }
         }

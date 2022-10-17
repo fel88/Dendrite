@@ -42,8 +42,11 @@ namespace Dendrite
         float origsx, origsy;
         bool isDrag = false;
 
-        
 
+        public virtual PointF BackTransform(PointF p1)
+        {
+            return new PointF((p1.X / zoom - sx), (InvertY ? (-1) : 1) * (p1.Y / zoom - sy));
+        }
         public float sx, sy;
         public float zoom = 1;
         //public Graphics gr;
@@ -97,12 +100,13 @@ namespace Dendrite
             StopDrag();
         }
 
+        public bool AllowDrag = true;
         private void Box_MouseDown(object sender, MouseEventArgs e)
         {
             var pos = Box.PointToClient(Cursor.Position);
             var p = Transform(pos);
 
-            if (e.Button == MouseButtons.Left)
+            if (AllowDrag && e.Button == MouseButtons.Left)
             {
                 isDrag = true;
                 startx = pos.X;

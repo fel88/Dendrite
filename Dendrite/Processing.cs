@@ -26,7 +26,76 @@ namespace Dendrite
             ctx.Init(pictureBox3);
             pictureBox3.SetDoubleBuffered(true);
             pictureBox3.Paint += PictureBox3_Paint;
+            pictureBox3.MouseDown += PictureBox3_MouseDown;
+            pictureBox3.MouseUp += PictureBox3_MouseUp;
             Load += Processing_Load;
+        }
+
+        private void PictureBox3_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (startedPin != null && hoveredPin != null)
+            {
+                PinLink link = new PinLink() { Input = startedPin, Output = hoveredPin };
+                hoveredPin.InputLinks.Add(link);
+                startedPin.OutputLinks.Add(link);
+            }
+            startedPin = null;
+            dragged = null;
+        }
+
+        private void PictureBox3_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                if (selected != null)
+                {
+                    (selected as NodeUI).IsSelected = false;
+                    selected = null;
+                }
+                if (hovered != null)
+                {
+                    if (hoveredPin == null)
+                    {
+                        dragged = hovered;
+                    }
+                    else
+                    {
+                        startedPin = hoveredPin;
+                    }
+                    selected = hovered;
+                    propertyGrid1.SelectedObject = selected.Node.Tag;
+                    propertyGrid2.SelectedObject = selected.Node;
+                    toolStripStatusLabel1.ForeColor = Color.Black;
+                    if (selected.Node.LastException != null)
+                    {
+                        toolStripStatusLabel1.ForeColor = Color.Red;
+                        toolStripStatusLabel1.Text = selected.Node.LastException.Message;
+                    }
+
+
+                    (selected as NodeUI).IsSelected = true;
+                    UpdateSelectedNodeControl();
+
+                }
+            }
+        }
+
+        private void UpdateSelectedNodeControl()
+        {
+            if (!(dragged is NodeUI n)) return;
+            if (!(n.Node.Tag is IInputPreprocessor prep)) return;
+
+            currentPreprocessor = prep;
+            groupBox1.Controls.Clear();
+
+            if (prep.ConfigControl != null)
+            {
+                var cc = Activator.CreateInstance(prep.ConfigControl) as IProcessorConfigControl;
+                cc.Init(prep);
+                var cc2 = cc as UserControl;
+                cc2.Dock = DockStyle.Fill;
+                groupBox1.Controls.Add(cc2);
+            }
         }
 
         private void Processing_Load(object sender, EventArgs e)
@@ -38,14 +107,53 @@ namespace Dendrite
         MessageFilter mf = null;
 
         PipelineUI pipelineUI = new PipelineUI();
+
+        IUIElement dragged;
+        NodeUI selected;
+        NodeUI hovered;
+        NodePin hoveredPin;
+        NodePin startedPin;
         private void PictureBox3_Paint(object sender, PaintEventArgs e)
         {
+            var pos = pictureBox3.PointToClient(Cursor.Position);
+            if (dragged != null)
+            {
+                dragged.Position = ctx.BackTransform(pos);
+            }
+            UpdateHovered();
             ctx.Graphics = e.Graphics;
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             e.Graphics.Clear(Color.DarkGray);
             //draw grid
             DrawGrid();
             pipelineUI.Draw(ctx);
+
+
+        }
+
+        private void UpdateHovered()
+        {
+            var pos = pictureBox3.PointToClient(Cursor.Position);
+            var pos2 = ctx.BackTransform(pos);
+            ctx.AllowDrag = dragged == null;
+            hovered = null;
+            foreach (var item in pipelineUI.Elements.OfType<NodeUI>())
+            {
+                if (item.ContainsPoint(pos2))
+                {
+                    hovered = item;
+                    ctx.AllowDrag = false;
+                    break;
+                }
+            }
+            hoveredPin = null;
+            if (hovered != null)
+            {
+                if ((hovered as NodeUI).HoveredPin != null)
+                {
+                    hoveredPin = (hovered as NodeUI).HoveredPin;
+                }
+            }
 
         }
 
@@ -142,7 +250,7 @@ namespace Dendrite
         {
             if (listView2.SelectedItems.Count == 0) return;
             currentNode = (NodeInfo)((listView2.SelectedItems[0] as ListViewItem).Tag);
-            UpdatePreprocessorsList();
+
             if (InputDatas.ContainsKey(currentNode.Name))
             {
                 if (InputDatas[currentNode.Name].Data is Mat mat)
@@ -229,8 +337,8 @@ namespace Dendrite
                 Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
                 return;
             }
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
         }
 
         internal void LoadEnvironment(string fileName)
@@ -239,35 +347,37 @@ namespace Dendrite
             pipelineUI.Init(env.Pipeline);
             Text = "Inference: " + fileName;
             UpdateNodesList();
-            UpdatePostProcessorsList();
+
         }
 
-        void UpdatePreprocessorsList()
-        {
-            if (currentNode == null) return;
-            listView3.Items.Clear();
-            if (!InputDatas.ContainsKey(currentNode.Name)) return;
 
-            foreach (var item in InputDatas[currentNode.Name].Preprocessors)
-            {
-                listView3.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
-            }
-        }
         private void nCHWToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var r = new NCHWPreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
+            /*
             if (currentNode == null) return;
 
             InputDatas[currentNode.Name].Preprocessors.Add(new NCHWPreprocessor());
-            UpdatePreprocessorsList();
+            UpdatePreprocessorsList();*/
         }
 
         private void meanstdToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentNode == null) return;
+            //if (currentNode == null) return;
 
             var r = new MeanStdPreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
         }
 
         private void normalizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -275,30 +385,13 @@ namespace Dendrite
             if (currentNode == null) return;
 
             var r = new NormalizePreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r });
         }
 
         IInputPreprocessor currentPreprocessor;
 
-        private void listView3_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listView3.SelectedItems.Count == 0) return;
-            var prep = listView3.SelectedItems[0].Tag as IInputPreprocessor;
-            currentPreprocessor = prep;
-            groupBox1.Controls.Clear();
 
-            if (prep.ConfigControl != null)
-            {
-                var cc = Activator.CreateInstance(prep.ConfigControl) as IProcessorConfigControl;
-                cc.Init(prep);
-                var cc2 = cc as UserControl;
-                cc2.Dock = DockStyle.Fill;
-                groupBox1.Controls.Add(cc2);
-            }
-
-
-        }
 
         //private void textBox2_TextChanged(object sender, EventArgs e)
         //{
@@ -355,20 +448,20 @@ namespace Dendrite
             if (currentNode == null) return;
 
             var r = new MeanStdPreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
 
             var r2 = new ResizePreprocessor() { Dims = currentNode.Dims };
-            InputDatas[currentNode.Name].Preprocessors.Add(r2);
-            listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r2 });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r2);
+            // listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r2 });
 
             var r3 = new NormalizePreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r3);
-            listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r3 });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r3);
+            //  listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r3 });
 
             var r4 = new NCHWPreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r4);
-            listView3.Items.Add(new ListViewItem(new string[] { "NCHW" }) { Tag = r4 });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r4);
+            //  listView3.Items.Add(new ListViewItem(new string[] { "NCHW" }) { Tag = r4 });
         }
 
         private void convertToIamgeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -483,7 +576,7 @@ namespace Dendrite
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView3.SelectedItems.Count == 0) return;
+            /*if (listView3.SelectedItems.Count == 0) return;
             if (currentNode == null) return;
             if (!InputDatas.ContainsKey(currentNode.Name)) return;
             if (Helpers.ShowQuestion($"Are you sure to delete {listView3.SelectedItems.Count} items?", Text) != DialogResult.Yes) return;
@@ -492,13 +585,13 @@ namespace Dendrite
             for (int i = 0; i < listView3.SelectedItems.Count; i++)
             {
                 var prep = listView3.SelectedItems[i].Tag as IInputPreprocessor;
-                InputDatas[currentNode.Name].Preprocessors.Remove(prep);
+                //InputDatas[currentNode.Name].Preprocessors.Remove(prep);
                 todel.Add(listView3.SelectedItems[i]);
             }
             foreach (var tt in todel)
             {
                 listView3.Items.Remove(tt);
-            }
+            }*/
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -835,7 +928,7 @@ namespace Dendrite
                         net.Run(session);
                         if (vid != null)
                         {
-                            var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
+                            /*var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
                             if (fr != null)
                             {
                                 var lm = (fr as IPostDrawer).LastMat;
@@ -850,7 +943,7 @@ namespace Dendrite
                             else
                             {
                                 vid.Write(net.lastReadedMat);
-                            }
+                            }*/
                         }
                         cntr++;
                         toolStripStatusLabel1.Text = "processed frames: " + cntr;
@@ -921,7 +1014,7 @@ namespace Dendrite
                 net.Run();
                 if (vid != null)
                 {
-                    var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
+                    /*var fr = (net.Postprocessors.FirstOrDefault(z => z is IPostDrawer));
                     if (fr != null)
                     {
                         vid.Write((fr as IPostDrawer).LastMat);
@@ -929,7 +1022,7 @@ namespace Dendrite
                     else
                     {
                         vid.Write(net.lastReadedMat);
-                    }
+                    }*/
                 }
             }
             catch (Exception ex)
@@ -981,7 +1074,7 @@ namespace Dendrite
         {
             StatisticForm s = new StatisticForm();
             var nd = net.Nodes.First(z => z.IsInput);
-            s.Init(lastPath, net.NetPath, nd.Name, nd.Dims, InputDatas[nd.Name].Preprocessors.ToArray());
+            //s.Init(lastPath, net.NetPath, nd.Name, nd.Dims, InputDatas[nd.Name].Preprocessors.ToArray());
             s.ShowDialog();
         }
 
@@ -999,8 +1092,8 @@ namespace Dendrite
             if (currentNode == null) return;
             if (!InputDatas.ContainsKey(currentNode.Name)) return;
             var r = new GrayscalePreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "grayscale" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "grayscale" }) { Tag = r });
         }
 
         private void aspectResizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1008,15 +1101,15 @@ namespace Dendrite
             if (currentNode == null) return;
             var r = new AspectResizePreprocessor() { Dims = currentNode.Dims };
             if (!InputDatas.ContainsKey(currentNode.Name)) return;
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "aspect" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "aspect" }) { Tag = r });
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             rewindVideo();
-            var sw = Stopwatch.StartNew();            
-            env.Process();            
+            var sw = Stopwatch.StartNew();
+            env.Process();
             sw.Stop();
             toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
         }
@@ -1062,8 +1155,8 @@ namespace Dendrite
             if (currentNode == null) return;
             var r = new ZeroImagePreprocessor();
             if (!InputDatas.ContainsKey(currentNode.Name)) return;
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "zero" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "zero" }) { Tag = r });
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -1452,79 +1545,62 @@ namespace Dendrite
             if (currentNode == null) return;
             if (!InputDatas.ContainsKey(currentNode.Name)) return;
             var r = new BGR2RGBPreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "bgr2rgb" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "bgr2rgb" }) { Tag = r });
         }
 
-        public void UpdatePostProcessorsList()
-        {
-            listView6.Items.Clear();
-            foreach (var item in net.Postprocessors)
-            {
-                listView6.Items.Add(new ListViewItem(new string[] { item.Name }) { Tag = item });
-            }
-        }
+
 
         private void yoloDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new YoloDecodePreprocessor();
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "yolo decode" }) { Tag = r });
+            env.Pipeline.Nodes.Add(new Node() { Tag = r });
+            //net.Postprocessors.Add(r);
+            //listView6.Items.Add(new ListViewItem(new string[] { "yolo decode" }) { Tag = r });
         }
 
         private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (listView6.SelectedItems.Count == 0) return;
-            var prep = listView6.SelectedItems[0].Tag as IInputPreprocessor;
+            // //if (listView6.SelectedItems.Count == 0) return;
+            //  var prep = listView6.SelectedItems[0].Tag as IInputPreprocessor;
 
-            net.Postprocessors.Remove(prep);
-            listView6.Items.Remove(listView6.SelectedItems[0]);
+            /*net.Postprocessors.Remove(prep);
+            listView6.Items.Remove(listView6.SelectedItems[0]);*/
         }
 
         private void drawBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DrawBoxesPostProcessor() { Pbox = pictureBox1 };
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "draw boxes" }) { Tag = r });
+            var r = new DrawBoxesPostProcessor() { };
+            /*  net.Postprocessors.Add(r);
+              listView6.Items.Add(new ListViewItem(new string[] { "draw boxes" }) { Tag = r });*/
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
-        private void listView6_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listView6.SelectedItems.Count == 0) return;
-            var prep = listView6.SelectedItems[0].Tag as IInputPreprocessor;
-            currentPreprocessor = prep;
-            groupBox1.Controls.Clear();
 
-            if (prep.ConfigControl != null)
-            {
-                var cc = Activator.CreateInstance(prep.ConfigControl) as IProcessorConfigControl;
-                cc.Init(prep);
-                var cc2 = cc as UserControl;
-                cc2.Dock = DockStyle.Fill;
-                groupBox1.Controls.Add(cc2);
-            }
-
-        }
 
         private void templateYoloToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (currentNode == null) return;
 
             var r = new ResizePreprocessor() { Dims = currentNode.Dims };
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //  listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
 
             var r2 = new BGR2RGBPreprocessor() { };
-            InputDatas[currentNode.Name].Preprocessors.Add(r2);
-            listView3.Items.Add(new ListViewItem(new string[] { "bgr2rgb" }) { Tag = r2 });
+            // InputDatas[currentNode.Name].Preprocessors.Add(r2);
+            // listView3.Items.Add(new ListViewItem(new string[] { "bgr2rgb" }) { Tag = r2 });
 
             var r3 = new NormalizePreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r3);
-            listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r3 });
+            // InputDatas[currentNode.Name].Preprocessors.Add(r3);
+            //listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r3 });
 
             var r4 = new NCHWPreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r4);
-            listView3.Items.Add(new ListViewItem(new string[] { "NCHW" }) { Tag = r4 });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r4);
+            // listView3.Items.Add(new ListViewItem(new string[] { "NCHW" }) { Tag = r4 });
         }
 
         private void toRGBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1532,8 +1608,8 @@ namespace Dendrite
             if (currentNode == null) return;
             if (!InputDatas.ContainsKey(currentNode.Name)) return;
             var r = new ToRGBPreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "rgb" }) { Tag = r });
+            //InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "rgb" }) { Tag = r });
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -1551,15 +1627,15 @@ namespace Dendrite
         private void keypointDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new KeypointsDecodePreprocessor();
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "keypoint decode" }) { Tag = r });
+            /* net.Postprocessors.Add(r);
+             listView6.Items.Add(new ListViewItem(new string[] { "keypoint decode" }) { Tag = r });*/
         }
 
         private void drawKeypointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new DrawKeypointsPostProcessor() { Pbox = pictureBox1 };
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "draw keypoints" }) { Tag = r });
+            /*  net.Postprocessors.Add(r);
+              listView6.Items.Add(new ListViewItem(new string[] { "draw keypoints" }) { Tag = r });*/
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -1602,22 +1678,22 @@ namespace Dendrite
         private void instanceSegmentationDecoderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new InstanceSegmentationDecodePreprocessor();
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation decoder" }) { Tag = r });
+            //  net.Postprocessors.Add(r);
+            //listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation decoder" }) { Tag = r });
         }
 
         private void instanceSegmentationDrawerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new DrawInstanceSegmentationPostProcessor() { Pbox = pictureBox1 };
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation drawer" }) { Tag = r });
+            // net.Postprocessors.Add(r);
+            //listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation drawer" }) { Tag = r });
         }
 
         private void nmsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new NmsPostProcessors();
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "nms" }) { Tag = r });
+            //   net.Postprocessors.Add(r);
+            // listView6.Items.Add(new ListViewItem(new string[] { "nms" }) { Tag = r });
         }
 
         private void checkBox5_CheckedChanged(object sender, EventArgs e)
@@ -1666,8 +1742,8 @@ namespace Dendrite
         private void depthmapDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new DepthmapDecodePreprocessor() { Pbox = pictureBox1 };
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "depthmap" }) { Tag = r });
+            //net.Postprocessors.Add(r);
+            //listView6.Items.Add(new ListViewItem(new string[] { "depthmap" }) { Tag = r });
         }
 
         private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1717,10 +1793,10 @@ namespace Dendrite
             var vv = InputDatas.First().Value;
             var mat = vv.Data as Mat;
             object param = mat;
-            foreach (var pitem in vv.Preprocessors)
+            /*foreach (var pitem in vv.Preprocessors)
             {
                 param = pitem.Process(param);
-            }
+            }*/
 
             ShowArray(param as Array);
         }
@@ -1730,15 +1806,15 @@ namespace Dendrite
             if (currentNode == null) return;
 
             var r = new TransposePreprocessor();
-            InputDatas[currentNode.Name].Preprocessors.Add(r);
-            listView3.Items.Add(new ListViewItem(new string[] { "transpose" }) { Tag = r });
+            //  InputDatas[currentNode.Name].Preprocessors.Add(r);
+            //listView3.Items.Add(new ListViewItem(new string[] { "transpose" }) { Tag = r });
         }
 
         private void rgb2bgrToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new BGR2RGBPreprocessor();
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "rgb2bgr" }) { Tag = r });
+            //net.Postprocessors.Add(r);
+            // listView6.Items.Add(new ListViewItem(new string[] { "rgb2bgr" }) { Tag = r });
         }
 
         private void numpyFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1996,7 +2072,7 @@ namespace Dendrite
 
                     var configFile = archive.CreateEntry("config.xml");
 
-                    var configXml = GetConfigXml();
+                    var configXml = env.GetConfigXml();
                     using (var entryStream = configFile.Open())
                     using (var streamWriter = new StreamWriter(entryStream))
                     {
@@ -2004,37 +2080,6 @@ namespace Dendrite
                     }
                 }
             }
-        }
-
-        private StringBuilder GetConfigXml()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<?xml version=\"1.0\"?>");
-            sb.AppendLine("<root>");
-            sb.AppendLine("<pipeline>");
-            foreach (var item in net.InputDatas.Keys)
-            {
-                sb.AppendLine($"<inputNode key=\"{item}\">");
-                sb.AppendLine("<preprocessors>");
-
-                foreach (var pp in net.InputDatas[item].Preprocessors)
-                {
-                    pp.StoreXml(sb);
-                }
-                sb.AppendLine("</preprocessors>");
-                sb.AppendLine("</inputNode>");
-            }
-            sb.AppendLine("<postprocessors>");
-            foreach (var item in net.Postprocessors)
-            {
-                item.StoreXml(sb);
-            }
-            sb.AppendLine("</postprocessors>");
-
-            sb.AppendLine("</pipeline>");
-
-            sb.AppendLine("</root>");
-            return sb;
         }
 
         private void timer2_Tick(object sender, EventArgs e)
@@ -2046,14 +2091,92 @@ namespace Dendrite
         private void boxesDecoderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new BoxesDecodePostProcessor();
-            net.Postprocessors.Add(r);
-            listView6.Items.Add(new ListViewItem(new string[] { "boxes decoder" }) { Tag = r });
+            //net.Postprocessors.Add(r);
+            //listView6.Items.Add(new ListViewItem(new string[] { "boxes decoder" }) { Tag = r });
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
         private void showImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pictureBox1.Image.Save("temp.jpg");
             Process.Start("temp.jpg");
+        }
+
+        private void postprocessorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            contextMenuStrip4.Show(Cursor.Position);
+        }
+
+        private void preprocessorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            contextMenuStrip2.Show(Cursor.Position);
+        }
+
+        private void netToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var nn = InferenceEnvironment.GenerateNodeFromNet(env.Net);
+            env.Pipeline.Nodes.Add(nn);
+            pipelineUI.AddItem(nn);
+        }
+
+        private void deleteToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (selected != null)
+            {
+                if (Helpers.ShowQuestion("Are you sure to delete selected nodes?", Text) == DialogResult.Yes)
+                {
+                    var n = (selected as NodeUI);
+                    env.Pipeline.Nodes.Remove(n.Node);
+                    n.Node.Detach();
+                    pipelineUI.Elements.Remove(n);
+                }
+            }
+        }
+
+        private void loadImgToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selected != null)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                if (ofd.ShowDialog() != DialogResult.OK) return;
+                var mat = Cv2.ImRead(ofd.FileName);
+                if ((selected.Node is ImageSourceNode isn))
+                {
+                    isn.SourceMat = mat;
+                }
+            }
+        }
+
+        private void imageSourceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var nn = new ImageSourceNode();
+            env.Pipeline.Nodes.Add(nn);
+            pipelineUI.AddItem(nn);
+        }
+
+        private void showImgToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selected != null)
+            {
+                if ((selected.Node is IImageContainer pd))
+                {
+                    if (pd.Image != null)
+                    {
+                        pictureBox1.Image = pd.Image.ToBitmap();
+                    }
+                }
+                if ((selected.Node.Tag is IImageContainer ic))
+                {
+                    if (ic.Image != null)
+                    {
+                        pictureBox1.Image = ic.Image.ToBitmap();
+                    }
+                }
+            }
         }
     }
 }

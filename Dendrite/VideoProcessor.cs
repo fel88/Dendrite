@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Dendrite.Preprocessors;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -77,7 +78,9 @@ namespace Dendrite
 
                            (env.Net.InputDatas[node.Name] as InputInfo).Data = img;
                            env.Process();
-                           if (env.Net.Postprocessors.Last().OutputSlots[0].Data is Mat mt)
+                           
+                           var last = env.Pipeline.Nodes.First(z => z.Outputs[0].OutputLinks.Count == 0 && z.Tag is IInputPreprocessor) as IInputPreprocessor;                           
+                           if (last.OutputSlots[0].Data is Mat mt)
                            {
                                vid.Write(mt);
                            }

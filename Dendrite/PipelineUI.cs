@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -59,6 +60,11 @@ namespace Dendrite
                 xx += 250;
                 yy += 150;
             }
+        }
+
+        internal void AddItem(Node node)
+        {
+            Elements.Add(new NodeUI() { Node = node });
         }
     }
 }
