@@ -1,5 +1,7 @@
 ﻿using Dendrite.Preprocessors;
 using OpenCvSharp;
+using System.Text;
+using System.Xml.Linq;
 
 namespace Dendrite
 {
@@ -11,6 +13,12 @@ namespace Dendrite
             Outputs.Add(new NodePin(this, new DataSlot()) { Name = "img" });
             Outputs.Add(new NodePin(this, new DataSlot()) { Name = "size" });
         }
+
+        public ImageSourceNode(XElement e) : base(e)
+        {
+
+        }
+
         public Mat SourceMat;
         public bool Is32Float { get; set; } = true;
         public ImageSizeFormatTypeEnum SizeFormat { get; set; } = ImageSizeFormatTypeEnum.NCHW;
@@ -36,8 +44,14 @@ namespace Dendrite
         {
             WH, NCHW
         }
-    }
-  
+
+        public override void StoreXml(StringBuilder sb)
+        {
+            sb.AppendLine($"<imgSourceNode id=\"{Id}\" name=\"{Name}\" >");
+            StoreBody(sb);
+            sb.AppendLine("</imgSourceNode>");
+        }
+    }  
 }
 
 

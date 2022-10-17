@@ -256,7 +256,9 @@
     <Compile Include="Dialogs\ShapeSizeDialog.Designer.cs">
       <DependentUpon>ShapeSizeDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="DiskFilesystem.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="IFilesystem.cs" />
     <Compile Include="ImageSourceNode.cs" />
     <Compile Include="Inference.cs">
       <SubType>Form</SubType>
@@ -463,6 +465,7 @@
     <Compile Include="WaitDialog.Designer.cs">
       <DependentUpon>WaitDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ZipFilesystem.cs" />
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </EmbeddedResource>

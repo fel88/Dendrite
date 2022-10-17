@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
@@ -12,12 +13,12 @@ namespace Dendrite
         {
         }
 
-        public NetNode(XElement item) : base(item)
+        public NetNode(XElement item, IFilesystem fs) : base(item)
         {
-            var netEl = item.Element("net");
-            ModelPath = netEl.Element("modelPath").Value;
+            //var netEl = item.Element("net");
+            ModelPath = item.Element("modelPath").Value;
             Tag = new Nnet();
-            Net.Init(ModelPath);
+            Net.Init(fs,ModelPath);
         }
         public override void Process()
         {
@@ -49,30 +50,12 @@ namespace Dendrite
         public override void StoreXml(StringBuilder sb)
         {
 
-            sb.AppendLine($"<netNode name=\"{0}\" >");
-            sb.AppendLine($"<modelPath>{ModelPath}</modelPath>");
+            sb.AppendLine($"<netNode id=\"{Id}\" name=\"{Name}\" >");
+            var fi = new FileInfo(ModelPath).Name;
+            sb.AppendLine($"<modelPath>{fi}</modelPath>");
 
             StoreBody(sb);
-            sb.AppendLine("<net>");
-            foreach (var item in Net.InputDatas.Keys)
-            {
-                sb.AppendLine($"<inputNode key=\"{item}\">");
-                /*   sb.AppendLine("<preprocessors>");
-
-                   foreach (var pp in Net.InputDatas[item].Preprocessors)
-                   {
-                       pp.StoreXml(sb);
-                   }
-                   sb.AppendLine("</preprocessors>");*/
-                sb.AppendLine("</inputNode>");
-            }
-            /*sb.AppendLine("<postprocessors>");
-            foreach (var item in Net.Postprocessors)
-            {
-                item.StoreXml(sb);
-            }
-            sb.AppendLine("</postprocessors>"); */
-            sb.AppendLine("</net>");
+        
             sb.AppendLine("</netNode>");
         }
     }

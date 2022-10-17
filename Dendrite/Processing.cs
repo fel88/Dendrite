@@ -57,6 +57,12 @@ namespace Dendrite
                     if (hoveredPin == null)
                     {
                         dragged = hovered;
+                        startDragPositionX = dragged.Position.X;
+                        startDragPositionY = dragged.Position.Y;
+                        var pos = pictureBox3.PointToClient(Cursor.Position);
+                        var pos2 = ctx.BackTransform(pos);
+                        startDragX = pos2.X;
+                        startDragY = pos2.Y;
                     }
                     else
                     {
@@ -113,12 +119,17 @@ namespace Dendrite
         NodeUI hovered;
         NodePin hoveredPin;
         NodePin startedPin;
+        float startDragX;
+        float startDragY;
+        float startDragPositionX;
+        float startDragPositionY;
         private void PictureBox3_Paint(object sender, PaintEventArgs e)
         {
             var pos = pictureBox3.PointToClient(Cursor.Position);
             if (dragged != null)
             {
-                dragged.Position = ctx.BackTransform(pos);
+                var back = ctx.BackTransform(pos);
+                dragged.Position = new PointF(startDragPositionX + back.X - startDragX, startDragPositionY + back.Y - startDragY);
             }
             UpdateHovered();
             ctx.Graphics = e.Graphics;
@@ -344,10 +355,11 @@ namespace Dendrite
         internal void LoadEnvironment(string fileName)
         {
             env.Load(fileName);
-            pipelineUI.Init(env.Pipeline);
+            pipelineUI = new PipelineUI(env.Pipeline);
+            pipelineUI.Restore(fileName);
+            //pipelineUI.Init(env.Pipeline);
             Text = "Inference: " + fileName;
             UpdateNodesList();
-
         }
 
 
@@ -810,7 +822,7 @@ namespace Dendrite
                 return;
             }
 
-            net.Init(path);
+            net.Init(DiskFilesystem, path);
 
             Text = "Inference: " + path;
             UpdateNodesList();
@@ -2032,6 +2044,8 @@ namespace Dendrite
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
             LoadEnvironment(ofd.FileName);
+            //p.Init(ofd.FileName);
+
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2078,6 +2092,15 @@ namespace Dendrite
                     {
                         streamWriter.WriteLine(configXml);
                     }
+
+                    var uiConfigFile = archive.CreateEntry("ui.xml");
+
+                    var uiConfigXml = pipelineUI.GetConfigXml();
+                    using (var entryStream = uiConfigFile.Open())
+                    using (var streamWriter = new StreamWriter(entryStream))
+                    {
+                        streamWriter.WriteLine(uiConfigXml);
+                    }
                 }
             }
         }
@@ -2115,9 +2138,15 @@ namespace Dendrite
         {
             contextMenuStrip2.Show(Cursor.Position);
         }
-
+        DiskFilesystem DiskFilesystem = new DiskFilesystem();
         private void netToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "ONNX (*.onnx)|*.onnx";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            net.Init(DiskFilesystem, ofd.FileName);
+
             var nn = InferenceEnvironment.GenerateNodeFromNet(env.Net);
             env.Pipeline.Nodes.Add(nn);
             pipelineUI.AddItem(nn);
@@ -2180,5 +2209,3 @@ namespace Dendrite
         }
     }
 }
-
-

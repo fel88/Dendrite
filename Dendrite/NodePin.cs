@@ -2,16 +2,24 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Dendrite
 {
     public class NodePin
     {
-        public NodePin(Node parent,DataSlot slot)
+        public NodePin(Node parent, DataSlot slot)
         {
             Parent = parent;
             Id = NewId++;
             Data = slot;
+        }
+
+        public NodePin(XElement el)
+        {
+            Id = int.Parse(el.Attribute("id").Value);
+            Name = el.Attribute("name").Value;
+            Data = new DataSlot();
         }
 
         public int Id { get; private set; }
@@ -23,6 +31,10 @@ namespace Dendrite
         public List<PinLink> OutputLinks = new List<PinLink>();
         public List<PinLink> InputLinks = new List<PinLink>();
 
+        public void RestoreLinks(XElement el, InferenceEnvironment env)
+        {
+
+        }
         internal void StoreXml(StringBuilder sb)
         {
             sb.AppendLine($"<pin id=\"{Id}\" name=\"{Name}\">");

@@ -31,19 +31,20 @@ namespace Dendrite
         {
             Path = epath;
             Net = new Nnet();
-            Net.Init(epath);
+            //Net.Init(epath);
             using (ZipArchive zip = ZipFile.Open(epath, ZipArchiveMode.Read))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
-                    if (entry.Name.EndsWith(".xml"))
+                    if (entry.Name.EndsWith("config.xml"))
                     {
                         using (var stream2 = entry.Open())
                         {
                             using (var reader = new StreamReader(stream2))
                             {
                                 var config = reader.ReadToEnd();
-                                LoadConfig(config);
+                                var fs = new ZipFilesystem(epath);
+                                LoadConfig(fs, config);
                             }
                         }
                     }
@@ -68,7 +69,7 @@ namespace Dendrite
         }
         public static Node GenerateNodeFromNet(Nnet net)
         {
-            var node = new NetNode() { Name = net.GetModelName(), Tag = net, ModelPath = net.NetPath };
+            var node = new NetNode() { Name = net.ModelName, Tag = net, ModelPath = net.NetPath };
             foreach (var nitem in net.Nodes.Where(z => z.IsInput))
             {
                 var ds = new DataSlot() { Name = nitem.Name };
@@ -103,43 +104,13 @@ namespace Dendrite
         }
 
 
-        private void LoadConfig(string config)
+        private void LoadConfig(IFilesystem fs, string config)
         {
             var doc = XDocument.Parse(config);
-            var types = Assembly.GetExecutingAssembly().GetTypes().Where(z => z.GetCustomAttribute(typeof(XmlNameAttribute)) != null).ToArray();
 
-            foreach (var item in doc.Descendants("inputNode"))
-            {
-                var key = item.Attribute("key").Value;
-                foreach (var pitem in item.Descendants("preprocessors"))
-                {
-                    foreach (var eitem in pitem.Elements())
-                    {
-                        var fr = types.FirstOrDefault(z => ((XmlNameAttribute)z.GetCustomAttribute(typeof(XmlNameAttribute))).XmlKey == eitem.Name.LocalName);
-                        if (fr != null)
-                        {
-                            if (!Net.InputDatas.ContainsKey(key))
-                                Net.InputDatas.Add(key, new InputInfo());
+            var pln = doc.Descendants("pipeline").First();
+            Pipeline.RestoreXml(fs, pln);
 
-                            var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
-                            //Net.InputDatas[key].Preprocessors.Add(proc);
-                            proc.ParseXml(eitem);
-                        }
-                    }
-                }
-            }
-
-            var postp = doc.Descendants("postprocessors").FirstOrDefault();
-            foreach (var eitem in postp.Elements())
-            {
-                var fr = types.FirstOrDefault(z => ((XmlNameAttribute)z.GetCustomAttribute(typeof(XmlNameAttribute))).XmlKey == eitem.Name.LocalName);
-                if (fr == null) continue;
-
-                var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
-                Pipeline.Nodes.Add(GenerateNodeFromProcessor(proc));
-                //Net.Postprocessors.Add(proc);
-                proc.ParseXml(eitem);
-            }
         }
     }
 }

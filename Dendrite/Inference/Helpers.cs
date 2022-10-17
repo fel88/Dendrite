@@ -134,9 +134,21 @@ namespace Dendrite
             return mat;
         }
 
-        public static double ParseDouble(string str)
+        public static double ParseDouble(this string str)
         {
             return double.Parse(str.Replace(",", "."), CultureInfo.InvariantCulture);
+        }
+        public static float ParseFloat(this string str)
+        {
+            return float.Parse(str.Replace(",", "."), CultureInfo.InvariantCulture);
+        }
+        public static int ParseInt(this string str)
+        {
+            return int.Parse(str);
+        }
+        public static string ToDoubleInvariantString(this float str)
+        {
+            return str.ToString().Replace(",", ".");
         }
 
         public static Mat drawKeypoints(Mat mat1, KeypointsDetectionInfo[] detections, float visTresh)

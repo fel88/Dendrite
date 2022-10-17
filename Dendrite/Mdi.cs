@@ -238,13 +238,13 @@ namespace Dendrite
 
         private void managerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "All available formats|*.den;*.onnx|onnx|*.onnx|Environment (*.den)|*.den";
-            if (ofd.ShowDialog() != DialogResult.OK) return;
+            //OpenFileDialog ofd = new OpenFileDialog();
+       //     ofd.Filter = "All available formats|*.den;*.onnx|onnx|*.onnx|Environment (*.den)|*.den";
+          //  if (ofd.ShowDialog() != DialogResult.OK) return;
             Processing p = new Processing();
             p.MdiParent = this;
 
-            p.Init(ofd.FileName);
+          //  p.Init(ofd.FileName);
 
             p.Show();
         }

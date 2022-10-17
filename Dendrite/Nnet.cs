@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
@@ -15,19 +16,21 @@ namespace Dendrite
     public class Nnet
     {
         public string NetPath => _netPath;
+        public string ModelName => new FileInfo(NetPath).Name;
         string _netPath;
         public NodeInfo[] Nodes => _nodes.ToArray();
 
         List<NodeInfo> _nodes = new List<NodeInfo>();
 
         InferenceSession session;
-        internal void Init(string path)
+        internal void Init(IFilesystem fs, string path)
         {
             _netPath = path;
-            if (path.EndsWith(".den"))
+            /*if (path.EndsWith(".den"))
                 session = new InferenceSession(GetModelBytes());
-            else
-                session = new InferenceSession(_netPath);
+            else*/
+            //session = new InferenceSession(_netPath);
+            session = new InferenceSession(fs.ReadAllBytes(path));
 
             Prepare(session);
         }
@@ -342,7 +345,6 @@ namespace Dendrite
                 }
             }
             return null;
-
         }
     }
 

@@ -116,11 +116,11 @@ namespace Dendrite
         }
 
         internal Node[] Toposort()
-        {            
+        {
             return Graph.Sort(Nodes.ToArray());
         }
 
-        public void RestoreXml(XElement elem)
+        public void RestoreXml(IFilesystem fs, XElement elem)
         {
             Nodes.Clear();
             foreach (var item in elem.Elements())
@@ -130,11 +130,51 @@ namespace Dendrite
                     var nd = new Node(item);
                     Nodes.Add(nd);
                 }
+                else
                 if (item.Name.LocalName == "netNode")
                 {
-                    var nd = new NetNode(item);
+                    var nd = new NetNode(item, fs);
                     Nodes.Add(nd);
                 }
+                else
+                if (item.Name.LocalName == "imgSourceNode")
+                {
+                    var nd = new ImageSourceNode(item);
+                    Nodes.Add(nd);
+                }
+            }
+
+            //restore links
+            var pins = Nodes.SelectMany(z => z.Inputs.Union(z.Outputs)).ToArray();
+            foreach (var item in elem.Elements())
+            {
+                var nodeId = item.Attribute("id").Value.ParseInt();
+                var nd = Nodes.First(z => z.Id == nodeId);
+                foreach (var pin in item.Descendants("pin"))
+                {
+                    var pid = pins.First(z => z.Id == pin.Attribute("id").Value.ParseInt());
+                    pid.InputLinks.Clear();
+                    foreach (var link in pin.Element("inputLinks").Elements("link"))
+                    {
+                        var id1 = link.Attribute("inputId").Value.ParseInt();
+                        var id2 = link.Attribute("outputId").Value.ParseInt();
+                        var p1 = pins.First(z => z.Id == id1);
+                        var p2 = pins.First(z => z.Id == id2);
+                        pid.InputLinks.Add(new PinLink() { Input = p1, Output = p2 });
+
+                    }
+                    pid.OutputLinks.Clear();
+                    foreach (var link in pin.Element("outputLinks").Elements("link"))
+                    {
+                        var id1 = link.Attribute("inputId").Value.ParseInt();
+                        var id2 = link.Attribute("outputId").Value.ParseInt();
+                        var p1 = pins.First(z => z.Id == id1);
+                        var p2 = pins.First(z => z.Id == id2);
+                        pid.OutputLinks.Add(new PinLink() { Input = p1, Output = p2 });
+
+                    }
+                }
+
             }
         }
 

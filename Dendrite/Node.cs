@@ -2,6 +2,8 @@
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 
@@ -9,6 +11,8 @@ namespace Dendrite
 {
     public class Node
     {
+        public int Id;
+        public static int NewId;
         public object Tag;
         public List<NodePin> Inputs = new List<NodePin>();
         public List<NodePin> Outputs = new List<NodePin>();
@@ -16,12 +20,40 @@ namespace Dendrite
 
         public Node()
         {
-
+            Id = NewId++;
         }
 
         public Node(XElement item)
         {
             Name = item.Attribute("name").Value;
+            Id = int.Parse(item.Attribute("id").Value);
+            var inps = item.Element("inputs");
+            var outps = item.Element("outputs");
+            var tag = item.Element("tag");
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(z => z.GetCustomAttribute(typeof(XmlNameAttribute)) != null).ToArray();
+            if (tag.Elements().Any())
+            {
+                var fr = types.FirstOrDefault(z => ((XmlNameAttribute)z.GetCustomAttribute(typeof(XmlNameAttribute))).XmlKey == tag.Elements().First().Name.LocalName);
+                if (fr != null)
+                {
+                    var proc = Activator.CreateInstance(fr) as IInputPreprocessor;
+                    proc.ParseXml(tag.Elements().First());
+                    Tag = proc;
+                }
+            }
+
+            Inputs.Clear();
+            foreach (var input in inps.Elements())
+            {
+                Inputs.Add(new NodePin(input) { Parent=this});
+
+            }
+            Outputs.Clear();
+            foreach (var pp in outps.Elements())
+            {
+                Outputs.Add(new NodePin(pp) { Parent = this });
+            }
+
         }
 
         protected void StoreBody(StringBuilder sb)
@@ -47,7 +79,7 @@ namespace Dendrite
         }
         public virtual void StoreXml(StringBuilder sb)
         {
-            sb.AppendLine($"<node name=\"{0}\">");
+            sb.AppendLine($"<node id=\"{Id}\" name=\"{Name}\">");
             StoreBody(sb);
 
             sb.AppendLine("</node>");
