@@ -39,8 +39,13 @@ namespace Dendrite
                 var cp1 = vec.Mul(0.25f);
                 var cp2 = vec.Mul(0.75f);
                 int side = (int)(vec.Length() / 3f);
+                var cx = (pos1.X + rpos2.X) / 2;
+                
                 cp1 = new PointF(rpos2.X + cp1.X + norm.X * side, rpos2.Y + cp1.Y + norm.Y * side);
                 cp2 = new PointF(rpos2.X + cp2.X - norm.X * side, rpos2.Y + cp2.Y - norm.Y * side);
+
+                cp1 = new PointF(cx, pos1.Y );
+                cp2 = new PointF(cx, rpos2.Y);
 
                 //ctx.Graphics.FillEllipse(Brushes.Red, cp1.X, cp1.Y, 10, 10);
                 //ctx.Graphics.FillEllipse(Brushes.Red, cp2.X, cp2.Y, 10, 10);

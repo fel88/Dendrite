@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -44,22 +45,25 @@ namespace Dendrite
         {
             env = _env;
 
-            var node = env.Net.Nodes.First(z => z.IsInput);
+            //var node = env.Net.Nodes.First(z => z.IsInput);
             VideoCapture cap = new VideoCapture(fileName);
             Mat mat = new Mat();
             cap.Read(mat);
-
+            var topo = env.Pipeline.Toposort();
+            if (topo.Length == 0 || !(topo[0] is ImageSourceNode)) return;
+            var sn = (topo.First() as ImageSourceNode);
 
             Text = $"Processing: {fileName}  {mat.Width}x{mat.Height}";
-
-            if (env.Net.InputDatas.ContainsKey(node.Name) && env.Net.InputDatas[node.Name] is InputInfo ii)
+            sn.SourceMat = mat.Clone();
+            /*if (env.Net.InputDatas.ContainsKey(node.Name) && env.Net.InputDatas[node.Name] is InputInfo ii)
             {
                 ii.Data = mat;
             }
             else
             {
                 env.Net.InputDatas[node.Name] = new InputInfo() { Data = mat };
-            }
+            }*/
+
 
             th = new Thread(() =>
            {
@@ -73,13 +77,13 @@ namespace Dendrite
                        Mat img = new Mat();
                        while (cap.Read(img))
                        {
-                           if (cancel) 
+                           if (cancel)
                                break;
 
-                           (env.Net.InputDatas[node.Name] as InputInfo).Data = img;
+                           sn.SourceMat = img.Clone();
                            env.Process();
-                           
-                           var last = env.Pipeline.Nodes.First(z => z.Outputs[0].OutputLinks.Count == 0 && z.Tag is IInputPreprocessor) as IInputPreprocessor;                           
+
+                           var last = topo.Last().Tag as IInputPreprocessor;
                            if (last.OutputSlots[0].Data is Mat mt)
                            {
                                vid.Write(mt);
@@ -92,6 +96,14 @@ namespace Dendrite
                                progressBar1.Value = perc;
                            })));
                        }
+                       progressBar1.Invoke(((Action)(() =>
+                       {
+                           if (Helpers.ShowQuestion("Open video?", Text) == DialogResult.Yes)
+                           {
+                               Process.Start(outputPath);
+                           }
+                       })));
+
                    }
                }
                finally

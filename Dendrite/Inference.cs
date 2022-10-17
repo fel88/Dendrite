@@ -25,11 +25,11 @@ namespace Dendrite
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            var fr = net.Nodes.First(z => z.IsInput);
-            LoadImage(fr);
+            // var fr = net.Nodes.First(z => z.IsInput);
+            //  LoadImage();
         }
 
-        private bool LoadImage(NodeInfo node)
+        private bool LoadImage(ImageSourceNode sn)
         {
             try
             {
@@ -47,14 +47,15 @@ namespace Dendrite
 
                     Text = $"Processing: {ofd.FileName}  {mat.Width}x{mat.Height}";
 
-                    if (InputDatas.ContainsKey(node.Name) && InputDatas[node.Name] is InputInfo ii)
+                    /*if (InputDatas.ContainsKey(node.Name) && InputDatas[node.Name] is InputInfo ii)
                     {
                         ii.Data = cap;
                     }
                     else
                     {
                         InputDatas[node.Name] = new InputInfo() { Data = cap };
-                    }
+                    }*/
+                    sn.SourceMat = mat.Clone();
 
                     pictureBox1.Image = BitmapConverter.ToBitmap(mat);
                 }
@@ -63,15 +64,16 @@ namespace Dendrite
                     var mat = OpenCvSharp.Cv2.ImRead(ofd.FileName);
                     Text = $"Processing: {ofd.FileName}  {mat.Width}x{mat.Height}";
                     //mat.ConvertTo(mat, MatType.CV_32F);
-
-                    if (InputDatas.ContainsKey(node.Name) && InputDatas[node.Name] is InputInfo ii)
-                    {
-                        ii.Data = mat;
-                    }
-                    else
-                    {
-                        InputDatas[node.Name] = new InputInfo() { Data = mat };
-                    }
+                    /*
+                                        if (InputDatas.ContainsKey(node.Name) && InputDatas[node.Name] is InputInfo ii)
+                                        {
+                                            ii.Data = mat;
+                                        }
+                                        else
+                                        {
+                                            InputDatas[node.Name] = new InputInfo() { Data = mat };
+                                        }*/
+                    sn.SourceMat = mat.Clone();
 
                     pictureBox1.Image = BitmapConverter.ToBitmap(mat);
                 }
@@ -98,7 +100,7 @@ namespace Dendrite
             var sw = Stopwatch.StartNew();
             env.Process();
             var outps = env.Pipeline.GetOutputs();
-            
+
             if (outps[0] is Mat m)
             {
                 pictureBox2.Image = m.ToBitmap();
@@ -120,11 +122,12 @@ namespace Dendrite
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
-        {
-            var fr = net.Nodes.First(z => z.IsInput);
-            if (LoadImage(fr))
+        {            
+            var topo = env.Pipeline.Toposort();
+            if (topo.Any() && topo[0] is ImageSourceNode sn)
             {
-                Run();
+                if (LoadImage(sn))                
+                    Run();                
             }
         }
 
@@ -135,12 +138,12 @@ namespace Dendrite
             if (ofd.ShowDialog() != DialogResult.OK) return;
             // lastPath = ofd.FileName;
             VideoProcessor vp = new VideoProcessor();
-            
+
             if (ofd.FileName.EndsWith("mp4") || ofd.FileName.EndsWith("avi") || ofd.FileName.EndsWith("mkv"))
             {
-                vp.Init(env, ofd.FileName); 
+                vp.Init(env, ofd.FileName);
                 vp.ShowDialog();
-                
+
             }
         }
     }
