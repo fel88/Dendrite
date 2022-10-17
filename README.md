@@ -1,11 +1,12 @@
 # Dendrite
-ONNX viewer &amp; editor
+ONNX viewer/editor/inference
 
 Graph layout https://github.com/fel88/Dagre.NET
 
 **Project status: WIP**
-
-<img src="imgs/2.jpg"/>
+<p align="center">
+ <img src="imgs/5.jpg"/>  <img src="imgs/4.jpg"/>
+</p>
 
 ## How to create an inference environment:
 
