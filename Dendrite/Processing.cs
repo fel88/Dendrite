@@ -43,6 +43,25 @@ namespace Dendrite
             dragged = null;
         }
 
+        public void SelectedChanged()
+        {
+            propertyGrid1.SelectedObject = selected.Node.Tag;
+            propertyGrid2.SelectedObject = selected.Node;
+            toolStripStatusLabel1.ForeColor = Color.Black;
+            if (selected.Node.LastException != null)
+            {
+                toolStripStatusLabel1.ForeColor = Color.Red;
+                toolStripStatusLabel1.Text = selected.Node.LastException.Message;
+            }
+
+            (selected as NodeUI).IsSelected = true;
+            UpdateSelectedNodeControl();
+            if (selected.Node is NetNode nn)
+            {
+                UpdateNodesList(nn.Net);
+            }
+        }
+
         private void PictureBox3_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -69,18 +88,8 @@ namespace Dendrite
                         startedPin = hoveredPin;
                     }
                     selected = hovered;
-                    propertyGrid1.SelectedObject = selected.Node.Tag;
-                    propertyGrid2.SelectedObject = selected.Node;
-                    toolStripStatusLabel1.ForeColor = Color.Black;
-                    if (selected.Node.LastException != null)
-                    {
-                        toolStripStatusLabel1.ForeColor = Color.Red;
-                        toolStripStatusLabel1.Text = selected.Node.LastException.Message;
-                    }
+                    SelectedChanged();
 
-
-                    (selected as NodeUI).IsSelected = true;
-                    UpdateSelectedNodeControl();
 
                 }
             }
@@ -341,13 +350,19 @@ namespace Dendrite
 
         private void resizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentNode == null) return;
-            var r = new ResizePreprocessor() { Dims = currentNode.Dims };
-            if (!InputDatas.ContainsKey(currentNode.Name))
+            //var r = new ResizePreprocessor() { Dims = currentNode.Dims };
+            var r = new ResizePreprocessor() { Dims=new int[] { 1,3,256,256} };
+            /*if (!InputDatas.ContainsKey(currentNode.Name))
             {
                 Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
                 return;
-            }
+            }*/
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+
             //InputDatas[currentNode.Name].Preprocessors.Add(r);
             //listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
         }
@@ -359,7 +374,7 @@ namespace Dendrite
             pipelineUI.Restore(fileName);
             //pipelineUI.Init(env.Pipeline);
             Text = "Inference: " + fileName;
-            UpdateNodesList();
+            UpdateNodesList(net);
         }
 
 
@@ -825,11 +840,11 @@ namespace Dendrite
             net.Init(DiskFilesystem, path);
 
             Text = "Inference: " + path;
-            UpdateNodesList();
+            UpdateNodesList(net);
         }
 
 
-        void UpdateNodesList()
+        void UpdateNodesList(Nnet net)
         {
             listView1.Items.Clear();
             listView2.Items.Clear();
@@ -2206,6 +2221,24 @@ namespace Dendrite
                     }
                 }
             }
+        }
+
+        private void textBox12_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox10_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void priorBoxesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new PriorBoxesProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
     }
 }

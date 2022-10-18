@@ -351,6 +351,12 @@
     <Compile Include="Preprocessors\Controls\NormalizeConfigControl.Designer.cs">
       <DependentUpon>NormalizeConfigControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Preprocessors\Controls\PriorBoxesConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preprocessors\Controls\PriorBoxesConfigControl.Designer.cs">
+      <DependentUpon>PriorBoxesConfigControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Preprocessors\Controls\ResizeConfigControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -377,6 +383,7 @@
     <Compile Include="Preprocessors\GrayscalePreprocessor.cs" />
     <Compile Include="Preprocessors\IInputPreprocessor.cs" />
     <Compile Include="Preprocessors\InstanceSegmentationDecodePreprocessor.cs" />
+    <Compile Include="Preprocessors\IPriorBoxesGenerator.cs" />
     <Compile Include="Preprocessors\KeypointsDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\MeanStdPreprocessor.cs" />
     <Compile Include="MergerWindow.cs">
@@ -395,6 +402,7 @@
     <Compile Include="Preprocessors\NmsPostProcessors.cs" />
     <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
     <Compile Include="Preprocessors\ObjectDetectionContext.cs" />
+    <Compile Include="Preprocessors\PriorBoxesProcessor.cs" />
     <Compile Include="Preprocessors\ResizePreprocessor.cs" />
     <Compile Include="Preprocessors\TransposePreprocessor.cs" />
     <Compile Include="Preprocessors\XmlNameAttribute.cs" />
@@ -519,6 +527,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\NormalizeConfigControl.resx">
       <DependentUpon>NormalizeConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preprocessors\Controls\PriorBoxesConfigControl.resx">
+      <DependentUpon>PriorBoxesConfigControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\ResizeConfigControl.resx">
       <DependentUpon>ResizeConfigControl.cs</DependentUpon>

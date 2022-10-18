@@ -126,9 +126,13 @@ namespace Dendrite
                 var cy = detections[i].Rect.Y + 12;
                 if (printLabels)
                 {
-                    mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + 250, cy - 15), new Scalar(0, 0, 0), -1);
+                    var fontScale = 0.5;
+                    int thickness = 1;
+                    int baseLine;
+                    var sz = OpenCvSharp.Cv2.GetTextSize(text, HersheyFonts.HersheyDuplex, fontScale, thickness,out baseLine);
+                    mat.Rectangle(new OpenCvSharp.Point(cx, cy + 5), new OpenCvSharp.Point(cx + sz.Width, cy - 15), new Scalar(0, 0, 0), -1);
                     mat.PutText(text, new OpenCvSharp.Point(cx, cy),
-                                HersheyFonts.HersheyDuplex, 0.5, new Scalar(255, 255, 255));
+                                HersheyFonts.HersheyDuplex, fontScale, new Scalar(255, 255, 255), thickness);
                 }
             }
             return mat;

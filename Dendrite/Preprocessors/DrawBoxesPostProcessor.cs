@@ -1,23 +1,21 @@
 ﻿using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
-using OpenCvSharp.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Dendrite.Preprocessors
 {
     [XmlName(XmlKey = "drawBoxes")]
-    public class DrawBoxesPostProcessor : AbstractPreprocessor, IPostDrawer, IImageContainer
+    public class DrawBoxesPostProcessor : AbstractPreprocessor, IImageContainer
     {
-
         public DrawBoxesPostProcessor()
         {
-            InputSlots = new DataSlot[2];
+            InputSlots = new DataSlot[3];
             InputSlots[0] = new DataSlot() { Name = "detections" };
             InputSlots[1] = new DataSlot() { Name = "image" };
+            InputSlots[2] = new DataSlot() { Name = "origin_img_size" };
 
             OutputSlots[0].Name = "img";
         }
@@ -25,11 +23,16 @@ namespace Dendrite.Preprocessors
         public Dictionary<int, string> ClassNames { get; set; } = new Dictionary<int, string>();
         public float VisThreshold { get; set; } = 0.4f;
         public bool DrawLabels { get; set; } = true;
-        //public PictureBox Pbox;
-        public Mat LastMat { get; set; }
+
+        public override void ParseXml(XElement sb)
+        {
+            if (sb.Attribute("drawLabels") != null)
+                DrawLabels = bool.Parse(sb.Attribute("drawLabels").Value);
+        }
+
         public override void StoreXml(StringBuilder sb)
         {
-            sb.AppendLine("<drawBoxes/>");
+            sb.AppendLine($"<drawBoxes drawLabels=\"{DrawLabels}\"/>");
         }
         public override string Name => "draw boxes";
 
@@ -45,20 +48,48 @@ namespace Dendrite.Preprocessors
             var list = InputSlots[0].Data as ObjectDetectionContext;
             var dets = list.Infos;
             var img = InputSlots[1].Data as Mat;
-
-            //var net = list.First(z => z is Nnet) as Nnet;
-            var ret = Helpers.DrawBoxes(img, dets, VisThreshold, DrawLabels);
-            LastMat = ret;
-            OutputSlots[0].Data = ret;
-            /*if (Pbox != null)
+            double scalerX = 1;
+            double scalerY = 1;
+            bool rescale = false;
+            if (InputSlots[2].Data is int[] ss)
             {
-                Pbox.Invoke((Action)(() =>
+                if (ss.Length == 4)//NCHW
                 {
-                    Pbox.Image = BitmapConverter.ToBitmap(LastMat);
-                }));
-            }*/
+                    scalerX = ss[3] / (double)(list.Size.Width);
+                    scalerY = ss[2] / (double)(list.Size.Height);
+                    rescale = true;
+                }
+                else if (ss.Length == 2)//WH
+                {
+                    scalerX = ss[0] / (double)(list.Size.Width);
+                    scalerY = ss[1] / (double)(list.Size.Height);
+                    rescale = true;
+                }
+            }
+            if (rescale)
+            {
+                List<ObjectDetectionInfo> dets2 = new List<ObjectDetectionInfo>();
+                foreach (var item in dets)
+                {
+                    var t = new ObjectDetectionInfo();
+                    t.Conf = item.Conf;
+                    t.Class = item.Class;
+                    t.Label = item.Label;
+                    t.Rect = new Rect(
+                        (int)(item.Rect.X * scalerX),
+                        (int)(item.Rect.Y * scalerY),
+                        (int)(item.Rect.Width * scalerX),
+                        (int)(item.Rect.Height * scalerY));
+                    dets2.Add(t);
+                }
+                dets = dets2.ToArray();
+            }
 
-            return LastMat;
+            var ret = Helpers.DrawBoxes(img, dets, VisThreshold, DrawLabels);
+
+            OutputSlots[0].Data = ret;
+
+            return ret;
         }
     }
 }

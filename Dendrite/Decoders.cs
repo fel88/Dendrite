@@ -145,30 +145,17 @@ namespace Dendrite
                 {
                     for (int j = 0; j < f[1]; j++)
                     {
-
                         for (var jj = 0u; jj < 2; jj++)
                         {
                             int min_size = _min_sizes[jj];
                             float s_kx = min_size / (float)img_w;
                             float s_ky = min_size / (float)img_h;
-                            List<float> dense_cx = new List<float>();
-                            List<float> dense_cy = new List<float>();
+
                             float x = j + 0.5f;
-                            dense_cx.Add(x * steps[k] / img_w);
+                            var cx = (x * steps[k] / img_w);
                             float y = i + 0.5f;
-                            dense_cy.Add(y * steps[k] / img_h);
-
-
-                            foreach (var cy in dense_cy)
-                            {
-                                foreach (var cx in dense_cx)
-                                {
-                                    prior_data.Add(new float[]{
-                                        cx,cy,s_kx,s_ky
-            });
-
-                                }
-                            }
+                            var cy = (y * steps[k] / img_h);
+                            prior_data.Add(new float[] { cx, cy, s_kx, s_ky });
                         }
                     }
                 }
@@ -370,9 +357,9 @@ namespace Dendrite
             var ret = new Tuple<Rect[], float[], int[]>(detections.ToArray(), oscores.ToArray(), numClasses > 2 ? owin.ToArray() : null);
             return ret;
         }
+
         public static float[][] PriorBoxes2(int img_w, int img_h)
         {
-
             List<float[]> prior_data = new List<float[]>();
 
             List<int[]> feature_maps = new List<int[]>();
@@ -401,39 +388,32 @@ namespace Dendrite
                             float s_kx = min_size / (float)img_w;
                             float s_ky = min_size / (float)img_h;
 
+                            float[] dx = null;
+                            float[] dy = null;
+                            float[] xar = null;
+                            float[] yar = null;
+
                             if (min_size == 32)
                             {
-                                float[] xar = new float[] { j + 0, j + 0.25f, j + 0.5f, j + 0.75f };
-                                var dx = (xar.Select(z => z * steps[k] / img_w));
-                                float[] yar = new float[] { i + 0, i + 0.25f, i + 0.5f, i + 0.75f };
-                                var dy = (yar.Select(z => z * steps[k] / img_h));
-
-
-                                foreach (var cy in dy)
-                                    foreach (var cx in dx)
-                                        prior_data.Add(new float[] { cx, cy, s_kx, s_ky });
-
+                                xar = new float[] { j, j + 0.25f, j + 0.5f, j + 0.75f };
+                                yar = new float[] { i, i + 0.25f, i + 0.5f, i + 0.75f };
                             }
                             else if (min_size == 64)
                             {
-                                float[] xar = new float[] { j + 0, j + 0.5f };
-                                var dx = (xar.Select(z => z * steps[k] / img_w));
-                                float[] yar = new float[] { i + 0, i + 0.5f };
-                                var dy = (yar.Select(z => z * steps[k] / img_h));
-
-
-                                foreach (var cy in dy)
-                                    foreach (var cx in dx)
-                                        prior_data.Add(new float[] { cx, cy, s_kx, s_ky });
-
+                                xar = new float[] { j, j + 0.5f };
+                                yar = new float[] { i, i + 0.5f };
                             }
                             else
                             {
-                                float cx = (j + 0.5f) * steps[k] / img_w;
-                                float cy = (i + 0.5f) * steps[k] / img_h;
-                                prior_data.Add(new float[] { cx, cy, s_kx, s_ky });
+                                xar = new float[] { j + 0.5f };
+                                yar = new float[] { i + 0.5f };
                             }
 
+                            dx = (xar.Select(z => z * steps[k] / img_w)).ToArray();
+                            dy = (yar.Select(z => z * steps[k] / img_h)).ToArray();
+                            foreach (var cy in dy)
+                                foreach (var cx in dx)
+                                    prior_data.Add(new float[] { cx, cy, s_kx, s_ky });
                         }
                     }
                 }

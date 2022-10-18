@@ -50,8 +50,8 @@ namespace Dendrite
             Mat mat = new Mat();
             cap.Read(mat);
             var topo = env.Pipeline.Toposort();
-            if (topo.Length == 0 || !(topo[0] is ImageSourceNode)) return;
-            var sn = (topo.First() as ImageSourceNode);
+            if (topo.Length == 0 || !(topo.Any(z => z is ImageSourceNode))) return;
+            var sn = (topo.First(z=> z is ImageSourceNode) as ImageSourceNode);
 
             Text = $"Processing: {fileName}  {mat.Width}x{mat.Height}";
             sn.SourceMat = mat.Clone();
@@ -82,12 +82,9 @@ namespace Dendrite
 
                            sn.SourceMat = img.Clone();
                            env.Process();
-
-                           var last = topo.Last().Tag as IInputPreprocessor;
-                           if (last.OutputSlots[0].Data is Mat mt)
-                           {
-                               vid.Write(mt);
-                           }
+                           var outp = env.Pipeline.GetOutputs();
+                           var last = outp.First(z => z is Mat) as Mat;
+                           vid.Write(last);
                            var pf = cap.Get(VideoCaptureProperties.PosFrames);
                            int perc = (int)Math.Round((pf / (float)nFrames) * 100);
                            progressBar1.Invoke(((Action)(() =>

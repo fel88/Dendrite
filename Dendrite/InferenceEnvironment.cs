@@ -97,7 +97,14 @@ namespace Dendrite
             var nodes = Pipeline.Toposort();
             foreach (var item in nodes)
             {
-                item.Process();
+                try
+                {
+                    item.Process();
+                }
+                catch (Exception ex)
+                {
+                    item.LastException = ex;
+                }
                 if (item.LastException != null) break;
             }
             //Net.Run();

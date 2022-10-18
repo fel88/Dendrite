@@ -9,6 +9,7 @@ namespace Dendrite
     public class PipelineGraph
     {
         public List<Node> Nodes = new List<Node>();
+
         public void StoreXml(StringBuilder sb)
         {
             sb.AppendLine("<pipeline>");
@@ -146,6 +147,8 @@ namespace Dendrite
 
             //restore links
             var pins = Nodes.SelectMany(z => z.Inputs.Union(z.Outputs)).ToArray();
+            Dictionary<string, PinLink> links = new Dictionary<string, PinLink>();
+
             foreach (var item in elem.Elements())
             {
                 var nodeId = item.Attribute("id").Value.ParseInt();
@@ -160,7 +163,15 @@ namespace Dendrite
                         var id2 = link.Attribute("outputId").Value.ParseInt();
                         var p1 = pins.First(z => z.Id == id1);
                         var p2 = pins.First(z => z.Id == id2);
-                        pid.InputLinks.Add(new PinLink() { Input = p1, Output = p2 });
+                        var key = p1.Id + ";" + p2.Id;
+                        var pp = new PinLink() { Input = p1, Output = p2 };
+
+                        if (links.ContainsKey(key))                        
+                            pp = links[key];                        
+                        else
+                            links.Add(key, pp);
+
+                        pid.InputLinks.Add(pp);
 
                     }
                     pid.OutputLinks.Clear();
@@ -170,7 +181,15 @@ namespace Dendrite
                         var id2 = link.Attribute("outputId").Value.ParseInt();
                         var p1 = pins.First(z => z.Id == id1);
                         var p2 = pins.First(z => z.Id == id2);
-                        pid.OutputLinks.Add(new PinLink() { Input = p1, Output = p2 });
+                        var key = p1.Id + ";" + p2.Id;
+                        var pp = new PinLink() { Input = p1, Output = p2 };
+
+                        if (links.ContainsKey(key))                        
+                            pp = links[key];                        
+                        else
+                            links.Add(key, pp);
+
+                        pid.OutputLinks.Add(pp);
 
                     }
                 }

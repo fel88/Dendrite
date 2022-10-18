@@ -147,6 +147,7 @@
             this.contextMenuStrip6 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadImgToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showImgToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.postprocessorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -157,6 +158,8 @@
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button6 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -191,9 +194,7 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.showImgToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
+            this.priorBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -706,7 +707,7 @@
             this.addToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(107, 48);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(181, 70);
             // 
             // addToolStripMenuItem
             // 
@@ -720,6 +721,7 @@
             this.bgr2rgbToolStripMenuItem,
             this.toRGBToolStripMenuItem,
             this.transposeToolStripMenuItem,
+            this.priorBoxesToolStripMenuItem,
             this.normalizeToolStripMenuItem,
             this.toolStripSeparator1,
             this.template1ToolStripMenuItem,
@@ -729,7 +731,7 @@
             this.templateMaskRCNNToolStripMenuItem,
             this.templateEspnetToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addToolStripMenuItem.Text = "add";
             // 
             // resizeToolStripMenuItem
@@ -1252,16 +1254,23 @@
             // deleteToolStripMenuItem2
             // 
             this.deleteToolStripMenuItem2.Name = "deleteToolStripMenuItem2";
-            this.deleteToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem2.Size = new System.Drawing.Size(126, 22);
             this.deleteToolStripMenuItem2.Text = "delete";
             this.deleteToolStripMenuItem2.Click += new System.EventHandler(this.deleteToolStripMenuItem2_Click);
             // 
             // loadImgToolStripMenuItem
             // 
             this.loadImgToolStripMenuItem.Name = "loadImgToolStripMenuItem";
-            this.loadImgToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadImgToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.loadImgToolStripMenuItem.Text = "load img";
             this.loadImgToolStripMenuItem.Click += new System.EventHandler(this.loadImgToolStripMenuItem_Click);
+            // 
+            // showImgToolStripMenuItem
+            // 
+            this.showImgToolStripMenuItem.Name = "showImgToolStripMenuItem";
+            this.showImgToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.showImgToolStripMenuItem.Text = "show img";
+            this.showImgToolStripMenuItem.Click += new System.EventHandler(this.showImgToolStripMenuItem_Click);
             // 
             // toolStrip2
             // 
@@ -1360,6 +1369,22 @@
             this.tabPage5.Text = "Config";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // propertyGrid2
+            // 
+            this.propertyGrid2.HelpVisible = false;
+            this.propertyGrid2.Location = new System.Drawing.Point(6, 425);
+            this.propertyGrid2.Name = "propertyGrid2";
+            this.propertyGrid2.Size = new System.Drawing.Size(170, 183);
+            this.propertyGrid2.TabIndex = 30;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.HelpVisible = false;
+            this.propertyGrid1.Location = new System.Drawing.Point(3, 236);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(170, 183);
+            this.propertyGrid1.TabIndex = 29;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.button6);
@@ -1420,6 +1445,7 @@
             this.textBox12.Size = new System.Drawing.Size(100, 20);
             this.textBox12.TabIndex = 2;
             this.textBox12.Text = "[0.1, 0.2]";
+            this.textBox12.TextChanged += new System.EventHandler(this.textBox12_TextChanged);
             // 
             // textBox11
             // 
@@ -1436,6 +1462,7 @@
             this.textBox10.Size = new System.Drawing.Size(100, 20);
             this.textBox10.TabIndex = 0;
             this.textBox10.Text = "[[32, 64, 128], [256], [512]]";
+            this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
             // 
             // groupBox3
             // 
@@ -1660,28 +1687,12 @@
             this.timer2.Interval = 25;
             this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
-            // showImgToolStripMenuItem
+            // priorBoxesToolStripMenuItem
             // 
-            this.showImgToolStripMenuItem.Name = "showImgToolStripMenuItem";
-            this.showImgToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.showImgToolStripMenuItem.Text = "show img";
-            this.showImgToolStripMenuItem.Click += new System.EventHandler(this.showImgToolStripMenuItem_Click);
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.Location = new System.Drawing.Point(3, 236);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(170, 183);
-            this.propertyGrid1.TabIndex = 29;
-            // 
-            // propertyGrid2
-            // 
-            this.propertyGrid2.HelpVisible = false;
-            this.propertyGrid2.Location = new System.Drawing.Point(6, 425);
-            this.propertyGrid2.Name = "propertyGrid2";
-            this.propertyGrid2.Size = new System.Drawing.Size(170, 183);
-            this.propertyGrid2.TabIndex = 30;
+            this.priorBoxesToolStripMenuItem.Name = "priorBoxesToolStripMenuItem";
+            this.priorBoxesToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.priorBoxesToolStripMenuItem.Text = "prior boxes";
+            this.priorBoxesToolStripMenuItem.Click += new System.EventHandler(this.priorBoxesToolStripMenuItem_Click);
             // 
             // Processing
             // 
@@ -1905,5 +1916,6 @@
         private System.Windows.Forms.ToolStripMenuItem showImgToolStripMenuItem;
         private System.Windows.Forms.PropertyGrid propertyGrid2;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.ToolStripMenuItem priorBoxesToolStripMenuItem;
     }
 }

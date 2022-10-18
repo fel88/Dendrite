@@ -101,11 +101,13 @@ namespace Dendrite
             env.Process();
             var outps = env.Pipeline.GetOutputs();
 
-            if (outps[0] is Mat m)
+            if (outps.Any(z => z is Mat))
             {
+                var m = outps.OfType<Mat>().First();
                 pictureBox2.Image = m.ToBitmap();
             }
             sw.Stop();
+
             toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
         }
 
@@ -122,12 +124,13 @@ namespace Dendrite
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
-        {            
+        {
             var topo = env.Pipeline.Toposort();
-            if (topo.Any() && topo[0] is ImageSourceNode sn)
+            if (topo.Length > 0 && topo.Any(z => z is ImageSourceNode))
             {
-                if (LoadImage(sn))                
-                    Run();                
+                var sn = topo.First(z => z is ImageSourceNode) as ImageSourceNode;
+                if (LoadImage(sn))
+                    Run();
             }
         }
 

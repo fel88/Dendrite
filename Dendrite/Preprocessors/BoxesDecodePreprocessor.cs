@@ -15,10 +15,11 @@ namespace Dendrite.Preprocessors
 
         public BoxesDecodePostProcessor()
         {
-            InputSlots = new DataSlot[3];
+            InputSlots = new DataSlot[4];
             InputSlots[0] = (new DataSlot() { Name = "conf" });
             InputSlots[1] = (new DataSlot() { Name = "loc" });
             InputSlots[2] = (new DataSlot() { Name = "img_size" });
+            InputSlots[3] = (new DataSlot() { Name = "prior_boxes" });
         }
 
         public override string Name => "boxes decoder";
@@ -48,12 +49,17 @@ namespace Dendrite.Preprocessors
             sz.Width = w;
             //  }
             string key = $"{sz.Width}x{sz.Height}";
-            if (!Decoders.allPriorBoxes.ContainsKey(key))
+            var pg = InputSlots[3].Data as IPriorBoxesGenerator;
+
+           /* if (!Decoders.allPriorBoxes.ContainsKey(key))
             {
                 var pd = Decoders.PriorBoxes2(sz.Width, sz.Height);
                 Decoders.allPriorBoxes.Add(key, pd);
-            }
-            var prior_data = Decoders.allPriorBoxes[key];
+            }*/
+            
+            //var prior_data = Decoders.allPriorBoxes[key];
+            var prior_data = pg.Generate(sz.Width, sz.Height);
+
             var ret = Decoders.BoxesDecode(new Size(w, h), rets1, rets3, sz, prior_data, VisThreshold);
 
             List<ObjectDetectionInfo> ret2 = new List<ObjectDetectionInfo>();
@@ -64,8 +70,12 @@ namespace Dendrite.Preprocessors
                 {
                     Rect = rect,
                     Conf = ret.Item2[i],
-                    Class = ret.Item3[i]
+                    
                 };
+                if (ret.Item3 != null)
+                {
+                    odi.Class = ret.Item3[i];
+                }
                 ret2.Add(odi);
             }
             return ret2.ToArray();
@@ -102,10 +112,16 @@ namespace Dendrite.Preprocessors
             var sz = InputSlots[2].Data as int[];
             int ww = 0;
             int hh = 0;
-            if (sz.Length == 4)
+            if (sz.Length == 4) // NCHW format
             {
                 ww = sz[3];
                 hh = sz[2];
+            }
+            else
+            if (sz.Length == 2)//WH format
+            {
+                ww = sz[0];
+                hh = sz[1];
             }
             var ret = BoxesDecode(ww, hh);
             ObjectDetectionContext ctx = new ObjectDetectionContext() { Infos = ret, Size = new Size(ww, hh) };
