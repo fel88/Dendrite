@@ -8,8 +8,8 @@ namespace Dendrite
     {
         public Node Node;
         public PointF Position { get; set; }
-        public float Width = 140;
-        public float Height = 160;
+        public float Width { get; set; } = 140;
+        public float Height { get; set; } = 160;
         public bool IsSelected = false;
         public NodePin HoveredPin;
         public PointF GetPinPosition(DrawingContext ctx, NodePin p)

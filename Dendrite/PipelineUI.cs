@@ -115,7 +115,7 @@ namespace Dendrite
                 var height = item.Attribute("height").Value.ParseFloat();
                 node.Position = new PointF(xx, yy);
                 node.Width = width;
-                node.Width = height;
+                node.Height = height;
                 Elements.Add(node);
             }
         }

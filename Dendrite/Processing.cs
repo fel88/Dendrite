@@ -47,6 +47,7 @@ namespace Dendrite
         {
             propertyGrid1.SelectedObject = selected.Node.Tag;
             propertyGrid2.SelectedObject = selected.Node;
+            propertyGrid3.SelectedObject = selected;
             toolStripStatusLabel1.ForeColor = Color.Black;
             if (selected.Node.LastException != null)
             {

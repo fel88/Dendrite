@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using static Dendrite.Preprocessors.NormalizePreprocessor;
 
 namespace Dendrite.Preprocessors.Controls
 {

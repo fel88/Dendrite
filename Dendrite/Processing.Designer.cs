@@ -100,6 +100,7 @@
             this.toRGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.transposeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.priorBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.concatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.normalizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.template1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -192,9 +193,9 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.concatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.propertyGrid3 = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -731,7 +732,7 @@
             this.templateMaskRCNNToolStripMenuItem,
             this.templateEspnetToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
             this.addToolStripMenuItem.Text = "add";
             // 
             // resizeToolStripMenuItem
@@ -803,6 +804,13 @@
             this.priorBoxesToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.priorBoxesToolStripMenuItem.Text = "prior boxes";
             this.priorBoxesToolStripMenuItem.Click += new System.EventHandler(this.priorBoxesToolStripMenuItem_Click);
+            // 
+            // concatToolStripMenuItem
+            // 
+            this.concatToolStripMenuItem.Name = "concatToolStripMenuItem";
+            this.concatToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.concatToolStripMenuItem.Text = "concat";
+            this.concatToolStripMenuItem.Click += new System.EventHandler(this.concatToolStripMenuItem_Click);
             // 
             // normalizeToolStripMenuItem
             // 
@@ -1359,10 +1367,11 @@
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.propertyGrid2);
-            this.tabPage5.Controls.Add(this.propertyGrid1);
             this.tabPage5.Controls.Add(this.groupBox2);
             this.tabPage5.Controls.Add(this.groupBox3);
+            this.tabPage5.Controls.Add(this.propertyGrid3);
+            this.tabPage5.Controls.Add(this.propertyGrid2);
+            this.tabPage5.Controls.Add(this.propertyGrid1);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -1382,9 +1391,9 @@
             // propertyGrid1
             // 
             this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.Location = new System.Drawing.Point(3, 236);
+            this.propertyGrid1.Location = new System.Drawing.Point(3, 155);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(170, 183);
+            this.propertyGrid1.Size = new System.Drawing.Size(170, 264);
             this.propertyGrid1.TabIndex = 29;
             // 
             // groupBox2
@@ -1402,6 +1411,7 @@
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "PriorBoxes settings";
+            this.groupBox2.Visible = false;
             // 
             // button6
             // 
@@ -1477,6 +1487,7 @@
             this.groupBox3.TabIndex = 28;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Video Output";
+            this.groupBox3.Visible = false;
             // 
             // label7
             // 
@@ -1528,7 +1539,7 @@
             this.depthmapDecodeToolStripMenuItem,
             this.rgb2bgrToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(106, 22);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(94, 22);
             this.addToolStripMenuItem1.Text = "add";
             // 
             // yoloDecodeToolStripMenuItem
@@ -1676,19 +1687,6 @@
             this.toolStripButton3.Text = "copy frame";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
-            // timer2
-            // 
-            this.timer2.Enabled = true;
-            this.timer2.Interval = 25;
-            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
-            // 
-            // concatToolStripMenuItem
-            // 
-            this.concatToolStripMenuItem.Name = "concatToolStripMenuItem";
-            this.concatToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.concatToolStripMenuItem.Text = "concat";
-            this.concatToolStripMenuItem.Click += new System.EventHandler(this.concatToolStripMenuItem_Click);
-            // 
             // toolStripButton4
             // 
             this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -1697,6 +1695,20 @@
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(37, 22);
             this.toolStripButton4.Text = "fit all";
+            // 
+            // timer2
+            // 
+            this.timer2.Enabled = true;
+            this.timer2.Interval = 25;
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
+            // propertyGrid3
+            // 
+            this.propertyGrid3.HelpVisible = false;
+            this.propertyGrid3.Location = new System.Drawing.Point(6, 6);
+            this.propertyGrid3.Name = "propertyGrid3";
+            this.propertyGrid3.Size = new System.Drawing.Size(170, 143);
+            this.propertyGrid3.TabIndex = 31;
             // 
             // Processing
             // 
@@ -1921,5 +1933,6 @@
         private System.Windows.Forms.ToolStripMenuItem priorBoxesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem concatToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.PropertyGrid propertyGrid3;
     }
 }

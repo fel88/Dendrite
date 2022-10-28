@@ -31,11 +31,23 @@ namespace Dendrite.Preprocessors
         public override void ParseXml(XElement sb)
         {
             Dims = sb.Attribute("dims").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(Helpers.ParseInt).ToArray();
+            if (sb.Attribute("externalSizeInput") != null)
+            {
+                var b1 = bool.Parse(sb.Attribute("externalSizeInput").Value);
+                if (b1)
+                {
+                    var aa = InputSlots[0];
+                    InputSlots = new DataSlot[2];
+                    InputSlots[0] = aa;
+                    InputSlots[1] = new DataSlot() { Name = "size" };
+                    Invalidate();
+                }
+            }
         }
 
         public override void StoreXml(StringBuilder sb)
         {
-            sb.AppendLine($"<resize dims=\"{string.Join(";", Dims)}\"/>");
+            sb.AppendLine($"<resize dims=\"{string.Join(";", Dims)}\" externalSizeInput=\"{InputSlots.Length == 2}\"/>");
         }
 
         public void Invalidate()
