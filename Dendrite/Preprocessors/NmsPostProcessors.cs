@@ -7,6 +7,7 @@ namespace Dendrite.Preprocessors
 {
     public class NmsPostProcessors : AbstractPreprocessor
     {
+        public override string Name => "nms";
         public override Type ConfigControl => typeof(NmsConfigControl);
 
         public float NmsThreshold = 0.2f;

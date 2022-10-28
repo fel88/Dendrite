@@ -8,10 +8,13 @@ using System.Windows.Forms;
 
 namespace Dendrite.Preprocessors
 {
-    public class DrawInstanceSegmentationPostProcessor : AbstractPreprocessor, IPostDrawer
+    public class DrawInstanceSegmentationPostProcessor : AbstractPreprocessor, IImageContainer
     {
-
+        public override string Name => "instance segmentation drawer";
         public override Type ConfigControl => typeof(InstanceSegmentatorDrawerConfigControl);
+
+        public Mat Image => OutputSlots[0].Data as Mat;
+
         static DrawInstanceSegmentationPostProcessor()
         {
             clrs.Add(Scalar.Red);
@@ -37,19 +40,12 @@ namespace Dendrite.Preprocessors
         public float VisThreshold = 0.4f;
 
 
-        public PictureBox Pbox;
-        public Mat LastMat { get; set; }
+        
         static List<Scalar> clrs = new List<Scalar>();
 
         internal void Redraw()
         {
-            var ret = DrawSegmentationMap(orig, Detections, VisThreshold);
-            //var ret = DrawSegmentationMap(net.lastReadedMat, dets, VisThreshold);
-            LastMat = ret;
-            Pbox.Invoke((Action)(() =>
-            {
-                Pbox.Image = BitmapConverter.ToBitmap(ret);
-            }));
+            var ret = DrawSegmentationMap(orig, Detections, VisThreshold);            
         }
 
         public bool EnableBoxDraw = true;
@@ -98,18 +94,13 @@ namespace Dendrite.Preprocessors
             }
             return mat;
         }
-        public override object Process(object input)
-        {
-            var list = input as object[];
-            var dets = list.Last(z => z is DetectionInfo[]) as DetectionInfo[];
-            var net = list.First(z => z is Nnet) as Nnet;
-            var ret = DrawSegmentationMap(net.lastReadedMat, dets.Select(z => z as SegmentationDetectionInfo).ToArray(), VisThreshold);
-            LastMat = ret;
-            Pbox.Invoke((Action)(() =>
-            {
-                Pbox.Image = BitmapConverter.ToBitmap(ret);
-            }));
 
+        public override object Process(object input)
+        {            
+            var dets = InputSlots[0].Data  as DetectionInfo[];
+            var mat = InputSlots[1].Data as Mat;
+            var ret = DrawSegmentationMap(mat, dets.Select(z => z as SegmentationDetectionInfo).ToArray(), VisThreshold);
+            OutputSlots[0].Data = ret;
 
             return ret;
         }

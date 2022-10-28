@@ -4,16 +4,26 @@ using System;
 
 namespace Dendrite.Preprocessors
 {
-    public class ZeroImagePreprocessor : AbstractPreprocessor
+    public class ZeroImagePreprocessor : AbstractPreprocessor, IImageContainer
     {
-        public byte Filler = 0;
-        public int Width;
-        public int Height;
-        public int Channels;
+        public ZeroImagePreprocessor()
+        {
+            InputSlots = new DataSlot[0];
+        }
+        public byte Filler { get; set; } = 0;
+        public int Width { get; set; } = 512;
+        public int Height { get; set; } = 512;
+        public int Channels { get; set; } = 3;
         public override Type ConfigControl => typeof(ZeroImageConfigControl);
+
+        public Mat Image => OutputSlots[0].Data as Mat;
+
         public override object Process(object inp)
         {
-            Mat zmt = new Mat(Height, Width, Channels == 3 ? MatType.CV_8UC3 : MatType.CV_8UC1, new Scalar(Filler));
+            Mat zmt = new Mat(Height, Width,
+                Channels == 3 ? MatType.CV_8UC3 : MatType.CV_8UC1,
+                Channels == 3 ? new Scalar(Filler, Filler, Filler) : new Scalar(Filler));
+            OutputSlots[0].Data = zmt;
             return zmt;
 
         }

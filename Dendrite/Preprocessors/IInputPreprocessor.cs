@@ -7,6 +7,7 @@ namespace Dendrite.Preprocessors
 {
     public interface IInputPreprocessor
     {
+        event Action<IInputPreprocessor> PinsChanged;
         Type ConfigControl { get; }
         string Name { get; }
         object Process(object input);

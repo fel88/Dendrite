@@ -15,11 +15,15 @@ namespace Dendrite.Preprocessors
         }
         public virtual Type ConfigControl => null;
 
+        public event Action<IInputPreprocessor> PinsChanged;
+
         public virtual void ParseXml(XElement sb)
         {
-
         }
-
+        protected void OnPinsChanged()
+        {
+            PinsChanged?.Invoke(this);
+        }
         public DataSlot[] InputSlots { get; set; }
         public DataSlot[] OutputSlots { get; set; }
 

@@ -77,6 +77,35 @@ namespace Dendrite
             }
             sb.AppendLine("</outputs>");
         }
+
+        internal void Attach(IInputPreprocessor pp)
+        {
+            Name = pp.Name;
+            Tag = pp;
+            pp.PinsChanged += Pp_PinsChanged;
+            UpdatePins();
+        }
+                
+        private void UpdatePins()
+        {
+            var pp = Tag as IInputPreprocessor;
+            Inputs.Clear();
+            Outputs.Clear();
+            foreach (var zitem in pp.InputSlots)
+            {
+                Inputs.Add(new NodePin(this, zitem) { Name = zitem.Name });
+            }
+            foreach (var zitem in pp.OutputSlots)
+            {
+                Outputs.Add(new NodePin(this, zitem) { Name = zitem.Name });
+            }
+        }
+
+        private void Pp_PinsChanged(IInputPreprocessor proc)
+        {
+            UpdatePins();
+        }
+
         public virtual void StoreXml(StringBuilder sb)
         {
             sb.AppendLine($"<node id=\"{Id}\" name=\"{Name}\">");

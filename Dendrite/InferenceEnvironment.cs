@@ -55,15 +55,8 @@ namespace Dendrite
 
         public static Node GenerateNodeFromProcessor(IInputPreprocessor pp)
         {
-            var node = new Node() { Name = pp.Name, Tag = pp };
-            foreach (var zitem in pp.InputSlots)
-            {
-                node.Inputs.Add(new NodePin(node, zitem) { Name = zitem.Name });
-            }
-            foreach (var zitem in pp.OutputSlots)
-            {
-                node.Outputs.Add(new NodePin(node, zitem) { Name = zitem.Name });
-            }
+            var node = new Node();
+            node.Attach(pp);            
 
             return node;
         }

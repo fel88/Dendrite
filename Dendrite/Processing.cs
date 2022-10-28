@@ -359,7 +359,7 @@ namespace Dendrite
             }*/
 
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
+            
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);
 
@@ -396,79 +396,24 @@ namespace Dendrite
 
         private void meanstdToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //if (currentNode == null) return;
-
             var r = new MeanStdPreprocessor();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
             env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
+            pipelineUI.AddItem(node);            
         }
 
         private void normalizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentNode == null) return;
-
             var r = new NormalizePreprocessor();
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r });
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
         IInputPreprocessor currentPreprocessor;
-
-
-
-        //private void textBox2_TextChanged(object sender, EventArgs e)
-        //{
-        //    if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-        //    try { mstd.Mean[1] = double.Parse(textBox2.Text, CultureInfo.InvariantCulture); }
-        //    catch (Exception ex)
-        //    {
-        //        textBox2.BackColor = Color.Red;
-        //    }
-        //}
-
-        //private void textBox3_TextChanged(object sender, EventArgs e)
-        //{
-        //    if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-        //    try { mstd.Mean[2] = double.Parse(textBox3.Text, CultureInfo.InvariantCulture); }
-        //    catch (Exception ex)
-        //    {
-        //        textBox3.BackColor = Color.Red;
-        //    }
-        //}
-
-        //private void textBox6_TextChanged(object sender, EventArgs e)
-        //{
-        //    if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-        //    try { mstd.Std[0] = double.Parse(textBox6.Text, CultureInfo.InvariantCulture); }
-        //    catch (Exception ex)
-        //    {
-        //        textBox6.BackColor = Color.Red;
-        //    }
-        //}
-
-        //private void textBox5_TextChanged(object sender, EventArgs e)
-        //{
-        //    if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-        //    try { mstd.Std[1] = double.Parse(textBox5.Text, CultureInfo.InvariantCulture); }
-        //    catch (Exception ex)
-        //    {
-        //        textBox5.BackColor = Color.Red;
-        //    }
-        //}
-
-        //private void textBox4_TextChanged(object sender, EventArgs e)
-        //{
-        //    if (!(currentPreprocessor is MeanStdPreprocessor mstd)) return;
-        //    try { mstd.Std[2] = double.Parse(textBox4.Text, CultureInfo.InvariantCulture); }
-        //    catch (Exception ex)
-        //    {
-        //        textBox4.BackColor = Color.Red;
-        //    }
-        //}
+                
 
         private void template1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1179,9 +1124,15 @@ namespace Dendrite
 
         private void staticImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentNode == null) return;
+           // if (currentNode == null) return;
             var r = new ZeroImagePreprocessor();
-            if (!InputDatas.ContainsKey(currentNode.Name)) return;
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+
+            //if (!InputDatas.ContainsKey(currentNode.Name)) return;
             //InputDatas[currentNode.Name].Preprocessors.Add(r);
             //listView3.Items.Add(new ListViewItem(new string[] { "zero" }) { Tag = r });
         }
@@ -1568,12 +1519,14 @@ namespace Dendrite
         }
 
         private void bgr2rgbToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (currentNode == null) return;
-            if (!InputDatas.ContainsKey(currentNode.Name)) return;
+        {            
             var r = new BGR2RGBPreprocessor();
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "bgr2rgb" }) { Tag = r });
+            
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
 
@@ -1654,15 +1607,21 @@ namespace Dendrite
         private void keypointDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new KeypointsDecodePreprocessor();
-            /* net.Postprocessors.Add(r);
-             listView6.Items.Add(new ListViewItem(new string[] { "keypoint decode" }) { Tag = r });*/
+            
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
         private void drawKeypointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DrawKeypointsPostProcessor() { Pbox = pictureBox1 };
-            /*  net.Postprocessors.Add(r);
-              listView6.Items.Add(new ListViewItem(new string[] { "draw keypoints" }) { Tag = r });*/
+            var r = new DrawKeypointsPostProcessor() ;
+            
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -1705,21 +1664,30 @@ namespace Dendrite
         private void instanceSegmentationDecoderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new InstanceSegmentationDecodePreprocessor();
-            //  net.Postprocessors.Add(r);
+            
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
             //listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation decoder" }) { Tag = r });
         }
 
         private void instanceSegmentationDrawerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DrawInstanceSegmentationPostProcessor() { Pbox = pictureBox1 };
-            // net.Postprocessors.Add(r);
+            var r = new DrawInstanceSegmentationPostProcessor() ;            
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
             //listView6.Items.Add(new ListViewItem(new string[] { "instance segmentation drawer" }) { Tag = r });
         }
 
         private void nmsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new NmsPostProcessors();
-            //   net.Postprocessors.Add(r);
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);            
             // listView6.Items.Add(new ListViewItem(new string[] { "nms" }) { Tag = r });
         }
 
@@ -1768,7 +1736,18 @@ namespace Dendrite
 
         private void depthmapDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DepthmapDecodePreprocessor() { Pbox = pictureBox1 };
+            var r = new DepthmapDecodePreprocessor() ;
+            
+            /*if (!InputDatas.ContainsKey(currentNode.Name))
+            {
+                Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
+                return;
+            }*/
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
             //net.Postprocessors.Add(r);
             //listView6.Items.Add(new ListViewItem(new string[] { "depthmap" }) { Tag = r });
         }
@@ -1840,8 +1819,11 @@ namespace Dendrite
         private void rgb2bgrToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new BGR2RGBPreprocessor();
-            //net.Postprocessors.Add(r);
-            // listView6.Items.Add(new ListViewItem(new string[] { "rgb2bgr" }) { Tag = r });
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+
         }
 
         private void numpyFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2239,6 +2221,16 @@ namespace Dendrite
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);
+        }
+
+        private void templateCRAFTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void templateMaskRCNNToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

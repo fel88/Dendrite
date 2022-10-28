@@ -155,7 +155,7 @@ namespace Dendrite
             return str.ToString().Replace(",", ".");
         }
 
-        public static Mat drawKeypoints(Mat mat1, KeypointsDetectionInfo[] detections, float visTresh)
+        public static Mat DrawKeypoints(Mat mat1, KeypointsDetectionInfo[] detections, float visTresh)
         {
             Mat mat = mat1.Clone();
 

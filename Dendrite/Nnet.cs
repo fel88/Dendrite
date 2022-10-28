@@ -251,9 +251,11 @@ namespace Dendrite
                     if (tnm.Contains("float"))
                     {
                         var data = result.AsTensor<float>();
-                        //var dims = data.Dimensions;
+                        InternalArray arr = new InternalArray(data.Dimensions.ToArray());
+
                         var rets = data.ToArray();
-                        OutputDatas.Add(result.Name, rets);
+                        arr.Data = rets.Select(z => (double)z).ToArray();
+                        OutputDatas.Add(result.Name, arr);
                     }
                     else if (tnm.Contains("int64"))
                     {
@@ -271,43 +273,16 @@ namespace Dendrite
                     }
                 }
             }
-            /*
-                        if (checkBox1.Checked)
-                        {
-                            Stopwatch sw2 = Stopwatch.StartNew();
-                            var ret = boxesDecode(mat2);
-                            sw2.Stop();
-                            toolStripStatusLabel1.Text = $"decode time: {sw2.ElapsedMilliseconds}ms";
-                            if (ret != null)
-                            {
-                                var mm = drawBoxes(mat2, ret.Item1, ret.Item2, visTresh, ret.Item3);
-                                pictureBox1.Image = BitmapConverter.ToBitmap(mm);
-                                mat2 = mm;
-                            }
-                        }
-                        if (vid != null)
-                        {
-                            vid.Write(mat2);
-                        }*/
+
             object inp = this;
             List<object> objs = new List<object>();
             objs.Add(inp);
-
-            /*
-            foreach (var v in Postprocessors)
-            {
-                var r = v.Process(objs.ToArray());
-                objs.Add(r);
-            }
-            */
             sw.Stop();
-            //  toolStripStatusLabel1.Text = $"{sw.ElapsedMilliseconds}ms";
 
         }
 
 
         public Mat lastReadedMat;
-        //public List<IInputPreprocessor> Postprocessors = new List<IInputPreprocessor>();
 
         internal byte[] GetModelBytes()
         {

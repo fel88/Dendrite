@@ -74,6 +74,10 @@ namespace Dendrite
 
         #endregion
 
+        public float[] ToFloatArray()
+        {
+            return Data.Select(z => (float)z).ToArray();
+        }
 
 
         public static InternalArray FromXml(string path)

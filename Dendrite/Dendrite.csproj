@@ -308,6 +308,7 @@
     <Compile Include="PipelineUI.cs" />
     <Compile Include="Preprocessors\AbstractPreprocessor.cs" />
     <Compile Include="Preprocessors\AspectResizePreprocessor.cs" />
+    <Compile Include="Preprocessors\BGR2RGBPreprocessor.cs" />
     <Compile Include="Preprocessors\BoxesDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.cs">
       <SubType>UserControl</SubType>
@@ -381,7 +382,9 @@
     <Compile Include="Preprocessors\DrawInstanceSegmentationPostProcessor.cs" />
     <Compile Include="Preprocessors\DrawKeypointsPostProcessor.cs" />
     <Compile Include="Preprocessors\GrayscalePreprocessor.cs" />
+    <Compile Include="Preprocessors\IImageContainer.cs" />
     <Compile Include="Preprocessors\IInputPreprocessor.cs" />
+    <Compile Include="Preprocessors\ImgConcatPostProcessor.cs" />
     <Compile Include="Preprocessors\InstanceSegmentationDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\IPriorBoxesGenerator.cs" />
     <Compile Include="Preprocessors\KeypointsDecodePreprocessor.cs" />
@@ -404,6 +407,7 @@
     <Compile Include="Preprocessors\ObjectDetectionContext.cs" />
     <Compile Include="Preprocessors\PriorBoxesProcessor.cs" />
     <Compile Include="Preprocessors\ResizePreprocessor.cs" />
+    <Compile Include="Preprocessors\ToRGBPreprocessor.cs" />
     <Compile Include="Preprocessors\TransposePreprocessor.cs" />
     <Compile Include="Preprocessors\XmlNameAttribute.cs" />
     <Compile Include="Preprocessors\YoloDecodePreprocessor.cs" />

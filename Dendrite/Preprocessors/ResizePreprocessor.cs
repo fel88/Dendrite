@@ -22,7 +22,7 @@ namespace Dendrite.Preprocessors
         public Mat Image
         {
             get
-            {                
+            {
                 return OutputSlots[0].Data as Mat;
             }
         }
@@ -38,9 +38,18 @@ namespace Dendrite.Preprocessors
             sb.AppendLine($"<resize dims=\"{string.Join(";", Dims)}\"/>");
         }
 
+        public void Invalidate()
+        {
+            OnPinsChanged();
+        }
+
         public override object Process(object inp)
         {
             var input = InputSlots[0].Data as Mat;
+            if (InputSlots.Length == 2)
+            {
+                Dims = InputSlots[1].Data as int[];
+            }
             //var input = inp as Mat;
             var ret = input.Resize(new OpenCvSharp.Size(Dims[3], Dims[2]));
             OutputSlots[0].Data = ret;

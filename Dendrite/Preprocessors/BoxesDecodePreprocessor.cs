@@ -37,8 +37,24 @@ namespace Dendrite.Preprocessors
         {
 
 
-            var rets1 = InputSlots[0].Data as float[];
-            var rets3 = InputSlots[1].Data as float[];
+            float[] rets1 = null;
+            float[] rets3 = null;
+            if (InputSlots[0].Data is float[])
+            {
+                rets1 = InputSlots[0].Data as float[];
+            }
+            else if (InputSlots[0].Data is InternalArray ar)
+            {
+                rets1 = ar.ToFloatArray();
+            }
+            if (InputSlots[1].Data is float[])
+            {
+                rets3 = InputSlots[1].Data as float[];
+            }
+            else if (InputSlots[1].Data is InternalArray ar)
+            {
+                rets3 = ar.ToFloatArray();
+            }
 
             /*  var dims = net.Nodes.First(z => z.IsInput).Dims;
               var sz = new System.Drawing.Size(dims[3], dims[2]);
@@ -51,12 +67,12 @@ namespace Dendrite.Preprocessors
             string key = $"{sz.Width}x{sz.Height}";
             var pg = InputSlots[3].Data as IPriorBoxesGenerator;
 
-           /* if (!Decoders.allPriorBoxes.ContainsKey(key))
-            {
-                var pd = Decoders.PriorBoxes2(sz.Width, sz.Height);
-                Decoders.allPriorBoxes.Add(key, pd);
-            }*/
-            
+            /* if (!Decoders.allPriorBoxes.ContainsKey(key))
+             {
+                 var pd = Decoders.PriorBoxes2(sz.Width, sz.Height);
+                 Decoders.allPriorBoxes.Add(key, pd);
+             }*/
+
             //var prior_data = Decoders.allPriorBoxes[key];
             var prior_data = pg.Generate(sz.Width, sz.Height);
 
@@ -70,7 +86,7 @@ namespace Dendrite.Preprocessors
                 {
                     Rect = rect,
                     Conf = ret.Item2[i],
-                    
+
                 };
                 if (ret.Item3 != null)
                 {

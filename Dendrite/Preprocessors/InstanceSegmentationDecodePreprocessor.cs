@@ -9,30 +9,43 @@ namespace Dendrite.Preprocessors
     public class InstanceSegmentationDecodePreprocessor : AbstractPreprocessor
     {
 
+        public InstanceSegmentationDecodePreprocessor()
+        {
+            InputSlots = new DataSlot[4];
+            InputSlots[0] = new DataSlot() { Name = "input" };
+            InputSlots[1] = new DataSlot() { Name = "scores" };
+            InputSlots[2] = new DataSlot() { Name = "labels" };
+            InputSlots[3] = new DataSlot() { Name = "boxes" };
+            InputSlots[4] = new DataSlot() { Name = "size" };
+        }
+
+        public override string Name => "instance segmentation decoder";
+
         public override Type ConfigControl => typeof(InstanceSegmentationDecoderConfigControl);
-        public double Threshold = 0.5;
-        public double MaskThreshold = 0.4;
+        public double Threshold { get; set; } = 0.5;
+        public double MaskThreshold { get; set; } = 0.4;
+
         public List<string> AllowedClasses = new List<string>();
-        public SegmentationDetectionInfo[] Decode(Nnet net, int w, int h, string[] allowedClasses = null)
+        public SegmentationDetectionInfo[] Decode(int w, int h, InternalArray f1, float[] bxs, float[] scores, Int64[] labls, string[] allowedClasses = null)
         {
             List<SegmentationDetectionInfo> ret = new List<SegmentationDetectionInfo>();
-            var inp = net.Nodes.First(z => z.IsInput);
-            var f1 = net.Nodes.FirstOrDefault(z => z.Dims.Last() == inp.Dims.Last());
-            var snd = net.Nodes.FirstOrDefault(z => z.Dims.Length == 1 && z.ElementType == typeof(float));
-            var labels = net.Nodes.FirstOrDefault(z => z.Dims.Length == 1 && z.ElementType != typeof(float));
-            var boxes = net.Nodes.FirstOrDefault(z => z.Dims.Last() == 4);
-            if (f1 == null)
-            {
-                return null;
-            }
+            /*  var inp = net.Nodes.First(z => z.IsInput);
+              var f1 = net.Nodes.FirstOrDefault(z => z.Dims.Last() == inp.Dims.Last());
+              var snd = net.Nodes.FirstOrDefault(z => z.Dims.Length == 1 && z.ElementType == typeof(float));
+              var labels = net.Nodes.FirstOrDefault(z => z.Dims.Length == 1 && z.ElementType != typeof(float));
+              var boxes = net.Nodes.FirstOrDefault(z => z.Dims.Last() == 4);
+              if (f1 == null)
+              {
+                  return null;
+              }*/
             var nms = Helpers.ReadResource("coco.2.names").Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 
-
-            var rets1 = net.OutputDatas[f1.Name] as float[];
+            var rets1 = f1.ToFloatArray();
+            /*var rets1 = net.OutputDatas[f1.Name] as float[];
             var labls = net.OutputDatas[labels.Name] as Int64[];
             var bxs = net.OutputDatas[boxes.Name] as float[];
-            var scores = net.OutputDatas[snd.Name] as float[];
-            InternalArray ar = new InternalArray(f1.Dims);
+            var scores = net.OutputDatas[snd.Name] as float[];*/
+            InternalArray ar = new InternalArray(f1.Shape);
             ar.Data = new double[rets1.Length];
 
             for (int i = 0; i < rets1.Length; i++)
@@ -56,7 +69,7 @@ namespace Dendrite.Preprocessors
                 if (scores[i] < Threshold) continue;
 
                 var kp = new SegmentationDetectionInfo();
-                
+
                 kp.Class = (int)(labls[i]);
                 kp.Conf = scores[i];
                 if (labls[i] < nms.Length)
@@ -90,10 +103,14 @@ namespace Dendrite.Preprocessors
 
         public override object Process(object inp)
         {
-            var list = inp as object[];
-            var net = list.First(z => z is Nnet) as Nnet;
-
-            var ret = Decode(net, net.lastReadedMat.Width, net.lastReadedMat.Height);
+            var f1 = InputSlots[0].Data as InternalArray;
+            var scores = InputSlots[1].Data as InternalArray;
+            var labels = InputSlots[2].Data as Int64[];
+            var boxes = InputSlots[3].Data as InternalArray;
+            var sz = InputSlots[4].Data as int[];
+            var ww = sz[3];
+            var hh = sz[2];
+            var ret = Decode(ww, hh, f1, boxes.ToFloatArray(), scores.ToFloatArray(), labels);
 
             return ret;
         }
