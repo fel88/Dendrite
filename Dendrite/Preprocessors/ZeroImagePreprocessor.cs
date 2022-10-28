@@ -4,6 +4,7 @@ using System;
 
 namespace Dendrite.Preprocessors
 {
+
     public class ZeroImagePreprocessor : AbstractPreprocessor, IImageContainer
     {
         public ZeroImagePreprocessor()

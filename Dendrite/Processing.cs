@@ -546,31 +546,7 @@ namespace Dendrite
             }
         }
 
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            /*if (listView3.SelectedItems.Count == 0) return;
-            if (currentNode == null) return;
-            if (!InputDatas.ContainsKey(currentNode.Name)) return;
-            if (Helpers.ShowQuestion($"Are you sure to delete {listView3.SelectedItems.Count} items?", Text) != DialogResult.Yes) return;
-
-            List<ListViewItem> todel = new List<ListViewItem>();
-            for (int i = 0; i < listView3.SelectedItems.Count; i++)
-            {
-                var prep = listView3.SelectedItems[i].Tag as IInputPreprocessor;
-                //InputDatas[currentNode.Name].Preprocessors.Remove(prep);
-                todel.Add(listView3.SelectedItems[i]);
-            }
-            foreach (var tt in todel)
-            {
-                listView3.Items.Remove(tt);
-            }*/
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
+     
         public Dictionary<string, InputInfo> InputDatas => net.InputDatas;
         public Dictionary<string, object> OutputDatas => net.OutputDatas;
         private void all1ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1060,12 +1036,13 @@ namespace Dendrite
 
 
         private void grayscaleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (currentNode == null) return;
-            if (!InputDatas.ContainsKey(currentNode.Name)) return;
-            var r = new GrayscalePreprocessor();
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "grayscale" }) { Tag = r });
+        {            
+            var r = new GrayscalePreprocessor(); 
+            
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);            
         }
 
         private void aspectResizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1530,7 +1507,6 @@ namespace Dendrite
         }
 
 
-
         private void yoloDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new YoloDecodePreprocessor();
@@ -1539,15 +1515,7 @@ namespace Dendrite
             //listView6.Items.Add(new ListViewItem(new string[] { "yolo decode" }) { Tag = r });
         }
 
-        private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            // //if (listView6.SelectedItems.Count == 0) return;
-            //  var prep = listView6.SelectedItems[0].Tag as IInputPreprocessor;
-
-            /*net.Postprocessors.Remove(prep);
-            listView6.Items.Remove(listView6.SelectedItems[0]);*/
-        }
-
+        
         private void drawBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new DrawBoxesPostProcessor() { };
@@ -2057,30 +2025,32 @@ namespace Dendrite
             {
                 using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true))
                 {
-                    var netName = new FileInfo(net.NetPath).Name;
-                    if (net.NetPath.EndsWith(".den"))
+                    if (env.Pipeline.Nodes.Any(z => z is NetNode))
                     {
-                        netName = net.GetModelName();
-                    }
-                    var demoFile = archive.CreateEntry(netName);
-
-                    using (var entryStream = demoFile.Open())
-                    //using (var streamWriter = new StreamWriter(entryStream))
-                    {
+                        var netName = new FileInfo(net.NetPath).Name;
                         if (net.NetPath.EndsWith(".den"))
                         {
-                            var bytes = net.GetModelBytes();
-                            entryStream.Write(bytes, 0, bytes.Length);
+                            netName = net.GetModelName();
                         }
-                        else
+                        var demoFile = archive.CreateEntry(netName);
+
+                        using (var entryStream = demoFile.Open())
+                        //using (var streamWriter = new StreamWriter(entryStream))
                         {
-                            using (var stream1 = File.OpenRead(net.NetPath))
+                            if (net.NetPath.EndsWith(".den"))
                             {
-                                stream1.CopyTo(entryStream);
+                                var bytes = net.GetModelBytes();
+                                entryStream.Write(bytes, 0, bytes.Length);
+                            }
+                            else
+                            {
+                                using (var stream1 = File.OpenRead(net.NetPath))
+                                {
+                                    stream1.CopyTo(entryStream);
+                                }
                             }
                         }
                     }
-
                     var configFile = archive.CreateEntry("config.xml");
 
                     var configXml = env.GetConfigXml();
@@ -2188,20 +2158,20 @@ namespace Dendrite
         {
             if (selected != null)
             {
-                if ((selected.Node is IImageContainer pd))
+                var targets = new[] { selected.Node , selected.Node.Tag };
+                foreach (var item in targets.OfType<IImageContainer>())
                 {
-                    if (pd.Image != null)
+                    if (item.Image != null)
                     {
-                        pictureBox1.Image = pd.Image.ToBitmap();
+                        Mat ret = item.Image;
+                        if (item.Image.Channels() == 1)
+                        {
+                            ret = new Mat();
+                            item.Image.ConvertTo(ret, MatType.CV_8UC3);
+                        }
+                        pictureBox1.Image = ret.ToBitmap();
                     }
-                }
-                if ((selected.Node.Tag is IImageContainer ic))
-                {
-                    if (ic.Image != null)
-                    {
-                        pictureBox1.Image = ic.Image.ToBitmap();
-                    }
-                }
+                }             
             }
         }
 
@@ -2231,6 +2201,14 @@ namespace Dendrite
         private void templateMaskRCNNToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void concatToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new ImgConcatPostProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
     }
 }

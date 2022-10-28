@@ -54,7 +54,11 @@ namespace Dendrite
             var sn = (topo.First(z=> z is ImageSourceNode) as ImageSourceNode);
 
             Text = $"Processing: {fileName}  {mat.Width}x{mat.Height}";
-            sn.SourceMat = mat.Clone();
+            sn.SourceMat = mat.Clone();            
+            env.Process();
+            var outp1 = env.Pipeline.GetOutputs();
+            var last1 = outp1.First(z => z is Mat) as Mat;
+
             /*if (env.Net.InputDatas.ContainsKey(node.Name) && env.Net.InputDatas[node.Name] is InputInfo ii)
             {
                 ii.Data = mat;
@@ -69,7 +73,7 @@ namespace Dendrite
            {
                try
                {
-                   using (var vid = new VideoWriter(outputPath, FourCC.XVID, OutputVideoFps, new OpenCvSharp.Size(mat.Width, mat.Height)))
+                   using (var vid = new VideoWriter(outputPath, FourCC.XVID, OutputVideoFps, new OpenCvSharp.Size(last1.Width, last1.Height)))
                    {
                        var nFrames = cap.Get(VideoCaptureProperties.FrameCount);
 
