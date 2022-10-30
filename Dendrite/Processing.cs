@@ -2254,5 +2254,21 @@ namespace Dendrite
             pipelineUI.AddItem(node);
 
         }
+
+        private void cRAFTDepthMapDecoderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new CraftMapDecoderPostProcessor();            
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);            
+        }
+
+        private void blendToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new BlendingPostProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
     }
 }

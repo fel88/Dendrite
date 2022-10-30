@@ -3,7 +3,9 @@ using OpenCvSharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Dendrite
@@ -95,21 +97,41 @@ namespace Dendrite
             Run();
         }
 
-        void Run()
+        async void Run()
         {
-            var sw = Stopwatch.StartNew();
-            env.Process();
-            var outps = env.Pipeline.GetOutputs();
-
-            if (outps.Any(z => z is Mat))
+            try
             {
-                var m = outps.OfType<Mat>().First();
-                m.ConvertTo(m, MatType.CV_8UC3);
-                pictureBox2.Image = m.ToBitmap();
-            }
-            sw.Stop();
+                var sw = Stopwatch.StartNew();
+                toolStrip1.Enabled = false;
+                await Task.Run(() =>
+                {
 
-            toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
+                    env.Process();
+                    var outps = env.Pipeline.GetOutputs();
+
+                    if (outps.Any(z => z is Mat))
+                    {
+                        var m = outps.OfType<Mat>().First();
+                        m.ConvertTo(m, MatType.CV_8UC3);
+                        pictureBox2.Image = m.ToBitmap();
+                    }
+                    sw.Stop();
+
+                });
+                toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
+                toolStripStatusLabel1.BackColor = SystemColors.Control;
+                toolStripStatusLabel1.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+                toolStripStatusLabel1.Text = ex.Message + ex.StackTrace;
+                toolStripStatusLabel1.BackColor = Color.Red;
+                toolStripStatusLabel1.ForeColor = Color.White;
+            }
+            finally
+            {
+                toolStrip1.Enabled = true;
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

@@ -39,8 +39,8 @@ namespace Dendrite.Preprocessors
             var classes = Helpers.ReadResource("imagenet1000");
             var s = classes.Split(new char[] { ':', '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries).ToArray();
             var tt = s[maxind * 2 + 1];
-                        
-            mat.Rectangle(new OpenCvSharp.Rect(0,0,mat.Width,30), Scalar.Black, -1);
+
+            mat.Rectangle(new OpenCvSharp.Rect(0, 0, mat.Width, 30), Scalar.Black, -1);
             mat.PutText(tt, new OpenCvSharp.Point(0, 20), HersheyFonts.HersheyComplexSmall, 1.0, Scalar.White);
             OutputSlots[0].Data = mat;
             return mat;

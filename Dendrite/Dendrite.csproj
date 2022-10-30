@@ -315,6 +315,7 @@
     <Compile Include="Preprocessors\AbstractPreprocessor.cs" />
     <Compile Include="Preprocessors\AspectResizePreprocessor.cs" />
     <Compile Include="Preprocessors\BGR2RGBPreprocessor.cs" />
+    <Compile Include="Preprocessors\BlendingPostProcessor.cs" />
     <Compile Include="Preprocessors\BoxesDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.cs">
       <SubType>UserControl</SubType>
@@ -382,6 +383,7 @@
     <Compile Include="Preprocessors\Controls\ZeroImageConfigControl.Designer.cs">
       <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Preprocessors\CraftMapDecoderPostProcessor.cs" />
     <Compile Include="Preprocessors\DataSlot.cs" />
     <Compile Include="Preprocessors\DepthmapDecodePreprocessor.cs" />
     <Compile Include="Preprocessors\DrawBoxesPostProcessor.cs" />
