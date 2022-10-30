@@ -18,6 +18,5 @@ Graph layout https://github.com/fel88/Dagre.NET
 6. Check outputs
 7. (optional). Save inference environment to .den file for quick use next time
 
-<img src="imgs/3.jpg"/>
-
+<img src="imgs/6.jpg"/>
 Ready inference environments can be downloaded from here : https://github.com/fel88/Dendrite.Environments
