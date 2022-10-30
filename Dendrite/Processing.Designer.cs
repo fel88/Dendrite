@@ -159,8 +159,6 @@
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button6 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -173,6 +171,9 @@
             this.label7 = new System.Windows.Forms.Label();
             this.textBox13 = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.propertyGrid3 = new System.Windows.Forms.PropertyGrid();
+            this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.yoloDecodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -195,7 +196,38 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.propertyGrid3 = new System.Windows.Forms.PropertyGrid();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem17 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem18 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem19 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem20 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem21 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem22 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem23 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem24 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem25 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem26 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem27 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem28 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem29 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem30 = new System.Windows.Forms.ToolStripMenuItem();
+            this.oneHotVectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -245,7 +277,7 @@
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(3, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(761, 656);
+            this.pictureBox1.Size = new System.Drawing.Size(991, 656);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
@@ -734,6 +766,7 @@
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
             this.addToolStripMenuItem.Text = "add";
+            this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
             // resizeToolStripMenuItem
             // 
@@ -1211,8 +1244,8 @@
             // 
             // tabControl3
             // 
-            this.tabControl3.Controls.Add(this.tabPage6);
             this.tabControl3.Controls.Add(this.tabPage7);
+            this.tabControl3.Controls.Add(this.tabPage6);
             this.tabControl3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
             this.tabControl3.Name = "tabControl3";
@@ -1226,7 +1259,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(767, 662);
+            this.tabPage6.Size = new System.Drawing.Size(997, 662);
             this.tabPage6.TabIndex = 0;
             this.tabPage6.Text = "Image";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1297,9 +1330,11 @@
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.preprocessorToolStripMenuItem,
+            this.toolStripMenuItem20,
             this.postprocessorToolStripMenuItem,
             this.netToolStripMenuItem,
-            this.imageSourceToolStripMenuItem});
+            this.imageSourceToolStripMenuItem,
+            this.toolStripMenuItem1});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -1309,28 +1344,28 @@
             // preprocessorToolStripMenuItem
             // 
             this.preprocessorToolStripMenuItem.Name = "preprocessorToolStripMenuItem";
-            this.preprocessorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.preprocessorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.preprocessorToolStripMenuItem.Text = "pre-processor";
             this.preprocessorToolStripMenuItem.Click += new System.EventHandler(this.preprocessorToolStripMenuItem_Click);
             // 
             // postprocessorToolStripMenuItem
             // 
             this.postprocessorToolStripMenuItem.Name = "postprocessorToolStripMenuItem";
-            this.postprocessorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.postprocessorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.postprocessorToolStripMenuItem.Text = "post-processor";
             this.postprocessorToolStripMenuItem.Click += new System.EventHandler(this.postprocessorToolStripMenuItem_Click);
             // 
             // netToolStripMenuItem
             // 
             this.netToolStripMenuItem.Name = "netToolStripMenuItem";
-            this.netToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.netToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.netToolStripMenuItem.Text = "net";
             this.netToolStripMenuItem.Click += new System.EventHandler(this.netToolStripMenuItem_Click);
             // 
             // imageSourceToolStripMenuItem
             // 
             this.imageSourceToolStripMenuItem.Name = "imageSourceToolStripMenuItem";
-            this.imageSourceToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.imageSourceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.imageSourceToolStripMenuItem.Text = "image source";
             this.imageSourceToolStripMenuItem.Click += new System.EventHandler(this.imageSourceToolStripMenuItem_Click);
             // 
@@ -1379,22 +1414,6 @@
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Config";
             this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // propertyGrid2
-            // 
-            this.propertyGrid2.HelpVisible = false;
-            this.propertyGrid2.Location = new System.Drawing.Point(6, 425);
-            this.propertyGrid2.Name = "propertyGrid2";
-            this.propertyGrid2.Size = new System.Drawing.Size(170, 183);
-            this.propertyGrid2.TabIndex = 30;
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.Location = new System.Drawing.Point(3, 155);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(170, 264);
-            this.propertyGrid1.TabIndex = 29;
             // 
             // groupBox2
             // 
@@ -1517,6 +1536,30 @@
             this.checkBox1.Text = "auto decode boxes";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_1);
+            // 
+            // propertyGrid3
+            // 
+            this.propertyGrid3.HelpVisible = false;
+            this.propertyGrid3.Location = new System.Drawing.Point(6, 6);
+            this.propertyGrid3.Name = "propertyGrid3";
+            this.propertyGrid3.Size = new System.Drawing.Size(170, 143);
+            this.propertyGrid3.TabIndex = 31;
+            // 
+            // propertyGrid2
+            // 
+            this.propertyGrid2.HelpVisible = false;
+            this.propertyGrid2.Location = new System.Drawing.Point(6, 425);
+            this.propertyGrid2.Name = "propertyGrid2";
+            this.propertyGrid2.Size = new System.Drawing.Size(170, 183);
+            this.propertyGrid2.TabIndex = 30;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.HelpVisible = false;
+            this.propertyGrid1.Location = new System.Drawing.Point(3, 155);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(170, 264);
+            this.propertyGrid1.TabIndex = 29;
             // 
             // contextMenuStrip4
             // 
@@ -1702,13 +1745,232 @@
             this.timer2.Interval = 25;
             this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
-            // propertyGrid3
+            // toolStripMenuItem1
             // 
-            this.propertyGrid3.HelpVisible = false;
-            this.propertyGrid3.Location = new System.Drawing.Point(6, 6);
-            this.propertyGrid3.Name = "propertyGrid3";
-            this.propertyGrid3.Size = new System.Drawing.Size(170, 143);
-            this.propertyGrid3.TabIndex = 31;
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem4,
+            this.toolStripMenuItem5,
+            this.toolStripMenuItem6,
+            this.toolStripMenuItem7,
+            this.toolStripMenuItem8,
+            this.toolStripMenuItem9,
+            this.toolStripMenuItem10,
+            this.toolStripMenuItem11,
+            this.toolStripMenuItem12,
+            this.toolStripMenuItem13,
+            this.toolStripSeparator2,
+            this.toolStripMenuItem14,
+            this.toolStripMenuItem15,
+            this.toolStripMenuItem16,
+            this.toolStripMenuItem17,
+            this.toolStripMenuItem18,
+            this.toolStripMenuItem19});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem1.Text = "pre-processor";
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem2.Text = "resize";
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem3.Text = "NCHW";
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem4.Text = "mean/std";
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem5.Text = "grayscale";
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem6.Text = "aspect resize";
+            // 
+            // toolStripMenuItem7
+            // 
+            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem7.Text = "zero image";
+            // 
+            // toolStripMenuItem8
+            // 
+            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem8.Text = "bgr2rgb";
+            // 
+            // toolStripMenuItem9
+            // 
+            this.toolStripMenuItem9.Name = "toolStripMenuItem9";
+            this.toolStripMenuItem9.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem9.Text = "toRGB";
+            // 
+            // toolStripMenuItem10
+            // 
+            this.toolStripMenuItem10.Name = "toolStripMenuItem10";
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem10.Text = "transpose";
+            // 
+            // toolStripMenuItem11
+            // 
+            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem11.Text = "prior boxes";
+            // 
+            // toolStripMenuItem12
+            // 
+            this.toolStripMenuItem12.Name = "toolStripMenuItem12";
+            this.toolStripMenuItem12.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem12.Text = "concat";
+            // 
+            // toolStripMenuItem13
+            // 
+            this.toolStripMenuItem13.Name = "toolStripMenuItem13";
+            this.toolStripMenuItem13.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem13.Text = "normalize";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(204, 6);
+            // 
+            // toolStripMenuItem14
+            // 
+            this.toolStripMenuItem14.Name = "toolStripMenuItem14";
+            this.toolStripMenuItem14.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem14.Text = "template1";
+            // 
+            // toolStripMenuItem15
+            // 
+            this.toolStripMenuItem15.Name = "toolStripMenuItem15";
+            this.toolStripMenuItem15.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem15.Text = "template: yolo";
+            // 
+            // toolStripMenuItem16
+            // 
+            this.toolStripMenuItem16.Name = "toolStripMenuItem16";
+            this.toolStripMenuItem16.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem16.Text = "template: CRAFT";
+            // 
+            // toolStripMenuItem17
+            // 
+            this.toolStripMenuItem17.Name = "toolStripMenuItem17";
+            this.toolStripMenuItem17.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem17.Text = "template: keypoints-rcnn";
+            // 
+            // toolStripMenuItem18
+            // 
+            this.toolStripMenuItem18.Name = "toolStripMenuItem18";
+            this.toolStripMenuItem18.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem18.Text = "template: maskRCNN";
+            // 
+            // toolStripMenuItem19
+            // 
+            this.toolStripMenuItem19.Name = "toolStripMenuItem19";
+            this.toolStripMenuItem19.Size = new System.Drawing.Size(207, 22);
+            this.toolStripMenuItem19.Text = "template: espnet";
+            // 
+            // toolStripMenuItem20
+            // 
+            this.toolStripMenuItem20.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem21,
+            this.toolStripMenuItem22,
+            this.toolStripMenuItem23,
+            this.toolStripMenuItem24,
+            this.toolStripMenuItem25,
+            this.toolStripMenuItem26,
+            this.toolStripMenuItem27,
+            this.toolStripMenuItem28,
+            this.toolStripMenuItem29,
+            this.toolStripMenuItem30,
+            this.oneHotVectorToolStripMenuItem});
+            this.toolStripMenuItem20.Name = "toolStripMenuItem20";
+            this.toolStripMenuItem20.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem20.Text = "post-processor";
+            // 
+            // toolStripMenuItem21
+            // 
+            this.toolStripMenuItem21.Name = "toolStripMenuItem21";
+            this.toolStripMenuItem21.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem21.Text = "yolo decode";
+            this.toolStripMenuItem21.Click += new System.EventHandler(this.toolStripMenuItem21_Click);
+            // 
+            // toolStripMenuItem22
+            // 
+            this.toolStripMenuItem22.Name = "toolStripMenuItem22";
+            this.toolStripMenuItem22.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem22.Text = "boxes decoder";
+            this.toolStripMenuItem22.Click += new System.EventHandler(this.toolStripMenuItem22_Click);
+            // 
+            // toolStripMenuItem23
+            // 
+            this.toolStripMenuItem23.Name = "toolStripMenuItem23";
+            this.toolStripMenuItem23.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem23.Text = "draw boxes";
+            // 
+            // toolStripMenuItem24
+            // 
+            this.toolStripMenuItem24.Name = "toolStripMenuItem24";
+            this.toolStripMenuItem24.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem24.Text = "keypoint decode";
+            // 
+            // toolStripMenuItem25
+            // 
+            this.toolStripMenuItem25.Name = "toolStripMenuItem25";
+            this.toolStripMenuItem25.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem25.Text = "draw keypoints";
+            // 
+            // toolStripMenuItem26
+            // 
+            this.toolStripMenuItem26.Name = "toolStripMenuItem26";
+            this.toolStripMenuItem26.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem26.Text = "instance segmentation decoder";
+            // 
+            // toolStripMenuItem27
+            // 
+            this.toolStripMenuItem27.Name = "toolStripMenuItem27";
+            this.toolStripMenuItem27.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem27.Text = "instance segmentation drawer";
+            // 
+            // toolStripMenuItem28
+            // 
+            this.toolStripMenuItem28.Name = "toolStripMenuItem28";
+            this.toolStripMenuItem28.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem28.Text = "nms";
+            // 
+            // toolStripMenuItem29
+            // 
+            this.toolStripMenuItem29.Name = "toolStripMenuItem29";
+            this.toolStripMenuItem29.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem29.Text = "depthmap decode";
+            // 
+            // toolStripMenuItem30
+            // 
+            this.toolStripMenuItem30.Name = "toolStripMenuItem30";
+            this.toolStripMenuItem30.Size = new System.Drawing.Size(240, 22);
+            this.toolStripMenuItem30.Text = "rgb2bgr";
+            this.toolStripMenuItem30.Click += new System.EventHandler(this.toolStripMenuItem30_Click);
+            // 
+            // oneHotVectorToolStripMenuItem
+            // 
+            this.oneHotVectorToolStripMenuItem.Name = "oneHotVectorToolStripMenuItem";
+            this.oneHotVectorToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.oneHotVectorToolStripMenuItem.Text = "oneHotVector";
+            this.oneHotVectorToolStripMenuItem.Click += new System.EventHandler(this.oneHotVectorToolStripMenuItem_Click);
             // 
             // Processing
             // 
@@ -1934,5 +2196,37 @@
         private System.Windows.Forms.ToolStripMenuItem concatToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.PropertyGrid propertyGrid3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem20;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem21;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem22;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem23;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem24;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem25;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem26;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem27;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem28;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem29;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem30;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem10;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem11;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem13;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem14;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem15;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem16;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem17;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem18;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem19;
+        private System.Windows.Forms.ToolStripMenuItem oneHotVectorToolStripMenuItem;
     }
 }

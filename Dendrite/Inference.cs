@@ -104,6 +104,7 @@ namespace Dendrite
             if (outps.Any(z => z is Mat))
             {
                 var m = outps.OfType<Mat>().First();
+                m.ConvertTo(m, MatType.CV_8UC3);
                 pictureBox2.Image = m.ToBitmap();
             }
             sw.Stop();

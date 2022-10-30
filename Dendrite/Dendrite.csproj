@@ -59,8 +59,8 @@
     <Reference Include="Dagre.NET, Version=1.0.0.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dagre.NET.1.0.0.6\lib\netstandard2.0\Dagre.NET.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf, Version=3.18.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.18.0\lib\net45\Google.Protobuf.dll</HintPath>
+    <Reference Include="Google.Protobuf, Version=3.21.5.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.21.5\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ML.OnnxRuntime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=f27f157f0a5b7bb6, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\lib\netstandard1.1\Microsoft.ML.OnnxRuntime.dll</HintPath>
@@ -294,6 +294,12 @@
       <DependentUpon>MdiChildForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MessageFilter.cs" />
+    <Compile Include="NetControlConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="NetControlConfig.Designer.cs">
+      <DependentUpon>NetControlConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="NetNode.cs" />
     <Compile Include="Nnet.cs" />
     <Compile Include="Node.cs" />
@@ -405,6 +411,7 @@
     <Compile Include="Preprocessors\NmsPostProcessors.cs" />
     <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
     <Compile Include="Preprocessors\ObjectDetectionContext.cs" />
+    <Compile Include="Preprocessors\OneHotVectorPostProcessor.cs" />
     <Compile Include="Preprocessors\PriorBoxesProcessor.cs" />
     <Compile Include="Preprocessors\ResizePreprocessor.cs" />
     <Compile Include="Preprocessors\ToRGBPreprocessor.cs" />
@@ -508,6 +515,9 @@
     <EmbeddedResource Include="MergerWindow.resx">
       <DependentUpon>MergerWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="NetControlConfig.resx">
+      <DependentUpon>NetControlConfig.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Preprocessors\Controls\AspectResizeConfigControl.resx">
       <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -599,6 +609,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon_140.ico" />
+    <EmbeddedResource Include="imagenet1000.txt" />
     <Content Include="settings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -29,6 +29,8 @@ namespace Dendrite
             pictureBox3.MouseDown += PictureBox3_MouseDown;
             pictureBox3.MouseUp += PictureBox3_MouseUp;
             Load += Processing_Load;
+
+            tableLayoutPanel1.ColumnStyles[0].Width = 0;
         }
 
         private void PictureBox3_MouseUp(object sender, MouseEventArgs e)
@@ -99,6 +101,17 @@ namespace Dendrite
         private void UpdateSelectedNodeControl()
         {
             if (!(dragged is NodeUI n)) return;
+
+            if (n.Node.Tag is Nnet net)
+            {
+                NetControlConfig cc = new NetControlConfig();
+                cc.Init(net);
+                groupBox1.Controls.Clear();
+                cc.Dock = DockStyle.Fill;
+                groupBox1.Controls.Add(cc);
+                UpdateNodesList(net);
+                return;
+            }
             if (!(n.Node.Tag is IInputPreprocessor prep)) return;
 
             currentPreprocessor = prep;
@@ -352,7 +365,7 @@ namespace Dendrite
         private void resizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //var r = new ResizePreprocessor() { Dims = currentNode.Dims };
-            var r = new ResizePreprocessor() { Dims=new int[] { 1,3,256,256} };
+            var r = new ResizePreprocessor() { Dims = new int[] { 1, 3, 256, 256 } };
             /*if (!InputDatas.ContainsKey(currentNode.Name))
             {
                 Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
@@ -360,7 +373,7 @@ namespace Dendrite
             }*/
 
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-            
+
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);
 
@@ -401,7 +414,7 @@ namespace Dendrite
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
             env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);            
+            pipelineUI.AddItem(node);
         }
 
         private void normalizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -414,7 +427,7 @@ namespace Dendrite
         }
 
         IInputPreprocessor currentPreprocessor;
-                
+
 
         private void template1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -547,7 +560,7 @@ namespace Dendrite
             }
         }
 
-     
+
         public Dictionary<string, InputInfo> InputDatas => net.InputDatas;
         public Dictionary<string, object> OutputDatas => net.OutputDatas;
         private void all1ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1037,13 +1050,13 @@ namespace Dendrite
 
 
         private void grayscaleToolStripMenuItem_Click(object sender, EventArgs e)
-        {            
-            var r = new GrayscalePreprocessor(); 
-            
+        {
+            var r = new GrayscalePreprocessor();
+
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
             env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);            
+            pipelineUI.AddItem(node);
         }
 
         private void aspectResizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1102,7 +1115,7 @@ namespace Dendrite
 
         private void staticImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           // if (currentNode == null) return;
+            // if (currentNode == null) return;
             var r = new ZeroImagePreprocessor();
 
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
@@ -1497,9 +1510,9 @@ namespace Dendrite
         }
 
         private void bgr2rgbToolStripMenuItem_Click(object sender, EventArgs e)
-        {            
+        {
             var r = new BGR2RGBPreprocessor();
-            
+
 
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
@@ -1516,7 +1529,7 @@ namespace Dendrite
             //listView6.Items.Add(new ListViewItem(new string[] { "yolo decode" }) { Tag = r });
         }
 
-        
+
         private void drawBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new DrawBoxesPostProcessor() { };
@@ -1576,7 +1589,7 @@ namespace Dendrite
         private void keypointDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new KeypointsDecodePreprocessor();
-            
+
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
             env.Pipeline.Nodes.Add(node);
@@ -1585,8 +1598,8 @@ namespace Dendrite
 
         private void drawKeypointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DrawKeypointsPostProcessor() ;
-            
+            var r = new DrawKeypointsPostProcessor();
+
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
             env.Pipeline.Nodes.Add(node);
@@ -1633,7 +1646,7 @@ namespace Dendrite
         private void instanceSegmentationDecoderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new InstanceSegmentationDecodePreprocessor();
-            
+
 
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
@@ -1644,7 +1657,7 @@ namespace Dendrite
 
         private void instanceSegmentationDrawerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DrawInstanceSegmentationPostProcessor() ;            
+            var r = new DrawInstanceSegmentationPostProcessor();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);
@@ -1656,7 +1669,7 @@ namespace Dendrite
             var r = new NmsPostProcessors();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);            
+            pipelineUI.AddItem(node);
             // listView6.Items.Add(new ListViewItem(new string[] { "nms" }) { Tag = r });
         }
 
@@ -1705,8 +1718,8 @@ namespace Dendrite
 
         private void depthmapDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DepthmapDecodePreprocessor() ;
-            
+            var r = new DepthmapDecodePreprocessor();
+
             /*if (!InputDatas.ContainsKey(currentNode.Name))
             {
                 Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
@@ -2159,12 +2172,13 @@ namespace Dendrite
         {
             if (selected != null)
             {
-                var targets = new[] { selected.Node , selected.Node.Tag };
+                var targets = new[] { selected.Node, selected.Node.Tag };
                 foreach (var item in targets.OfType<IImageContainer>())
                 {
                     if (item.Image != null)
                     {
                         Mat ret = item.Image;
+                        ret.ConvertTo(ret, MatType.CV_8UC3);
                         if (item.Image.Channels() == 1)
                         {
                             ret = new Mat();
@@ -2172,7 +2186,7 @@ namespace Dendrite
                         }
                         pictureBox1.Image = ret.ToBitmap();
                     }
-                }             
+                }
             }
         }
 
@@ -2210,6 +2224,35 @@ namespace Dendrite
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);
+        }
+
+        private void addToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem21_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem22_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem30_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void oneHotVectorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new OneHotVectorPostProcessor() { };
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+
         }
     }
 }

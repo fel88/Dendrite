@@ -10,13 +10,14 @@ namespace Dendrite.Preprocessors
     [XmlName(XmlKey = "resize")]
     public class ResizePreprocessor : AbstractPreprocessor, IImageContainer
     {
-
         public ResizePreprocessor()
         {
             OutputSlots = new DataSlot[2];
             OutputSlots[0] = new DataSlot() { Name = "resized_img" };
             OutputSlots[1] = new DataSlot() { Name = "img_size" };
         }
+
+        public override string Name => "resize";
         public override Type ConfigControl => typeof(ResizeConfigControl);
 
         public Mat Image

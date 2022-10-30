@@ -13,6 +13,7 @@ namespace Dendrite.Preprocessors
         public float[] Variances = new float[] { 0.1f, 0.2f };
         public int[][] MinSizes = new int[][] { new int[] { 32, 64, 128 }, new int[] { 256 }, new int[] { 512 } };
         public int[] Steps = new int[] { 32, 64, 128 };
+        public override string Name => "prior boxes";
 
         //retinaFace:
         //int[][] min_sizes = new int[][] { new int[] { 16, 32 }, new int[] { 64, 128 }, new int[] { 256, 512 } };
@@ -40,7 +41,7 @@ namespace Dendrite.Preprocessors
         public override Type ConfigControl => typeof(PriorBoxesConfigControl);
 
         Dictionary<string, float[][]> allPriorBoxes = new Dictionary<string, float[][]>();
-        
+
         public float[][] PriorBoxes(int img_w, int img_h)
         {
 
