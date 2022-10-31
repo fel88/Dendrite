@@ -33,7 +33,7 @@ namespace Dendrite
                 mat.ConvertTo(mat, MatType.CV_32F);
             }
             Outputs[0].Data.Data = mat;
-            Outputs[1].Data.Data = new Size(mat.Width, mat.Height); ;
+            Outputs[1].Data.Data = new OpenCvSharp.Size(mat.Width, mat.Height); ;
             if (SizeFormat == ImageSizeFormatTypeEnum.NCHW)
             {
                 Outputs[1].Data.Data = new int[] { 1, mat.Channels(), mat.Height, mat.Width };

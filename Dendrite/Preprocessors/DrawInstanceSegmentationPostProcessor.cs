@@ -89,7 +89,7 @@ namespace Dendrite.Preprocessors
                 }
                 if (EnableTextDraw)
                 {
-                    mat.PutText(detections[i].Label + ": " + Math.Round(detections[i].Conf, 4), new Point(detections[i].Rect.Left, detections[i].Rect.Top), HersheyFonts.HersheyComplex, 1, clr);
+                    mat.PutText(detections[i].Label + ": " + Math.Round(detections[i].Conf, 4), new OpenCvSharp.Point(detections[i].Rect.Left, detections[i].Rect.Top), HersheyFonts.HersheyComplex, 1, clr);
                 }
             }
             return mat;

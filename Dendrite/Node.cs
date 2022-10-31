@@ -29,7 +29,7 @@ namespace Dendrite
             Id = int.Parse(item.Attribute("id").Value);
             var inps = item.Element("inputs");
             var outps = item.Element("outputs");
-            var tag = item.Element("tag");
+            var tag = item.Element("tag");            
             var types = Assembly.GetExecutingAssembly().GetTypes().Where(z => z.GetCustomAttribute(typeof(XmlNameAttribute)) != null).ToArray();
             if (tag.Elements().Any())
             {

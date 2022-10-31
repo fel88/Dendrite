@@ -1,637 +1,136 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props')" />
-  <Import Project="..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props" Condition="Exists('..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F97093E9-EF8E-4465-AA1E-14907B669102}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Dendrite</RootNamespace>
-    <AssemblyName>Dendrite</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RootNamespace>Dendrite._6._0</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>icon_140.ico</ApplicationIcon>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Dagre.NET, Version=1.0.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dagre.NET.1.0.0.6\lib\netstandard2.0\Dagre.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf, Version=3.21.5.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.21.5\lib\net45\Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.ML.OnnxRuntime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=f27f157f0a5b7bb6, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\lib\netstandard1.1\Microsoft.ML.OnnxRuntime.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="OpenCvSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenCvSharp4.4.5.1.20210210\lib\net461\OpenCvSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenCvSharp4.4.5.1.20210210\lib\net461\OpenCvSharp.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenCvSharp.WpfExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenCvSharp4.WpfExtensions.4.5.1.20210210\lib\net461\OpenCvSharp.WpfExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.AppContext.4.3.0\lib\net463\System.AppContext.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.3.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.Tracing, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.Tracing.4.3.0\lib\net462\System.Diagnostics.Tracing.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Drawing.Common.5.0.0\lib\net461\System.Drawing.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Globalization.Calendars, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Globalization.Calendars.4.3.0\lib\net46\System.Globalization.Calendars.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Linq, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Linq.4.3.0\lib\net463\System.Linq.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Linq.Expressions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Linq.Expressions.4.3.0\lib\net463\System.Linq.Expressions.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.Http.4.3.0\lib\net46\System.Net.Http.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Net.Sockets, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.Sockets.4.3.0\lib\net46\System.Net.Sockets.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.InteropServices.4.3.0\lib\net463\System.Runtime.InteropServices.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Text.RegularExpressions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.RegularExpressions.4.3.0\lib\net463\System.Text.RegularExpressions.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
+    <None Remove="coco.2.names" />
+    <None Remove="coco.names" />
+    <None Remove="icon_140.ico" />
+    <None Remove="imagenet1000.txt" />
+    <None Remove="settings.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AboutBox1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AboutBox1.Designer.cs">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ArrayComparer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ArrayComparer.Designer.cs">
-      <DependentUpon>ArrayComparer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BitmapDrawingContext.cs" />
-    <Compile Include="ComboBoxItem.cs" />
-    <Compile Include="Dialogs\ShapeSizeDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dialogs\ShapeSizeDialog.Designer.cs">
-      <DependentUpon>ShapeSizeDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DiskFilesystem.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="IFilesystem.cs" />
-    <Compile Include="ImageSourceNode.cs" />
-    <Compile Include="Inference.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Inference.Designer.cs">
-      <DependentUpon>Inference.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InferenceEnvironment.cs" />
-    <Compile Include="IUIElement.cs" />
-    <Compile Include="Layouts\DagreGraphLayout.cs" />
-    <Compile Include="Edit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Edit.Designer.cs">
-      <DependentUpon>Edit.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ExpandSubItem.cs" />
-    <Compile Include="GraphLayout.cs" />
-    <Compile Include="Decoders.cs" />
-    <Compile Include="InputInfo.cs" />
-    <Compile Include="IProcessorConfigControl.cs" />
-    <Compile Include="KeypointsDetectionInfo.cs" />
-    <Compile Include="Mdi.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Mdi.Designer.cs">
-      <DependentUpon>Mdi.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MdiChildForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MdiChildForm.Designer.cs">
-      <DependentUpon>MdiChildForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MessageFilter.cs" />
-    <Compile Include="NetControlConfig.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="NetControlConfig.Designer.cs">
-      <DependentUpon>NetControlConfig.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NetNode.cs" />
-    <Compile Include="Nnet.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="NodeInfo.cs" />
-    <Compile Include="NodePin.cs" />
-    <Compile Include="NodePinType.cs" />
-    <Compile Include="NodeUI.cs" />
-    <Compile Include="NpyLoader.cs" />
-    <Compile Include="ObjectDetectionInfo.cs" />
-    <Compile Include="PinLink.cs" />
-    <Compile Include="PipelineGraph.cs" />
-    <Compile Include="PipelineUI.cs" />
-    <Compile Include="Preprocessors\AbstractPreprocessor.cs" />
-    <Compile Include="Preprocessors\AspectResizePreprocessor.cs" />
-    <Compile Include="Preprocessors\BGR2RGBPreprocessor.cs" />
-    <Compile Include="Preprocessors\BlendingPostProcessor.cs" />
-    <Compile Include="Preprocessors\BoxesDecodePreprocessor.cs" />
-    <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\AspectResizeConfigControl.Designer.cs">
-      <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\DepthmapConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\DepthmapConfigControl.Designer.cs">
-      <DependentUpon>DepthmapConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\DrawBoxesConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\DrawBoxesConfigControl.Designer.cs">
-      <DependentUpon>DrawBoxesConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.Designer.cs">
-      <DependentUpon>InstanceSegmentationDecoderConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.Designer.cs">
-      <DependentUpon>InstanceSegmentatorDrawerConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\NmsConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\NmsConfigControl.Designer.cs">
-      <DependentUpon>NmsConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\NormalizeConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\NormalizeConfigControl.Designer.cs">
-      <DependentUpon>NormalizeConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\PriorBoxesConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\PriorBoxesConfigControl.Designer.cs">
-      <DependentUpon>PriorBoxesConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\ResizeConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\ResizeConfigControl.Designer.cs">
-      <DependentUpon>ResizeConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\YoloDecoderConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\YoloDecoderConfigControl.Designer.cs">
-      <DependentUpon>YoloDecoderConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\ZeroImageConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\ZeroImageConfigControl.Designer.cs">
-      <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\CraftMapDecoderPostProcessor.cs" />
-    <Compile Include="Preprocessors\DataSlot.cs" />
-    <Compile Include="Preprocessors\DepthmapDecodePreprocessor.cs" />
-    <Compile Include="Preprocessors\DrawBoxesPostProcessor.cs" />
-    <Compile Include="Preprocessors\DrawInstanceSegmentationPostProcessor.cs" />
-    <Compile Include="Preprocessors\DrawKeypointsPostProcessor.cs" />
-    <Compile Include="Preprocessors\GrayscalePreprocessor.cs" />
-    <Compile Include="Preprocessors\IImageContainer.cs" />
-    <Compile Include="Preprocessors\IInputPreprocessor.cs" />
-    <Compile Include="Preprocessors\ImgConcatPostProcessor.cs" />
-    <Compile Include="Preprocessors\InstanceSegmentationDecodePreprocessor.cs" />
-    <Compile Include="Preprocessors\IPriorBoxesGenerator.cs" />
-    <Compile Include="Preprocessors\KeypointsDecodePreprocessor.cs" />
-    <Compile Include="Preprocessors\MeanStdPreprocessor.cs" />
-    <Compile Include="MergerWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MergerWindow.Designer.cs">
-      <DependentUpon>MergerWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\MeanStdConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Preprocessors\Controls\MeanStdConfigControl.Designer.cs">
-      <DependentUpon>MeanStdConfigControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Preprocessors\NCHWPreprocessor.cs" />
-    <Compile Include="Preprocessors\NmsPostProcessors.cs" />
-    <Compile Include="Preprocessors\NormalizePreprocessor.cs" />
-    <Compile Include="Preprocessors\ObjectDetectionContext.cs" />
-    <Compile Include="Preprocessors\OneHotVectorPostProcessor.cs" />
-    <Compile Include="Preprocessors\PriorBoxesProcessor.cs" />
-    <Compile Include="Preprocessors\ResizePreprocessor.cs" />
-    <Compile Include="Preprocessors\ToRGBPreprocessor.cs" />
-    <Compile Include="Preprocessors\TransposePreprocessor.cs" />
-    <Compile Include="Preprocessors\XmlNameAttribute.cs" />
-    <Compile Include="Preprocessors\YoloDecodePreprocessor.cs" />
-    <Compile Include="Processing.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Processing.Designer.cs">
-      <DependentUpon>Processing.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SegmentationDetectionInfo.cs" />
-    <Compile Include="Layouts\SimpleGraphLayout.cs" />
-    <Compile Include="StaticColors.cs" />
-    <Compile Include="StatisticForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StatisticForm.Designer.cs">
-      <DependentUpon>StatisticForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Layouts\TableGraphLayout.cs" />
-    <Compile Include="TextEnterDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TextEnterDialog.Designer.cs">
-      <DependentUpon>TextEnterDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ExpandControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExpandControl.Designer.cs">
-      <DependentUpon>ExpandControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ExpandGroupControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ExpandGroupControl.Designer.cs">
-      <DependentUpon>ExpandGroupControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GraphNodeDrawInfo.cs" />
-    <Compile Include="Inference\InferenceEngine.cs" />
-    <Compile Include="Inference\AvgPool2d.cs" />
-    <Compile Include="Inference\BatchNorm2d.cs" />
-    <Compile Include="Inference\CalcLogItem.cs" />
-    <Compile Include="Inference\Conv2d.cs" />
-    <Compile Include="Inference\Helpers.cs" />
-    <Compile Include="Inference\InternalArray.cs" />
-    <Compile Include="Inference\NeuralItem.cs" />
-    <Compile Include="Inference\PReLU.cs" />
-    <Compile Include="ListViewExtensions.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Preprocessors\ZeroImagePreprocessor.cs" />
-    <Compile Include="VideoProcessor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VideoProcessor.Designer.cs">
-      <DependentUpon>VideoProcessor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WaitDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WaitDialog.Designer.cs">
-      <DependentUpon>WaitDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ZipFilesystem.cs" />
-    <EmbeddedResource Include="AboutBox1.resx">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ArrayComparer.resx">
-      <DependentUpon>ArrayComparer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Dialogs\ShapeSizeDialog.resx">
-      <DependentUpon>ShapeSizeDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Edit.resx">
-      <DependentUpon>Edit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ExpandControl.resx">
-      <DependentUpon>ExpandControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ExpandGroupControl.resx">
-      <DependentUpon>ExpandGroupControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Inference.resx">
-      <DependentUpon>Inference.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Mdi.resx">
-      <DependentUpon>Mdi.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MergerWindow.resx">
-      <DependentUpon>MergerWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NetControlConfig.resx">
-      <DependentUpon>NetControlConfig.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\AspectResizeConfigControl.resx">
-      <DependentUpon>AspectResizeConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\DepthmapConfigControl.resx">
-      <DependentUpon>DepthmapConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\DrawBoxesConfigControl.resx">
-      <DependentUpon>DrawBoxesConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.resx">
-      <DependentUpon>InstanceSegmentationDecoderConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.resx">
-      <DependentUpon>InstanceSegmentatorDrawerConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\MeanStdConfigControl.resx">
-      <DependentUpon>MeanStdConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\NmsConfigControl.resx">
-      <DependentUpon>NmsConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\NormalizeConfigControl.resx">
-      <DependentUpon>NormalizeConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\PriorBoxesConfigControl.resx">
-      <DependentUpon>PriorBoxesConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\ResizeConfigControl.resx">
-      <DependentUpon>ResizeConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\YoloDecoderConfigControl.resx">
-      <DependentUpon>YoloDecoderConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Preprocessors\Controls\ZeroImageConfigControl.resx">
-      <DependentUpon>ZeroImageConfigControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Processing.resx">
-      <DependentUpon>Processing.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="StatisticForm.resx">
-      <DependentUpon>StatisticForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="coco.names" />
-    <EmbeddedResource Include="coco.2.names" />
-    <EmbeddedResource Include="TextEnterDialog.resx">
-      <DependentUpon>TextEnterDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VideoProcessor.resx">
-      <DependentUpon>VideoProcessor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WaitDialog.resx">
-      <DependentUpon>WaitDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
+
   <ItemGroup>
     <Content Include="icon_140.ico" />
-    <EmbeddedResource Include="imagenet1000.txt" />
     <Content Include="settings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\DendriteLib\DendriteLib.csproj">
-      <Project>{af17be9c-7e92-4d02-9cb9-e19910dd1b34}</Project>
-      <Name>DendriteLib</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="coco.2.names" />
+    <EmbeddedResource Include="coco.names" />
+    <EmbeddedResource Include="imagenet1000.txt" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCvSharp4.runtime.win.4.5.1.20210210\build\net\OpenCvSharp4.runtime.win.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets'))" />
-  </Target>
-  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.Managed.1.7.1\build\netstandard1.1\Microsoft.ML.OnnxRuntime.Managed.targets')" />
-  <Import Project="..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.1.7.0\build\netstandard1.1\Microsoft.ML.OnnxRuntime.targets')" />
+
+  <ItemGroup>
+    <PackageReference Include="Dagre.NET" Version="1.0.0.6" />
+    <PackageReference Include="Google.Protobuf" Version="3.21.9" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.13.1" />
+    <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />
+    <PackageReference Include="OpenCvSharp4.Extensions" Version="4.6.0.20220608" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.6.0.20220608" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DendriteLib\DendriteLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="AboutBox1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ArrayComparer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Dialogs\ShapeSizeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Edit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ExpandControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ExpandGroupControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Form1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Inference.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Mdi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MdiChildForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MergerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="NetControlConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\AspectResizeConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\DepthmapConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\DrawBoxesConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\MeanStdConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\NmsConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\NormalizeConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\PriorBoxesConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\ResizeConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\YoloDecoderConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Preprocessors\Controls\ZeroImageConfigControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Processing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="StatisticForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="TextEnterDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="VideoProcessor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WaitDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30320.27
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dendrite", "Dendrite\Dendrite.csproj", "{F97093E9-EF8E-4465-AA1E-14907B669102}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dendrite", "Dendrite\Dendrite.csproj", "{BDA68B1B-9877-448E-A5C0-DB04F78CCC6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DendriteLib", "DendriteLib\DendriteLib.csproj", "{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DendriteLib", "DendriteLib\DendriteLib.csproj", "{6D5290E3-1018-4C88-A13B-99138F96314B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F97093E9-EF8E-4465-AA1E-14907B669102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F97093E9-EF8E-4465-AA1E-14907B669102}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F97093E9-EF8E-4465-AA1E-14907B669102}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F97093E9-EF8E-4465-AA1E-14907B669102}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF17BE9C-7E92-4D02-9CB9-E19910DD1B34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDA68B1B-9877-448E-A5C0-DB04F78CCC6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDA68B1B-9877-448E-A5C0-DB04F78CCC6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDA68B1B-9877-448E-A5C0-DB04F78CCC6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDA68B1B-9877-448E-A5C0-DB04F78CCC6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D5290E3-1018-4C88-A13B-99138F96314B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D5290E3-1018-4C88-A13B-99138F96314B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D5290E3-1018-4C88-A13B-99138F96314B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D5290E3-1018-4C88-A13B-99138F96314B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

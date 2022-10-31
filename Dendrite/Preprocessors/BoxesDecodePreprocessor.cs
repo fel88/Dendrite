@@ -76,7 +76,7 @@ namespace Dendrite.Preprocessors
             //var prior_data = Decoders.allPriorBoxes[key];
             var prior_data = pg.Generate(sz.Width, sz.Height);
 
-            var ret = Decoders.BoxesDecode(new Size(w, h), rets1, rets3, sz, prior_data, VisThreshold);
+            var ret = Decoders.BoxesDecode(new OpenCvSharp.Size(w, h), rets1, rets3, sz, prior_data, VisThreshold);
 
             List<ObjectDetectionInfo> ret2 = new List<ObjectDetectionInfo>();
             for (int i = 0; i < ret.Item1.Length; i++)
@@ -140,7 +140,7 @@ namespace Dendrite.Preprocessors
                 hh = sz[1];
             }
             var ret = BoxesDecode(ww, hh);
-            ObjectDetectionContext ctx = new ObjectDetectionContext() { Infos = ret, Size = new Size(ww, hh) };
+            ObjectDetectionContext ctx = new ObjectDetectionContext() { Infos = ret, Size = new OpenCvSharp.Size(ww, hh) };
             OutputSlots[0].Data = ctx;
             return ret;
         }
