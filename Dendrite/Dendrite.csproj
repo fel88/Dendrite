@@ -3,10 +3,17 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <RootNamespace>Dendrite._6._0</RootNamespace>
+    <RootNamespace>Dendrite</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <StartupObject>Dendrite.Program</StartupObject>
+    <ApplicationIcon>icon_140.ico</ApplicationIcon>
+    <Company>https://github.com/fel88</Company>
+    <Authors>fel88</Authors>
+    <Copyright>Copyleft ©  2020-2022</Copyright>
+    <Description>Neural networks viewer/editor/inference</Description>
+    <Product>Dendrite: neural nets viewer</Product>
   </PropertyGroup>
 
   <ItemGroup>
