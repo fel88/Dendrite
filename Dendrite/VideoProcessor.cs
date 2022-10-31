@@ -1,16 +1,5 @@
-﻿using Dendrite.Preprocessors;
-using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using OpenCvSharp;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Dendrite
 {
@@ -51,10 +40,10 @@ namespace Dendrite
             cap.Read(mat);
             var topo = env.Pipeline.Toposort();
             if (topo.Length == 0 || !(topo.Any(z => z is ImageSourceNode))) return;
-            var sn = (topo.First(z=> z is ImageSourceNode) as ImageSourceNode);
+            var sn = (topo.First(z => z is ImageSourceNode) as ImageSourceNode);
 
             Text = $"Processing: {fileName}  {mat.Width}x{mat.Height}";
-            sn.SourceMat = mat.Clone();            
+            sn.SourceMat = mat.Clone();
             env.Process();
             var outp1 = env.Pipeline.GetOutputs();
             var last1 = outp1.First(z => z is Mat) as Mat;
@@ -101,7 +90,7 @@ namespace Dendrite
                        {
                            if (Helpers.ShowQuestion("Open video?", Text) == DialogResult.Yes)
                            {
-                               Process.Start(outputPath);
+                               Process.Start(new ProcessStartInfo(outputPath) { UseShellExecute = true });
                            }
                        })));
 

@@ -163,8 +163,8 @@ namespace Dendrite
 
         internal void StopDrawThread()
         {
-            if (drawThread != null)
-                drawThread.Abort();
+            exitRequired = true;
+            reset.Set();            
         }
 
         public static void Rec(StringBuilder sb, long[] dims, int level, float[] array, long offset, int? lenLimit = null)
@@ -710,6 +710,7 @@ namespace Dendrite
         public bool ShowFullNames { get; set; } = false;
         Thread drawThread;
         AutoResetEvent reset = new AutoResetEvent(true);
+        bool exitRequired = false;
         public void StartDrawThread()
         {
             if (drawThread != null) return;
@@ -717,10 +718,21 @@ namespace Dendrite
             {
                 while (true)
                 {
-                    if (!drawEnabled)
-                        reset.WaitOne();
-                    Redraw();
-                    Thread.Sleep(15);
+                    try
+                    {
+                        if (!drawEnabled)
+                            reset.WaitOne();
+
+                        if (exitRequired)
+                            break;
+
+                        Redraw();
+                        Thread.Sleep(15);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                 }
             });
             drawThread.IsBackground = true;

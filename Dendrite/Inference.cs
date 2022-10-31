@@ -136,14 +136,14 @@ namespace Dendrite
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            pictureBox1.Image.Save("temp1.jpg");
-            Process.Start("temp1.jpg");
+            pictureBox1.Image.Save("temp1.jpg");            
+            Process.Start(new ProcessStartInfo("temp1.jpg") { UseShellExecute = true });
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            pictureBox2.Image.Save("temp2.jpg");
-            Process.Start("temp2.jpg");
+            pictureBox2.Image.Save("temp2.jpg");                        
+            Process.Start(new ProcessStartInfo("temp2.jpg") { UseShellExecute = true });            
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
