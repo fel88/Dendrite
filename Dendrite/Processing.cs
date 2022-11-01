@@ -2107,7 +2107,7 @@ namespace Dendrite
         private void showImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pictureBox1.Image.Save("temp.jpg");
-            Process.Start("temp.jpg");
+            Process.Start(new ProcessStartInfo("temp.jpg") { UseShellExecute = true });
         }
 
         private void postprocessorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2257,15 +2257,23 @@ namespace Dendrite
 
         private void cRAFTDepthMapDecoderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new CraftMapDecoderPostProcessor();            
+            var r = new CraftMapDecoderPostProcessor();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);            
+            pipelineUI.AddItem(node);
         }
 
         private void blendToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new BlendingPostProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void imgToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new ImgProcessor();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);

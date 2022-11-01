@@ -1,8 +1,4 @@
-﻿using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 namespace Dendrite.Preprocessors
 {
@@ -33,10 +29,9 @@ namespace Dendrite.Preprocessors
         }
 
         public List<string> AllowedClasses = new List<string>();
+
         public ObjectDetectionInfo[] BoxesDecode(int w, int h)
         {
-
-
             float[] rets1 = null;
             float[] rets3 = null;
             if (InputSlots[0].Data is float[])

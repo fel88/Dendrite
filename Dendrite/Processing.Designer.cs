@@ -36,9 +36,9 @@
             this.showImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader9 = new System.Windows.Forms.ColumnHeader();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.convertToIamgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.binaryMaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,9 +70,9 @@
             this.binaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listView2 = new System.Windows.Forms.ListView();
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
             this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.setToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.all1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -125,13 +125,13 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.listView4 = new System.Windows.Forms.ListView();
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader8 = new System.Windows.Forms.ColumnHeader();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.listView5 = new System.Windows.Forms.ListView();
-            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10 = new System.Windows.Forms.ColumnHeader();
             this.button9 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
@@ -163,6 +163,8 @@
             this.toolStripMenuItem29 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem30 = new System.Windows.Forms.ToolStripMenuItem();
             this.oneHotVectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cRAFTDepthMapDecoderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.postprocessorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.netToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -228,8 +230,7 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.cRAFTDepthMapDecoderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.blendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imgToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -266,9 +267,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Location = new System.Drawing.Point(4, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(31, 13);
+            this.label1.Size = new System.Drawing.Size(35, 15);
             this.label1.TabIndex = 2;
             this.label1.Text = "Input";
             // 
@@ -277,9 +279,10 @@
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.ContextMenuStrip = this.contextMenuStrip5;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox1.Location = new System.Drawing.Point(4, 3);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(761, 656);
+            this.pictureBox1.Size = new System.Drawing.Size(888, 760);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
@@ -302,9 +305,10 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 222);
+            this.label2.Location = new System.Drawing.Point(4, 259);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.Size = new System.Drawing.Size(45, 15);
             this.label2.TabIndex = 6;
             this.label2.Text = "Output";
             // 
@@ -318,10 +322,10 @@
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(3, 245);
+            this.listView1.Location = new System.Drawing.Point(4, 285);
+            this.listView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(238, 196);
+            this.listView1.Size = new System.Drawing.Size(276, 230);
             this.listView1.TabIndex = 7;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -596,10 +600,10 @@
             this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView2.FullRowSelect = true;
             this.listView2.GridLines = true;
-            this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(3, 23);
+            this.listView2.Location = new System.Drawing.Point(4, 26);
+            this.listView2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(238, 196);
+            this.listView2.Size = new System.Drawing.Size(276, 230);
             this.listView2.TabIndex = 8;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
@@ -730,9 +734,10 @@
             // richTextBox1
             // 
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBox1.Location = new System.Drawing.Point(15, 136);
+            this.richTextBox1.Location = new System.Drawing.Point(18, 157);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(224, 114);
+            this.richTextBox1.Size = new System.Drawing.Size(261, 131);
             this.richTextBox1.TabIndex = 9;
             this.richTextBox1.Text = "";
             // 
@@ -903,9 +908,10 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 749);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 868);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1231, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(1436, 22);
             this.statusStrip1.TabIndex = 25;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -918,9 +924,11 @@
             // groupBox1
             // 
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Location = new System.Drawing.Point(4, 3);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(180, 656);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox1.Size = new System.Drawing.Size(209, 768);
             this.groupBox1.TabIndex = 26;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Config";
@@ -928,20 +936,21 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 250F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 292F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 233F));
             this.tableLayoutPanel1.Controls.Add(this.panel4, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel3, 2, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 25);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1231, 724);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1436, 843);
             this.tableLayoutPanel1.TabIndex = 27;
             // 
             // panel4
@@ -950,17 +959,19 @@
             this.panel4.Controls.Add(this.checkBox3);
             this.panel4.Controls.Add(this.pictureBox2);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(3, 3);
+            this.panel4.Location = new System.Drawing.Point(4, 3);
+            this.panel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1225, 24);
+            this.panel4.Size = new System.Drawing.Size(1428, 29);
             this.panel4.TabIndex = 28;
             // 
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(7, 6);
+            this.checkBox3.Location = new System.Drawing.Point(8, 7);
+            this.checkBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(70, 17);
+            this.checkBox3.Size = new System.Drawing.Size(76, 19);
             this.checkBox3.TabIndex = 28;
             this.checkBox3.Text = "run video";
             this.checkBox3.UseVisualStyleBackColor = true;
@@ -971,9 +982,10 @@
             this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox2.Location = new System.Drawing.Point(105, 3);
+            this.pictureBox2.Location = new System.Drawing.Point(122, 3);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(1094, 18);
+            this.pictureBox2.Size = new System.Drawing.Size(1275, 20);
             this.pictureBox2.TabIndex = 27;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
@@ -982,9 +994,10 @@
             // 
             this.panel1.Controls.Add(this.tableLayoutPanel2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 33);
+            this.panel1.Location = new System.Drawing.Point(4, 38);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(244, 688);
+            this.panel1.Size = new System.Drawing.Size(284, 802);
             this.panel1.TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -999,15 +1012,16 @@
             this.tableLayoutPanel2.Controls.Add(this.listView1, 0, 3);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 6;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(244, 688);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(284, 802);
             this.tableLayoutPanel2.TabIndex = 29;
             // 
             // panel5
@@ -1016,23 +1030,26 @@
             this.panel5.Controls.Add(this.button4);
             this.panel5.Controls.Add(this.button5);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(3, 447);
+            this.panel5.Location = new System.Drawing.Point(4, 521);
+            this.panel5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(238, 34);
+            this.panel5.Size = new System.Drawing.Size(276, 40);
             this.panel5.TabIndex = 30;
             // 
             // textBox9
             // 
-            this.textBox9.Location = new System.Drawing.Point(3, 11);
+            this.textBox9.Location = new System.Drawing.Point(4, 13);
+            this.textBox9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(100, 20);
+            this.textBox9.Size = new System.Drawing.Size(116, 23);
             this.textBox9.TabIndex = 27;
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(109, 7);
+            this.button4.Location = new System.Drawing.Point(127, 8);
+            this.button4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(54, 26);
+            this.button4.Size = new System.Drawing.Size(63, 30);
             this.button4.TabIndex = 25;
             this.button4.Text = "set addr";
             this.button4.UseVisualStyleBackColor = true;
@@ -1040,9 +1057,10 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(169, 7);
+            this.button5.Location = new System.Drawing.Point(197, 8);
+            this.button5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(54, 26);
+            this.button5.Size = new System.Drawing.Size(63, 30);
             this.button5.TabIndex = 28;
             this.button5.Text = "set val";
             this.button5.UseVisualStyleBackColor = true;
@@ -1054,20 +1072,22 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(3, 487);
+            this.tabControl1.Location = new System.Drawing.Point(4, 567);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(238, 198);
+            this.tabControl1.Size = new System.Drawing.Size(276, 232);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.listView4);
             this.tabPage1.Controls.Add(this.richTextBox1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(230, 172);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage1.Size = new System.Drawing.Size(268, 204);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1079,10 +1099,10 @@
             this.columnHeader8});
             this.listView4.FullRowSelect = true;
             this.listView4.GridLines = true;
-            this.listView4.HideSelection = false;
-            this.listView4.Location = new System.Drawing.Point(9, 6);
+            this.listView4.Location = new System.Drawing.Point(10, 7);
+            this.listView4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listView4.Name = "listView4";
-            this.listView4.Size = new System.Drawing.Size(230, 124);
+            this.listView4.Size = new System.Drawing.Size(268, 142);
             this.listView4.TabIndex = 27;
             this.listView4.UseCompatibleStateImageBehavior = false;
             this.listView4.View = System.Windows.Forms.View.Details;
@@ -1104,19 +1124,21 @@
             this.tabPage2.Controls.Add(this.button10);
             this.tabPage2.Controls.Add(this.listView5);
             this.tabPage2.Controls.Add(this.button9);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(230, 172);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage2.Size = new System.Drawing.Size(270, 200);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(88, 189);
+            this.button11.Location = new System.Drawing.Point(103, 218);
+            this.button11.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(75, 23);
+            this.button11.Size = new System.Drawing.Size(88, 27);
             this.button11.TabIndex = 4;
             this.button11.Text = "clear frames";
             this.button11.UseVisualStyleBackColor = true;
@@ -1124,9 +1146,10 @@
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(38, 44);
+            this.button10.Location = new System.Drawing.Point(44, 51);
+            this.button10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(141, 23);
+            this.button10.Size = new System.Drawing.Size(164, 27);
             this.button10.TabIndex = 5;
             this.button10.Text = "gather statistic";
             this.button10.UseVisualStyleBackColor = true;
@@ -1138,19 +1161,20 @@
             this.columnHeader10});
             this.listView5.FullRowSelect = true;
             this.listView5.GridLines = true;
-            this.listView5.HideSelection = false;
-            this.listView5.Location = new System.Drawing.Point(6, 73);
+            this.listView5.Location = new System.Drawing.Point(7, 84);
+            this.listView5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listView5.Name = "listView5";
-            this.listView5.Size = new System.Drawing.Size(173, 112);
+            this.listView5.Size = new System.Drawing.Size(201, 129);
             this.listView5.TabIndex = 4;
             this.listView5.UseCompatibleStateImageBehavior = false;
             this.listView5.View = System.Windows.Forms.View.Details;
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(6, 15);
+            this.button9.Location = new System.Drawing.Point(7, 17);
+            this.button9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(141, 23);
+            this.button9.Size = new System.Drawing.Size(164, 27);
             this.button9.TabIndex = 4;
             this.button9.Text = "save all frames";
             this.button9.UseVisualStyleBackColor = true;
@@ -1164,10 +1188,11 @@
             this.tabPage3.Controls.Add(this.checkBox4);
             this.tabPage3.Controls.Add(this.checkBox2);
             this.tabPage3.Controls.Add(this.textBox1);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(230, 172);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage3.Size = new System.Drawing.Size(270, 200);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Video settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1177,9 +1202,10 @@
             this.checkBox5.AutoSize = true;
             this.checkBox5.Checked = true;
             this.checkBox5.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox5.Location = new System.Drawing.Point(64, 152);
+            this.checkBox5.Location = new System.Drawing.Point(75, 175);
+            this.checkBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(102, 17);
+            this.checkBox5.Size = new System.Drawing.Size(112, 19);
             this.checkBox5.TabIndex = 6;
             this.checkBox5.Text = "fetch next frame";
             this.checkBox5.UseVisualStyleBackColor = true;
@@ -1187,9 +1213,10 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(77, 123);
+            this.button2.Location = new System.Drawing.Point(90, 142);
+            this.button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(88, 27);
             this.button2.TabIndex = 5;
             this.button2.Text = ">>";
             this.button2.UseVisualStyleBackColor = true;
@@ -1197,9 +1224,10 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(6, 123);
+            this.button1.Location = new System.Drawing.Point(7, 142);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(88, 27);
             this.button1.TabIndex = 4;
             this.button1.Text = "<<";
             this.button1.UseVisualStyleBackColor = true;
@@ -1208,9 +1236,10 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(77, 82);
+            this.checkBox4.Location = new System.Drawing.Point(90, 95);
+            this.checkBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(113, 17);
+            this.checkBox4.Size = new System.Drawing.Size(123, 19);
             this.checkBox4.TabIndex = 4;
             this.checkBox4.Text = "disable processing";
             this.checkBox4.UseVisualStyleBackColor = true;
@@ -1219,18 +1248,20 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(6, 44);
+            this.checkBox2.Location = new System.Drawing.Point(7, 51);
+            this.checkBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(65, 17);
+            this.checkBox2.Size = new System.Drawing.Size(70, 19);
             this.checkBox2.TabIndex = 0;
             this.checkBox2.Text = "fixed fps";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(77, 44);
+            this.textBox1.Location = new System.Drawing.Point(90, 51);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.Size = new System.Drawing.Size(116, 23);
             this.textBox1.TabIndex = 0;
             this.textBox1.Text = "25";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
@@ -1239,9 +1270,10 @@
             // 
             this.panel2.Controls.Add(this.tabControl3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(253, 33);
+            this.panel2.Location = new System.Drawing.Point(296, 38);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(775, 688);
+            this.panel2.Size = new System.Drawing.Size(903, 802);
             this.panel2.TabIndex = 1;
             // 
             // tabControl3
@@ -1250,19 +1282,21 @@
             this.tabControl3.Controls.Add(this.tabPage6);
             this.tabControl3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
+            this.tabControl3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.SelectedIndex = 0;
-            this.tabControl3.Size = new System.Drawing.Size(775, 688);
+            this.tabControl3.Size = new System.Drawing.Size(903, 802);
             this.tabControl3.TabIndex = 4;
             // 
             // tabPage7
             // 
             this.tabPage7.Controls.Add(this.pictureBox3);
             this.tabPage7.Controls.Add(this.toolStrip2);
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Location = new System.Drawing.Point(4, 24);
+            this.tabPage7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(767, 662);
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage7.Size = new System.Drawing.Size(895, 774);
             this.tabPage7.TabIndex = 1;
             this.tabPage7.Text = "Node editor";
             // 
@@ -1270,9 +1304,10 @@
             // 
             this.pictureBox3.ContextMenuStrip = this.contextMenuStrip6;
             this.pictureBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox3.Location = new System.Drawing.Point(3, 28);
+            this.pictureBox3.Location = new System.Drawing.Point(4, 28);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(761, 631);
+            this.pictureBox3.Size = new System.Drawing.Size(887, 743);
             this.pictureBox3.TabIndex = 0;
             this.pictureBox3.TabStop = false;
             // 
@@ -1310,9 +1345,9 @@
             // 
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton2});
-            this.toolStrip2.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip2.Location = new System.Drawing.Point(4, 3);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(761, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(887, 25);
             this.toolStrip2.TabIndex = 1;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -1354,7 +1389,8 @@
             this.toolStripMenuItem30,
             this.oneHotVectorToolStripMenuItem,
             this.cRAFTDepthMapDecoderToolStripMenuItem,
-            this.blendToolStripMenuItem});
+            this.blendToolStripMenuItem,
+            this.imgToolStripMenuItem});
             this.toolStripMenuItem20.Name = "toolStripMenuItem20";
             this.toolStripMenuItem20.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenuItem20.Text = "post-processor";
@@ -1428,6 +1464,20 @@
             this.oneHotVectorToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
             this.oneHotVectorToolStripMenuItem.Text = "oneHotVector";
             this.oneHotVectorToolStripMenuItem.Click += new System.EventHandler(this.oneHotVectorToolStripMenuItem_Click);
+            // 
+            // cRAFTDepthMapDecoderToolStripMenuItem
+            // 
+            this.cRAFTDepthMapDecoderToolStripMenuItem.Name = "cRAFTDepthMapDecoderToolStripMenuItem";
+            this.cRAFTDepthMapDecoderToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.cRAFTDepthMapDecoderToolStripMenuItem.Text = "CRAFT depth map decoder";
+            this.cRAFTDepthMapDecoderToolStripMenuItem.Click += new System.EventHandler(this.cRAFTDepthMapDecoderToolStripMenuItem_Click);
+            // 
+            // blendToolStripMenuItem
+            // 
+            this.blendToolStripMenuItem.Name = "blendToolStripMenuItem";
+            this.blendToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.blendToolStripMenuItem.Text = "blend";
+            this.blendToolStripMenuItem.Click += new System.EventHandler(this.blendToolStripMenuItem_Click);
             // 
             // postprocessorToolStripMenuItem
             // 
@@ -1592,10 +1642,11 @@
             // tabPage6
             // 
             this.tabPage6.Controls.Add(this.pictureBox1);
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Location = new System.Drawing.Point(4, 24);
+            this.tabPage6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(767, 662);
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage6.Size = new System.Drawing.Size(896, 766);
             this.tabPage6.TabIndex = 0;
             this.tabPage6.Text = "Image";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1604,9 +1655,10 @@
             // 
             this.panel3.Controls.Add(this.tabControl2);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(1034, 33);
+            this.panel3.Location = new System.Drawing.Point(1207, 38);
+            this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(194, 688);
+            this.panel3.Size = new System.Drawing.Size(225, 802);
             this.panel3.TabIndex = 2;
             // 
             // tabControl2
@@ -1615,18 +1667,20 @@
             this.tabControl2.Controls.Add(this.tabPage5);
             this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl2.Location = new System.Drawing.Point(0, 0);
+            this.tabControl2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(194, 688);
+            this.tabControl2.Size = new System.Drawing.Size(225, 802);
             this.tabControl2.TabIndex = 31;
             // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.groupBox1);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Location = new System.Drawing.Point(4, 24);
+            this.tabPage4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(186, 662);
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage4.Size = new System.Drawing.Size(217, 774);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Node";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1638,10 +1692,11 @@
             this.tabPage5.Controls.Add(this.propertyGrid3);
             this.tabPage5.Controls.Add(this.propertyGrid2);
             this.tabPage5.Controls.Add(this.propertyGrid1);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Location = new System.Drawing.Point(4, 24);
+            this.tabPage5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(186, 662);
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage5.Size = new System.Drawing.Size(218, 766);
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Config";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1655,9 +1710,11 @@
             this.groupBox2.Controls.Add(this.textBox12);
             this.groupBox2.Controls.Add(this.textBox11);
             this.groupBox2.Controls.Add(this.textBox10);
-            this.groupBox2.Location = new System.Drawing.Point(6, 6);
+            this.groupBox2.Location = new System.Drawing.Point(7, 7);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(179, 143);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox2.Size = new System.Drawing.Size(209, 165);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "PriorBoxes settings";
@@ -1665,9 +1722,10 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(53, 97);
+            this.button6.Location = new System.Drawing.Point(62, 112);
+            this.button6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.Size = new System.Drawing.Size(88, 27);
             this.button6.TabIndex = 6;
             this.button6.Text = "Set";
             this.button6.UseVisualStyleBackColor = true;
@@ -1676,52 +1734,58 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 74);
+            this.label6.Location = new System.Drawing.Point(10, 85);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(49, 13);
+            this.label6.Size = new System.Drawing.Size(52, 15);
             this.label6.TabIndex = 5;
             this.label6.Text = "Variance";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 48);
+            this.label5.Location = new System.Drawing.Point(14, 55);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(34, 13);
+            this.label5.Size = new System.Drawing.Size(35, 15);
             this.label5.TabIndex = 4;
             this.label5.Text = "Steps";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 22);
+            this.label4.Location = new System.Drawing.Point(14, 25);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(49, 13);
+            this.label4.Size = new System.Drawing.Size(53, 15);
             this.label4.TabIndex = 3;
             this.label4.Text = "MinSizes";
             // 
             // textBox12
             // 
-            this.textBox12.Location = new System.Drawing.Point(67, 71);
+            this.textBox12.Location = new System.Drawing.Point(78, 82);
+            this.textBox12.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox12.Name = "textBox12";
-            this.textBox12.Size = new System.Drawing.Size(100, 20);
+            this.textBox12.Size = new System.Drawing.Size(116, 23);
             this.textBox12.TabIndex = 2;
             this.textBox12.Text = "[0.1, 0.2]";
             this.textBox12.TextChanged += new System.EventHandler(this.textBox12_TextChanged);
             // 
             // textBox11
             // 
-            this.textBox11.Location = new System.Drawing.Point(67, 45);
+            this.textBox11.Location = new System.Drawing.Point(78, 52);
+            this.textBox11.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(100, 20);
+            this.textBox11.Size = new System.Drawing.Size(116, 23);
             this.textBox11.TabIndex = 1;
             this.textBox11.Text = "[32. 64, 128]";
             // 
             // textBox10
             // 
-            this.textBox10.Location = new System.Drawing.Point(67, 19);
+            this.textBox10.Location = new System.Drawing.Point(78, 22);
+            this.textBox10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(100, 20);
+            this.textBox10.Size = new System.Drawing.Size(116, 23);
             this.textBox10.TabIndex = 0;
             this.textBox10.Text = "[[32, 64, 128], [256], [512]]";
             this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
@@ -1731,9 +1795,11 @@
             this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.textBox13);
             this.groupBox3.Controls.Add(this.checkBox1);
-            this.groupBox3.Location = new System.Drawing.Point(6, 155);
+            this.groupBox3.Location = new System.Drawing.Point(7, 179);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(185, 62);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox3.Size = new System.Drawing.Size(216, 72);
             this.groupBox3.TabIndex = 28;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Video Output";
@@ -1742,17 +1808,19 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 39);
+            this.label7.Location = new System.Drawing.Point(14, 45);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(44, 13);
+            this.label7.Size = new System.Drawing.Size(50, 15);
             this.label7.TabIndex = 2;
             this.label7.Text = "treshold";
             // 
             // textBox13
             // 
-            this.textBox13.Location = new System.Drawing.Point(62, 36);
+            this.textBox13.Location = new System.Drawing.Point(72, 42);
+            this.textBox13.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox13.Name = "textBox13";
-            this.textBox13.Size = new System.Drawing.Size(100, 20);
+            this.textBox13.Size = new System.Drawing.Size(116, 23);
             this.textBox13.TabIndex = 1;
             this.textBox13.Text = "0.7";
             this.textBox13.TextChanged += new System.EventHandler(this.textBox13_TextChanged);
@@ -1760,9 +1828,10 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(15, 19);
+            this.checkBox1.Location = new System.Drawing.Point(18, 22);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(117, 17);
+            this.checkBox1.Size = new System.Drawing.Size(125, 19);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "auto decode boxes";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -1771,25 +1840,28 @@
             // propertyGrid3
             // 
             this.propertyGrid3.HelpVisible = false;
-            this.propertyGrid3.Location = new System.Drawing.Point(6, 6);
+            this.propertyGrid3.Location = new System.Drawing.Point(7, 7);
+            this.propertyGrid3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.propertyGrid3.Name = "propertyGrid3";
-            this.propertyGrid3.Size = new System.Drawing.Size(170, 143);
+            this.propertyGrid3.Size = new System.Drawing.Size(198, 165);
             this.propertyGrid3.TabIndex = 31;
             // 
             // propertyGrid2
             // 
             this.propertyGrid2.HelpVisible = false;
-            this.propertyGrid2.Location = new System.Drawing.Point(6, 425);
+            this.propertyGrid2.Location = new System.Drawing.Point(7, 490);
+            this.propertyGrid2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.propertyGrid2.Name = "propertyGrid2";
-            this.propertyGrid2.Size = new System.Drawing.Size(170, 183);
+            this.propertyGrid2.Size = new System.Drawing.Size(198, 211);
             this.propertyGrid2.TabIndex = 30;
             // 
             // propertyGrid1
             // 
             this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.Location = new System.Drawing.Point(3, 155);
+            this.propertyGrid1.Location = new System.Drawing.Point(4, 179);
+            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(170, 264);
+            this.propertyGrid1.Size = new System.Drawing.Size(198, 305);
             this.propertyGrid1.TabIndex = 29;
             // 
             // contextMenuStrip4
@@ -1901,7 +1973,7 @@
             this.toolStripButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1231, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1436, 25);
             this.toolStrip1.TabIndex = 28;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -1920,14 +1992,14 @@
             // loadToolStripMenuItem1
             // 
             this.loadToolStripMenuItem1.Name = "loadToolStripMenuItem1";
-            this.loadToolStripMenuItem1.Size = new System.Drawing.Size(100, 22);
+            this.loadToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.loadToolStripMenuItem1.Text = "Load";
             this.loadToolStripMenuItem1.Click += new System.EventHandler(this.loadToolStripMenuItem1_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -1976,28 +2048,22 @@
             this.timer2.Interval = 25;
             this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
-            // cRAFTDepthMapDecoderToolStripMenuItem
+            // imgToolStripMenuItem
             // 
-            this.cRAFTDepthMapDecoderToolStripMenuItem.Name = "cRAFTDepthMapDecoderToolStripMenuItem";
-            this.cRAFTDepthMapDecoderToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
-            this.cRAFTDepthMapDecoderToolStripMenuItem.Text = "CRAFT depth map decoder";
-            this.cRAFTDepthMapDecoderToolStripMenuItem.Click += new System.EventHandler(this.cRAFTDepthMapDecoderToolStripMenuItem_Click);
-            // 
-            // blendToolStripMenuItem
-            // 
-            this.blendToolStripMenuItem.Name = "blendToolStripMenuItem";
-            this.blendToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
-            this.blendToolStripMenuItem.Text = "blend";
-            this.blendToolStripMenuItem.Click += new System.EventHandler(this.blendToolStripMenuItem_Click);
+            this.imgToolStripMenuItem.Name = "imgToolStripMenuItem";
+            this.imgToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.imgToolStripMenuItem.Text = "img decode";
+            this.imgToolStripMenuItem.Click += new System.EventHandler(this.imgToolStripMenuItem_Click);
             // 
             // Processing
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1231, 771);
+            this.ClientSize = new System.Drawing.Size(1436, 890);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "Processing";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Inference";
@@ -2248,5 +2314,6 @@
         private System.Windows.Forms.ToolStripMenuItem oneHotVectorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cRAFTDepthMapDecoderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem blendToolStripMenuItem;
+        private ToolStripMenuItem imgToolStripMenuItem;
     }
 }
