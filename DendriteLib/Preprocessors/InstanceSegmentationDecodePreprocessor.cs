@@ -1,4 +1,4 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿using Dendrite.Lib;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Dendrite.Preprocessors
 
         public override string Name => "instance segmentation decoder";
 
-        public override Type ConfigControl => typeof(InstanceSegmentationDecoderConfigControl);
+        //public override Type ConfigControl => typeof(InstanceSegmentationDecoderConfigControl);
         public double Threshold { get; set; } = 0.5;
         public double MaskThreshold { get; set; } = 0.4;
 

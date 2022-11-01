@@ -1,4 +1,5 @@
 ﻿using Dendrite.Dialogs;
+using Dendrite.Lib;
 using Dendrite.Preprocessors;
 using Microsoft.ML.OnnxRuntime;
 using OpenCvSharp;
@@ -1830,7 +1831,7 @@ namespace Dendrite
                     dims[i] = cc.Dims[i];
                     if (dims[i] != npy.Shape[i])
                     {
-                        Helpers.ShowError($"size mismatch: ({string.Join(",", cc.Dims.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
+                        Extensions.ShowError($"size mismatch: ({string.Join(",", cc.Dims.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
                         return;
                     }
                 }
@@ -1840,7 +1841,7 @@ namespace Dendrite
             arr1.Data = dd.Select(z => (double)z).ToArray();
             if (dd.Length != npy.Data.Length)
             {
-                Helpers.ShowError($"size mismatch: ({string.Join(",", arr1.Shape.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
+                Extensions.ShowError($"size mismatch: ({string.Join(",", arr1.Shape.ToArray())}) and ({string.Join(",", npy.Shape.ToArray())})", Text);
                 return;
             }
             float eps = 10e-5f;
@@ -1853,14 +1854,14 @@ namespace Dendrite
                 maxDiff = Math.Max(Math.Abs(dd[i] - npy.Data[i]), maxDiff);
                 if (Math.Abs(dd[i] - npy.Data[i]) > eps)
                 {
-                    Helpers.ShowError("value mismatch", Text);
+                    Extensions.ShowError("value mismatch", Text);
                     ArrayComparer arc = new ArrayComparer();
                     arc.Init(dd, npy.Data.Select(z => (float)z).ToArray());
                     arc.ShowDialog();
                     return;
                 }
             }
-            Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
+            Extensions.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
         }
 
         private void binaryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1885,7 +1886,7 @@ namespace Dendrite
 
             if (ff.Count != dd.Length)
             {
-                Helpers.ShowError($"size mismatch: ({string.Join(",", ff.Count)}) and ({string.Join(",", dd.Length)})", Text);
+                Extensions.ShowError($"size mismatch: ({string.Join(",", ff.Count)}) and ({string.Join(",", dd.Length)})", Text);
                 return;
             }
 
@@ -1897,14 +1898,14 @@ namespace Dendrite
                 maxDiff = Math.Abs(ff[i] - dd[i]);
                 if (Math.Abs(ff[i] - dd[i]) > eps)
                 {
-                    Helpers.ShowError("value mismatch", Text);
+                    Extensions.ShowError("value mismatch", Text);
                     ArrayComparer arc = new ArrayComparer();
                     arc.Init(dd, ff.ToArray());
                     arc.ShowDialog();
                     return;
                 }
             }
-            Helpers.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
+            Extensions.ShowInfo($"tensors are equal. maxDiff: {maxDiff}", Text);
 
         }
 
@@ -2137,7 +2138,7 @@ namespace Dendrite
         {
             if (selected != null)
             {
-                if (Helpers.ShowQuestion("Are you sure to delete selected nodes?", Text) == DialogResult.Yes)
+                if (Extensions.ShowQuestion("Are you sure to delete selected nodes?", Text) == DialogResult.Yes)
                 {
                     var n = (selected as NodeUI);
                     env.Pipeline.Nodes.Remove(n.Node);

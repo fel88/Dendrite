@@ -1,4 +1,4 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using System;
 using System.Text;
@@ -9,7 +9,7 @@ namespace Dendrite.Preprocessors
     [XmlName(XmlKey = "normalize")]
     public class NormalizePreprocessor : AbstractPreprocessor
     {
-        public override Type ConfigControl => typeof(NormalizeConfigControl);
+        //public override Type ConfigControl => typeof(NormalizeConfigControl);
         public NormalizeRangeTypeEnum RangeType { get; set; }
         public override object Process(object inp)
         {

@@ -13,9 +13,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 
-namespace Dendrite
+namespace Dendrite.Lib
 {
     public static class Helpers
     {
@@ -230,20 +230,7 @@ namespace Dendrite
                 return reader.ReadToEnd();
             }
         }
-        public static void ShowError(string msg, string caption)
-        {
-            MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        public static DialogResult ShowQuestion(string msg, string caption, MessageBoxButtons btn = MessageBoxButtons.YesNo)
-        {
-            return MessageBox.Show(msg, caption, btn, MessageBoxIcon.Question);
-        }
-
-        public static void ShowInfo(string msg, string caption)
-        {
-            MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+     
 
         public static string AsString(this AttributeProto item)
         {
@@ -356,26 +343,7 @@ namespace Dendrite
             return ret;
         }
 
-        public static bool AllowParallelProcessing = false;
-        public static InternalArray[] ParallelProcess(NeuralItem[] items, InternalArray input)
-        {
-            InternalArray[] res = new InternalArray[items.Length];
-            if (!AllowParallelProcessing)
-            {
-                for (int i = 0; i < items.Length; i++)
-                {
-                    res[i] = items[i].Forward(input);
-                }
-            }
-            else
-            {
-                Parallel.For(0, items.Length, (i) =>
-                {
-                    res[i] = items[i].Forward(input);
-                });
-            }
-            return res;
-        }
+       
 
         public static InternalArray Cat(InternalArray[] items, int dim = 0)
         {
@@ -422,45 +390,7 @@ namespace Dendrite
             pos += array.offsets[0];
             return ret;
         }
-        public static List<NeuralItem> GetAllChilds(NeuralItem item, List<NeuralItem> ret = null)
-        {
-            if (ret == null)
-            {
-                ret = new List<NeuralItem>();
-            }
-            if (item.Childs == null)
-            {
-                ret.Add(item);
-            }
-            else
-            {
-                foreach (var citem in item.Childs)
-                {
-                    GetWeightedAllChilds(citem, ret);
-                }
-            }
-            return ret;
-        }
-        public static List<NeuralItem> GetWeightedAllChilds(NeuralItem item, List<NeuralItem> ret = null)
-        {
-            if (ret == null)
-            {
-                ret = new List<NeuralItem>();
-            }
-            if (item.Childs == null)
-            {
-                ret.Add(item);
-            }
-            else
-            {
-                foreach (var citem in item.Childs)
-                {
-                    if (citem is AvgPool2d) continue;
-                    GetWeightedAllChilds(citem, ret);
-                }
-            }
-            return ret;
-        }
+    
 
         public static InternalArray ParseFromString(string str)
         {

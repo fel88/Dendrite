@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Dendrite.Lib;
+using OpenCvSharp;
 
 namespace Dendrite.Preprocessors
 {

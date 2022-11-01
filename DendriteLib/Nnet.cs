@@ -23,7 +23,7 @@ namespace Dendrite
         List<NodeInfo> _nodes = new List<NodeInfo>();
 
         InferenceSession session;
-        internal void Init(IFilesystem fs, string path)
+        public void Init(IFilesystem fs, string path)
         {
             _netPath = path;
             /*if (path.EndsWith(".den"))
@@ -284,7 +284,7 @@ namespace Dendrite
 
         public Mat lastReadedMat;
 
-        internal byte[] GetModelBytes()
+        public byte[] GetModelBytes()
         {
             using (ZipArchive zip = ZipFile.Open(NetPath, ZipArchiveMode.Read))
             {
@@ -305,7 +305,7 @@ namespace Dendrite
             return null;
 
         }
-        internal string GetModelName()
+        public string GetModelName()
         {
             using (ZipArchive zip = ZipFile.Open(NetPath, ZipArchiveMode.Read))
             {

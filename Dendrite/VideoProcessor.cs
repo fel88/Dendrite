@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Dendrite.Lib;
+using OpenCvSharp;
 using System.Diagnostics;
 
 namespace Dendrite
@@ -88,7 +89,7 @@ namespace Dendrite
                        }
                        progressBar1.Invoke(((Action)(() =>
                        {
-                           if (Helpers.ShowQuestion("Open video?", Text) == DialogResult.Yes)
+                           if (Extensions.ShowQuestion("Open video?", Text) == DialogResult.Yes)
                            {
                                Process.Start(new ProcessStartInfo(outputPath) { UseShellExecute = true });
                            }

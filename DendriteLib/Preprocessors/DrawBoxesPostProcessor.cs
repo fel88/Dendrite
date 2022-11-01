@@ -1,4 +1,5 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿using Dendrite.Lib;
+//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace Dendrite.Preprocessors
         }
         public override string Name => "draw boxes";
 
-        public override Type ConfigControl => typeof(DrawBoxesConfigControl);
+        //public override Type ConfigControl => typeof(DrawBoxesConfigControl);
 
         public Mat Image => (Mat)OutputSlots[0].Data;
 

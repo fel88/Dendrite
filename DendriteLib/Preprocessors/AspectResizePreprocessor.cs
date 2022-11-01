@@ -1,4 +1,4 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 
 namespace Dendrite.Preprocessors
@@ -10,7 +10,7 @@ namespace Dendrite.Preprocessors
 
         public bool ForceH;
         public double H;
-        public override System.Type ConfigControl => typeof(AspectResizeConfigControl);
+        //public override System.Type ConfigControl => typeof(AspectResizeConfigControl);
 
         public override object Process(object inp)
         {

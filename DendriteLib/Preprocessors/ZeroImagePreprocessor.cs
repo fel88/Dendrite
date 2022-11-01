@@ -1,4 +1,4 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using System;
 
@@ -15,7 +15,7 @@ namespace Dendrite.Preprocessors
         public int Width { get; set; } = 512;
         public int Height { get; set; } = 512;
         public int Channels { get; set; } = 3;
-        public override Type ConfigControl => typeof(ZeroImageConfigControl);
+        //public override Type ConfigControl => typeof(ZeroImageConfigControl);
 
         public Mat Image => OutputSlots[0].Data as Mat;
 

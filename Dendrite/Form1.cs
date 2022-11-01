@@ -16,6 +16,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using System.Xml.Linq;
 using System.IO.Compression;
 using Dendrite.Layouts;
+using Dendrite.Lib;
 
 namespace Dendrite
 {
@@ -812,7 +813,7 @@ namespace Dendrite
             timer1.Enabled = true;
             if (wd.Exception != null)
             {
-                Helpers.ShowError(wd.Exception.Message, Program.MainForm.Text);
+                Extensions.ShowError(wd.Exception.Message, Program.MainForm.Text);
             }
             Program.MainForm.SetStatusMessage($"Load time: {sw.ElapsedMilliseconds} ms");
 
@@ -1164,7 +1165,7 @@ namespace Dendrite
             if (selected == null) return;
             if (selected is GroupNode g)
             {
-                if (Helpers.ShowQuestion($"Expand group {g.Prefix}?", ParentForm.Text) == DialogResult.Yes)
+                if (Extensions.ShowQuestion($"Expand group {g.Prefix}?", ParentForm.Text) == DialogResult.Yes)
                 {
                     CurrentLayout.RequestedGroups.RemoveAll(z => z.Prefix == g.Prefix);
                     LoadModel(_lastPath, false);

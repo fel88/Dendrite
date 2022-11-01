@@ -6,10 +6,4 @@ namespace Dendrite
     {
         public Point2f[] Points;        
     }
-
-    public class DetectionInfo
-    {
-        public float Conf;
-        public Rect Rect;
-    }
 }

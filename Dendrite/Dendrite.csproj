@@ -87,42 +87,6 @@
     <Compile Update="NetControlConfig.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Preprocessors\Controls\AspectResizeConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\DepthmapConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\DrawBoxesConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\InstanceSegmentationDecoderConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\InstanceSegmentatorDrawerConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\MeanStdConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\NmsConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\NormalizeConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\PriorBoxesConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\ResizeConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\YoloDecoderConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Preprocessors\Controls\ZeroImageConfigControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="Processing.cs">
       <SubType>Form</SubType>
     </Compile>

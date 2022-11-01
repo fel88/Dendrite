@@ -1,4 +1,5 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿using Dendrite.Lib;
+//using Dendrite.Preprocessors.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace Dendrite.Preprocessors
             return PriorBoxes(w, h);
         }
 
-        public override Type ConfigControl => typeof(PriorBoxesConfigControl);
+        //public override Type ConfigControl => typeof(PriorBoxesConfigControl);
 
         Dictionary<string, float[][]> allPriorBoxes = new Dictionary<string, float[][]>();
 

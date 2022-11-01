@@ -1,10 +1,10 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using System;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace Dendrite.Preprocessors

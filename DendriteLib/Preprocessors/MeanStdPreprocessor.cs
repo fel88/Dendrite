@@ -1,4 +1,5 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿using Dendrite.Lib;
+//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using System;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Dendrite.Preprocessors
     {
         public override string Name => "mean/std";
 
-        public override Type ConfigControl => typeof(MeanStdConfigControl);
+        //public override Type ConfigControl => typeof(MeanStdConfigControl);
         public double[] Mean = new double[3];
         public double[] Std = new double[3];
 

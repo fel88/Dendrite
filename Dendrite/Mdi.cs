@@ -1,4 +1,5 @@
 ﻿using Dendrite.Layouts;
+using Dendrite.Lib;
 using System;
 using System.Drawing;
 using System.IO;
@@ -19,7 +20,7 @@ namespace Dendrite
             }
             catch (Exception ex)
             {
-                Helpers.ShowError(ex.Message, Text);
+                Extensions.ShowError(ex.Message, Text);
             }
         }
 

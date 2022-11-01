@@ -114,7 +114,7 @@ namespace Dendrite
             sb.AppendLine("</node>");
         }
 
-        internal void Detach()
+        public void Detach()
         {
             foreach (var item in Inputs)
             {

@@ -1,17 +1,17 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 
 namespace Dendrite.Preprocessors
 {
     public class DrawInstanceSegmentationPostProcessor : AbstractPreprocessor, IImageContainer
     {
         public override string Name => "instance segmentation drawer";
-        public override Type ConfigControl => typeof(InstanceSegmentatorDrawerConfigControl);
+        //public override Type ConfigControl => typeof(InstanceSegmentatorDrawerConfigControl);
 
         public Mat Image => OutputSlots[0].Data as Mat;
 
@@ -43,7 +43,7 @@ namespace Dendrite.Preprocessors
         
         static List<Scalar> clrs = new List<Scalar>();
 
-        internal void Redraw()
+        public void Redraw()
         {
             var ret = DrawSegmentationMap(orig, Detections, VisThreshold);            
         }

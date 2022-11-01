@@ -85,7 +85,7 @@ namespace Dendrite
             return node;
         }
 
-        internal void Process()
+        public void Process()
         {
             var nodes = Pipeline.Toposort();
             foreach (var item in nodes)

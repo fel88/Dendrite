@@ -1,4 +1,4 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿//using Dendrite.Preprocessors.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace Dendrite.Preprocessors
     public class NmsPostProcessors : AbstractPreprocessor
     {
         public override string Name => "nms";
-        public override Type ConfigControl => typeof(NmsConfigControl);
+        //public override Type ConfigControl => typeof(NmsConfigControl);
 
         public float NmsThreshold = 0.2f;
         public override object Process(object input)

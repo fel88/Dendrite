@@ -271,7 +271,7 @@ namespace Dendrite
             return ret;
 
         }
-        internal void Set(int[] inds, double val)
+        public void Set(int[] inds, double val)
         {
             switch (inds.Length)
             {
@@ -288,7 +288,7 @@ namespace Dendrite
                     throw new Exception($"set value: unsupported dim len: {inds.Length}");
             }            
         }
-        internal void Set2D(int i, int j, double val)
+        public void Set2D(int i, int j, double val)
         {
             int pos = i * Shape[1] + j;
             Data[pos] = val;
@@ -297,14 +297,14 @@ namespace Dendrite
 #if NET461
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        internal bool WithIn(int x, int y)
+        public bool WithIn(int x, int y)
         {
             return x >= 0 && y >= 0 && x < Shape[0] && y < Shape[1];
         }
 #if NET461
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        internal bool WithIn(int x, int y, int z)
+        public bool WithIn(int x, int y, int z)
         {
             return x >= 0 && y >= 0 && z >= 0 && x < Shape[0] && y < Shape[1] && z < Shape[2];
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dendrite.Lib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -116,7 +117,7 @@ namespace Dendrite
             }
         }
 
-        internal Node[] Toposort()
+        public Node[] Toposort()
         {
             return Graph.Sort(Nodes.ToArray());
         }
@@ -197,7 +198,7 @@ namespace Dendrite
             }
         }
 
-        internal object[] GetOutputs()
+        public object[] GetOutputs()
         {
             var ret = Nodes.SelectMany(z => z.Outputs).Where(z => z.OutputLinks.Count == 0).Distinct().ToArray();
             return ret.Select(z => z.Data.Data).ToArray();

@@ -1,4 +1,5 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿using Dendrite.Lib;
+//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -105,7 +106,7 @@ namespace Dendrite.Preprocessors
 
         }
 
-        public override Type ConfigControl => typeof(YoloDecoderConfigControl);
+        //public override Type ConfigControl => typeof(YoloDecoderConfigControl);
         public override object Process(object inp)
         {
             var list = inp as object[];

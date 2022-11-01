@@ -1,4 +1,5 @@
-﻿using Dendrite.Preprocessors.Controls;
+﻿using Dendrite.Lib;
+//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using System;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Dendrite.Preprocessors
         }
 
         public override string Name => "resize";
-        public override Type ConfigControl => typeof(ResizeConfigControl);
+        //public override Type ConfigControl => typeof(ResizeConfigControl);
 
         public Mat Image
         {

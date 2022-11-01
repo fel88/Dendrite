@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Dendrite.Lib;
+using OpenCvSharp;
 using System.Drawing;
 using System.Linq;
 using System.Text;
