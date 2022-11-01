@@ -20,3 +20,9 @@ Graph layout https://github.com/fel88/Dagre.NET
 
 <img src="imgs/6.jpg"/>
 Ready inference environments can be downloaded from here : https://github.com/fel88/Dendrite.Environments
+
+## Console use:
+
+[exe] <.den file> <input image/video/sound>  <output_path>
+
+**Dendrite.Console craft.den sample.jpg output.jpg**
