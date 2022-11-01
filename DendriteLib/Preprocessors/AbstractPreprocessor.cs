@@ -13,7 +13,7 @@ namespace Dendrite.Preprocessors
             InputSlots = new DataSlot[1] { new DataSlot() { Name = "input" } };
             OutputSlots = new DataSlot[1] { new DataSlot() { Name = "output" } };
         }
-        public virtual Type ConfigControl => null;
+        public virtual Type ConfigControl { get; set; } = null;
 
         public event Action<IInputPreprocessor> PinsChanged;
 

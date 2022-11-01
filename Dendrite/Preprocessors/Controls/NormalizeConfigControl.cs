@@ -1,9 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
-using static Dendrite.Preprocessors.NormalizePreprocessor;
+﻿using static Dendrite.Preprocessors.NormalizePreprocessor;
 
 namespace Dendrite.Preprocessors.Controls
 {
+    [PreprocessorBind(typeof(NormalizeConfigControl))]
     public partial class NormalizeConfigControl : UserControl, IProcessorConfigControl
     {
         public NormalizeConfigControl()

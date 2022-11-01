@@ -1,6 +1,7 @@
 ﻿using Dendrite.Dialogs;
 using Dendrite.Lib;
 using Dendrite.Preprocessors;
+using Dendrite.Preprocessors.Controls;
 using Microsoft.ML.OnnxRuntime;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
@@ -13,6 +14,8 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
+using System.Resources.Extensions;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -118,9 +121,15 @@ namespace Dendrite
             currentPreprocessor = prep;
             groupBox1.Controls.Clear();
 
-            if (prep.ConfigControl != null)
+            var cands = Assembly.GetCallingAssembly().GetTypes().Where(z => z.GetInterfaces().Contains(typeof(IProcessorConfigControl))).ToArray();
+
+            var ccc = prep.ConfigControl;
+            if (ccc == null)
+                ccc = cands.FirstOrDefault(z => z.GetCustomAttribute(typeof(PreprocessorBindAttribute)) != null && ((PreprocessorBindAttribute)z.GetCustomAttribute(typeof(PreprocessorBindAttribute))).Type.IsInstanceOfType(prep));
+
+            if (ccc != null)
             {
-                var cc = Activator.CreateInstance(prep.ConfigControl) as IProcessorConfigControl;
+                var cc = Activator.CreateInstance(ccc) as IProcessorConfigControl;
                 cc.Init(prep);
                 var cc2 = cc as UserControl;
                 cc2.Dock = DockStyle.Fill;

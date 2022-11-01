@@ -1,8 +1,6 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace Dendrite.Preprocessors.Controls
+﻿namespace Dendrite.Preprocessors.Controls
 {
+    [PreprocessorBind(typeof(DepthmapDecodePreprocessor))]
     public partial class DepthmapConfigControl : UserControl, IProcessorConfigControl
     {
         public DepthmapConfigControl()

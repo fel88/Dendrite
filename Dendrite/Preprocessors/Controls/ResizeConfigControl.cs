@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace Dendrite.Preprocessors.Controls
+﻿namespace Dendrite.Preprocessors.Controls
 {
+    [PreprocessorBind(typeof(ResizePreprocessor))]
     public partial class ResizeConfigControl : UserControl, IProcessorConfigControl
     {
         public ResizeConfigControl()
@@ -62,4 +53,5 @@ namespace Dendrite.Preprocessors.Controls
 
         }
     }
+
 }

@@ -4,6 +4,7 @@ using System.Globalization;
 
 namespace Dendrite.Preprocessors.Controls
 {
+    [PreprocessorBind(typeof(DrawBoxesPostProcessor))]
     public partial class DrawBoxesConfigControl : UserControl, IProcessorConfigControl
     {
         public DrawBoxesConfigControl()

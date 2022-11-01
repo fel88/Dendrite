@@ -4,6 +4,6 @@ namespace Dendrite
 {
     public interface IProcessorConfigControl
     {
-        void Init(IInputPreprocessor proc);
+        void Init(IInputPreprocessor proc);        
     }
 }
