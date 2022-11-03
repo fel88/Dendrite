@@ -30,7 +30,8 @@ namespace Dendrite
                 session = new InferenceSession(GetModelBytes());
             else*/
             //session = new InferenceSession(_netPath);
-            session = new InferenceSession(fs.ReadAllBytes(path));
+
+            session = new InferenceSession(fs.ReadAllBytes(path), new SessionOptions() { LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_ERROR });
 
             Prepare(session);
         }
@@ -235,13 +236,14 @@ namespace Dendrite
             }
             if (session1 == null)
             {
-                session1 = new InferenceSession(_netPath);
+                session1 = new InferenceSession(_netPath, new SessionOptions() { LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_ERROR });
             }
 
             //var container = new List<NamedOnnxValue>();
 
             //var mat2 = prepareData(container, session1);
             OutputDatas.Clear();
+
             using (var results = session1.Run(container))
             {
                 // Get the results
