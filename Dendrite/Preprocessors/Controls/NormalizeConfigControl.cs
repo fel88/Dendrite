@@ -2,7 +2,7 @@
 
 namespace Dendrite.Preprocessors.Controls
 {
-    [PreprocessorBind(typeof(NormalizeConfigControl))]
+    [PreprocessorBind(typeof(NormalizePreprocessor))]
     public partial class NormalizeConfigControl : UserControl, IProcessorConfigControl
     {
         public NormalizeConfigControl()

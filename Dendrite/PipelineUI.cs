@@ -74,9 +74,11 @@ namespace Dendrite
             }
         }
 
-        internal void AddItem(Node node)
+        internal IUIElement AddItem(Node node)
         {
-            Elements.Add(new NodeUI() { Node = node });
+            var n = new NodeUI() { Node = node };
+            Elements.Add(n);
+            return n;
         }
 
         internal void Restore(string epath)

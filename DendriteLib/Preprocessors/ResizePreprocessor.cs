@@ -28,7 +28,7 @@ namespace Dendrite.Preprocessors
             }
         }
 
-        public int[] Dims;
+        public int[] Dims = new[] { 1, 3, 256, 256 };
         public override void ParseXml(XElement sb)
         {
             Dims = sb.Attribute("dims").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(Helpers.ParseInt).ToArray();

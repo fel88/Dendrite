@@ -8,6 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="coco.2.names" />
+    <None Remove="coco.names" />
+    <None Remove="imagenet1000.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="coco.2.names" />
+    <EmbeddedResource Include="coco.names" />
+    <EmbeddedResource Include="imagenet1000.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.21.9" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.13.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />

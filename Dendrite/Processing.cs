@@ -374,21 +374,7 @@ namespace Dendrite
 
         private void resizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //var r = new ResizePreprocessor() { Dims = currentNode.Dims };
-            var r = new ResizePreprocessor() { Dims = new int[] { 1, 3, 256, 256 } };
-            /*if (!InputDatas.ContainsKey(currentNode.Name))
-            {
-                Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
-                return;
-            }*/
 
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
-
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r });
         }
 
         internal void LoadEnvironment(string fileName)
@@ -404,27 +390,12 @@ namespace Dendrite
 
         private void nCHWToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new NCHWPreprocessor();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
-            /*
-            if (currentNode == null) return;
-
-            InputDatas[currentNode.Name].Preprocessors.Add(new NCHWPreprocessor());
-            UpdatePreprocessorsList();*/
         }
 
         private void meanstdToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new MeanStdPreprocessor();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
         }
 
         private void normalizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2284,6 +2255,67 @@ namespace Dendrite
         private void imgToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new ImgProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            var r = new ResizePreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            var r = new NCHWPreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            var r = new MeanStdPreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem14_Click(object sender, EventArgs e)
+        {
+            List<Node> nodes = new List<Node>();
+            nodes.Add(new ImageSourceNode());
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new ResizePreprocessor()));
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new NormalizePreprocessor()));
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new MeanStdPreprocessor()));
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new NCHWPreprocessor()));
+
+            int xx = 0;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                Node? node = nodes[i];
+                env.Pipeline.Nodes.Add(node);
+                var nn = pipelineUI.AddItem(node);
+                nn.Position = new PointF(xx, 0);
+                xx += 200;
+                if (i > 0)
+                {
+                    PinLink link = new PinLink() { Input = nodes[i - 1].Outputs[0], Output = nodes[i].Inputs[0] };
+                    nodes[i - 1].Outputs[0].OutputLinks.Add(link);
+                    nodes[i].Inputs[0].InputLinks.Add(link);
+                }
+            }
+        }
+
+        private void putTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new PutTextPostProcessor();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);

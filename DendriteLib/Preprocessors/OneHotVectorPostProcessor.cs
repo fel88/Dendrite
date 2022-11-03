@@ -1,55 +1,76 @@
 ﻿using Dendrite.Lib;
-using OpenCvSharp;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 
 namespace Dendrite.Preprocessors
 {
     [XmlName(XmlKey = "oneHotVec")]
-    public class OneHotVectorPostProcessor : AbstractPreprocessor, IImageContainer
+    public class OneHotVectorPostProcessor : AbstractPreprocessor
     {
         public OneHotVectorPostProcessor()
         {
-            InputSlots = new DataSlot[2];
-            InputSlots[0] = new DataSlot() { Name = "vector" };
-            InputSlots[1] = new DataSlot() { Name = "img" };
+            InputSlots = new DataSlot[1];
+            InputSlots[0] = new DataSlot() { Name = "vector" };            
         }
 
+        public List<string> CustomClasses = new List<string>();
+
+        public int LastMaxClass { get; private set; }
+        public string LastMaxClassTitle { get; private set; }
         public override string Name => "one hot vector";
         public OneHotVectorType ClassesType { get; set; }
+
         public enum OneHotVectorType
         {
-            ImageNet1000
-        }
-        public Mat Image => OutputSlots[0].Data as Mat;
+            ImageNet1000,
+            Custom //from inside list
+        }       
 
         public override object Process(object input)
         {
-            var vec = InputSlots[0].Data as InternalArray;
-            var img = InputSlots[1].Data as Mat;
-            int maxind = 0;
+            var vec = InputSlots[0].Data as InternalArray;            
+            int maxind = -1;
+            double maxval = 0;
+
+            //softmax calc 
+            var all = vec.Data.Select(z => Math.Exp(z)).Sum();
             for (int i = 0; i < vec.Data.Length; i++)
             {
-                if (vec.Data[i] > vec.Data[maxind])
+                var val = Math.Exp(vec.Data[i]) / all;
+                if (maxind == -1 || val > maxval)
                 {
                     maxind = i;
+                    maxval = val;
+                }
+            }            
+
+            List<string> rc = new List<string>();
+            if (ClassesType == OneHotVectorType.ImageNet1000)
+            {
+                var classes = Helpers.ReadResource("imagenet1000");
+                var s = classes.Split(new char[] { ':', '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries).ToArray();
+                for (int i = 1; i < s.Length; i += 2)
+                {
+                    rc.Add(s[i]);
                 }
             }
-            var mat = img.Clone() as Mat;
-            var classes = Helpers.ReadResource("imagenet1000");
-            var s = classes.Split(new char[] { ':', '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries).ToArray();
-            var tt = s[maxind * 2 + 1];
+            else//custom
+            {
+                rc = CustomClasses.ToList();
+            }
 
-            mat.Rectangle(new OpenCvSharp.Rect(0, 0, mat.Width, 30), Scalar.Black, -1);
-            mat.PutText(tt, new OpenCvSharp.Point(0, 20), HersheyFonts.HersheyComplexSmall, 1.0, Scalar.White);
-            OutputSlots[0].Data = mat;
-            return mat;
+            var tt = rc[maxind];
+
+            LastMaxClass = maxind;
+            LastMaxClassTitle = tt;
+
+            
+            OutputSlots[0].Data = tt;
+            return tt;
         }
 
         public override void StoreXml(StringBuilder sb)
         {
-            sb.AppendLine("<oneHotVec/>");
+            sb.AppendLine($"<oneHotVec type=\"{ClassesType}\"/>");
         }
     }
 }
