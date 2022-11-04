@@ -31,7 +31,7 @@ namespace Dendrite
             foreach (var item in net.Nodes.Where(z => !z.IsInput))
             {
                 var dims = item.Dims;
-                listView1.Items.Add(new ListViewItem(new string[] { item.Name, string.Join("x", dims), "" }) { Tag = item });
+                listView1.Items.Add(new ListViewItem(new string[] { item.Name, string.Join("x", dims),item.ElementType.Name, "" }) { Tag = item });
             }
 
             foreach (var item in net.Nodes.Where(z => z.IsInput))

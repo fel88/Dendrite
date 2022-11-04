@@ -20,13 +20,7 @@ namespace Dendrite.Preprocessors
         public override string Name => "resize";
         //public override Type ConfigControl => typeof(ResizeConfigControl);
 
-        public Mat Image
-        {
-            get
-            {
-                return OutputSlots[0].Data as Mat;
-            }
-        }
+        public Mat Image => OutputSlots[0].Data as Mat;
 
         public int[] Dims = new[] { 1, 3, 256, 256 };
         public override void ParseXml(XElement sb)

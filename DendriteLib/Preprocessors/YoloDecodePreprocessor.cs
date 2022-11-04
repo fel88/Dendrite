@@ -1,18 +1,30 @@
 ﻿using Dendrite.Lib;
-//using Dendrite.Preprocessors.Controls;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Dendrite.Preprocessors
 {
+    [XmlName(XmlKey = "yoloDecoder")]
     public class YoloDecodePreprocessor : AbstractPreprocessor
     {
+        public YoloDecodePreprocessor()
+        {
+            InputSlots = new DataSlot[4];
+            InputSlots[0] = (new DataSlot() { Name = "conf" });
+            InputSlots[1] = (new DataSlot() { Name = "loc" });
+            InputSlots[2] = (new DataSlot() { Name = "img_size" });
+            InputSlots[3] = (new DataSlot() { Name = "prior_boxes" });
+        }
         public float NmsThreshold = 0.8f;
         public double Threshold = 0.4;
         public List<string> AllowedClasses = new List<string>();
-
+        public override void StoreXml(StringBuilder sb)
+        {
+            sb.AppendLine("<yoloDecoder/>");
+        }
         public static ObjectDetectionInfo[] yoloBoxesDecode(Nnet net, int w, int h, float nms_tresh, double threshold, string[] allowedClasses = null)
         {
             List<ObjectDetectionInfo> ret = new List<ObjectDetectionInfo>();

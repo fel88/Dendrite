@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace Dendrite.Preprocessors.Controls
 {
+    [PreprocessorBind(typeof(DrawInstanceSegmentationPostProcessor))]
     public partial class InstanceSegmentatorDrawerConfigControl : UserControl, IProcessorConfigControl
     {
         public InstanceSegmentatorDrawerConfigControl()
@@ -26,8 +27,8 @@ namespace Dendrite.Preprocessors.Controls
             checkBox2.Checked = Proc.EnableTextDraw;
             
             listView1.Items.Clear();
-            if (Proc.Detections != null)
-                foreach (var item in Proc.Detections)
+            if (Proc.LastDetections != null)
+                foreach (var item in Proc.LastDetections)
                 {
                     listView1.Items.Add(new ListViewItem(new string[] { "" }) { Tag = item });
                 }
@@ -43,14 +44,14 @@ namespace Dendrite.Preprocessors.Controls
             if (listView1.SelectedItems.Count == 0) return;
             var tag = listView1.SelectedItems[0].Tag as SegmentationDetectionInfo;
             tag.Visible = !tag.Visible;
-            Proc.Redraw();
+            //Proc.Redraw();
         }
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             listView1.Items.Clear();
-            if (Proc.Detections != null)
-                foreach (var item in Proc.Detections)
+            if (Proc.LastDetections != null)
+                foreach (var item in Proc.LastDetections)
                 {
                     listView1.Items.Add(new ListViewItem(new string[] { item.Label, item.Conf + "" }) { Tag = item });
                 }

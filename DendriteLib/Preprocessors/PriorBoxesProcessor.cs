@@ -1,8 +1,4 @@
 ﻿using Dendrite.Lib;
-//using Dendrite.Preprocessors.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
@@ -11,6 +7,10 @@ namespace Dendrite.Preprocessors
     [XmlName(XmlKey = "priorBoxes")]
     public class PriorBoxesProcessor : AbstractPreprocessor, IPriorBoxesGenerator
     {
+        public PriorBoxesProcessor()
+        {
+            InputSlots = new DataSlot[0] { };
+        }
         public float[] Variances = new float[] { 0.1f, 0.2f };
         public int[][] MinSizes = new int[][] { new int[] { 32, 64, 128 }, new int[] { 256 }, new int[] { 512 } };
         public int[] Steps = new int[] { 32, 64, 128 };

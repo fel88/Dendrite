@@ -29,7 +29,7 @@ namespace Dendrite
             Id = int.Parse(item.Attribute("id").Value);
             var inps = item.Element("inputs");
             var outps = item.Element("outputs");
-            var tag = item.Element("tag");            
+            var tag = item.Element("tag");
             var types = Assembly.GetExecutingAssembly().GetTypes().Where(z => z.GetCustomAttribute(typeof(XmlNameAttribute)) != null).ToArray();
             if (tag.Elements().Any())
             {
@@ -45,7 +45,7 @@ namespace Dendrite
             Inputs.Clear();
             foreach (var input in inps.Elements())
             {
-                Inputs.Add(new NodePin(input) { Parent=this});
+                Inputs.Add(new NodePin(input) { Parent = this });
 
             }
             Outputs.Clear();
@@ -85,7 +85,7 @@ namespace Dendrite
             pp.PinsChanged += Pp_PinsChanged;
             UpdatePins();
         }
-                
+
         private void UpdatePins()
         {
             var pp = Tag as IInputPreprocessor;
@@ -156,12 +156,12 @@ namespace Dendrite
             {
                 if (Tag is IInputPreprocessor ip)
                 {
-                    for (int i = 0; i < Inputs.Count; i++)
+                    for (int i = 0; i < Math.Min(Inputs.Count, ip.InputSlots.Length); i++)
                     {
                         ip.InputSlots[i].Data = Inputs[i].Data.Data;
                     }
-                    ip.Process(null);
-                    for (int i = 0; i < Outputs.Count; i++)
+                    ip.Process();
+                    for (int i = 0; i < Math.Min(Outputs.Count, ip.OutputSlots.Length); i++)
                     {
                         Outputs[i].Data.Data = ip.OutputSlots[i].Data;
                     }

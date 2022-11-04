@@ -1,17 +1,16 @@
 ﻿using Dendrite.Lib;
 using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 
 namespace Dendrite.Preprocessors
 {
+    [XmlName(XmlKey = "instanceSegmentationDecoder")]
     public class InstanceSegmentationDecodePreprocessor : AbstractPreprocessor
     {
 
         public InstanceSegmentationDecodePreprocessor()
         {
-            InputSlots = new DataSlot[4];
+            InputSlots = new DataSlot[5];
             InputSlots[0] = new DataSlot() { Name = "input" };
             InputSlots[1] = new DataSlot() { Name = "scores" };
             InputSlots[2] = new DataSlot() { Name = "labels" };
@@ -112,7 +111,13 @@ namespace Dendrite.Preprocessors
             var hh = sz[2];
             var ret = Decode(ww, hh, f1, boxes.ToFloatArray(), scores.ToFloatArray(), labels);
 
+            OutputSlots[0].Data = ret;
+
             return ret;
+        }
+        public override void StoreXml(StringBuilder sb)
+        {
+            sb.AppendLine($"<instanceSegmentationDecoder/>");
         }
     }
 }

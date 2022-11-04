@@ -10,9 +10,9 @@ namespace Dendrite.Preprocessors
         event Action<IInputPreprocessor> PinsChanged;
         Type ConfigControl { get; }
         string Name { get; }
-        object Process(object input);
-        DataSlot[] InputSlots { get;  } 
-        DataSlot[] OutputSlots { get;  } 
+        object Process(object input = null);
+        DataSlot[] InputSlots { get; }
+        DataSlot[] OutputSlots { get; }
         void StoreXml(StringBuilder sb);
         void ParseXml(XElement sb);
     }

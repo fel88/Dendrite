@@ -5,20 +5,11 @@ using Dendrite.Preprocessors.Controls;
 using Microsoft.ML.OnnxRuntime;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
-using System.Resources.Extensions;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 
 namespace Dendrite
 {
@@ -35,6 +26,7 @@ namespace Dendrite
             Load += Processing_Load;
 
             tableLayoutPanel1.ColumnStyles[0].Width = 0;
+            tableLayoutPanel1.RowStyles[0].Height = 0;
         }
 
         private void PictureBox3_MouseUp(object sender, MouseEventArgs e)
@@ -101,7 +93,7 @@ namespace Dendrite
                 }
             }
         }
-
+        
         private void UpdateSelectedNodeControl()
         {
             if (!(dragged is NodeUI n)) return;
@@ -117,8 +109,7 @@ namespace Dendrite
                 return;
             }
             if (!(n.Node.Tag is IInputPreprocessor prep)) return;
-
-            currentPreprocessor = prep;
+                        
             groupBox1.Controls.Clear();
 
             var cands = Assembly.GetCallingAssembly().GetTypes().Where(z => z.GetInterfaces().Contains(typeof(IProcessorConfigControl))).ToArray();
@@ -377,6 +368,11 @@ namespace Dendrite
 
         }
 
+        internal async void LoadEnvironmentAsync(string fileName)
+        {
+            await Task.Run(() => { LoadEnvironment(fileName); });
+        }
+
         internal void LoadEnvironment(string fileName)
         {
             env.Load(fileName);
@@ -400,36 +396,9 @@ namespace Dendrite
 
         private void normalizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new NormalizePreprocessor();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
         }
-
-        IInputPreprocessor currentPreprocessor;
-
-
-        private void template1ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (currentNode == null) return;
-
-            var r = new MeanStdPreprocessor();
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "mean/std" }) { Tag = r });
-
-            var r2 = new ResizePreprocessor() { Dims = currentNode.Dims };
-            //InputDatas[currentNode.Name].Preprocessors.Add(r2);
-            // listView3.Items.Add(new ListViewItem(new string[] { "resize" }) { Tag = r2 });
-
-            var r3 = new NormalizePreprocessor();
-            //InputDatas[currentNode.Name].Preprocessors.Add(r3);
-            //  listView3.Items.Add(new ListViewItem(new string[] { "normalize" }) { Tag = r3 });
-
-            var r4 = new NCHWPreprocessor();
-            //InputDatas[currentNode.Name].Preprocessors.Add(r4);
-            //  listView3.Items.Add(new ListViewItem(new string[] { "NCHW" }) { Tag = r4 });
-        }
+        
 
         private void convertToIamgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1032,12 +1001,7 @@ namespace Dendrite
 
         private void grayscaleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new GrayscalePreprocessor();
 
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
         }
 
         private void aspectResizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1051,11 +1015,29 @@ namespace Dendrite
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            rewindVideo();
-            var sw = Stopwatch.StartNew();
-            env.Process();
-            sw.Stop();
-            toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
+            RunAsync();
+        }
+
+        async void RunAsync()
+        {
+            await Task.Run(() => { Run(); });
+        }
+        void Run()
+        {
+            toolStripButton1.Enabled = false;
+            try
+            {
+                rewindVideo();
+                var sw = Stopwatch.StartNew();
+                env.Process();
+                sw.Stop();
+                toolStripStatusLabel1.Text = $"inference time: {sw.ElapsedMilliseconds}ms";
+            }
+            finally
+            {
+                toolStripButton1.Enabled = true;
+            }
+            
         }
 
         private void loadImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1096,17 +1078,7 @@ namespace Dendrite
 
         private void staticImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // if (currentNode == null) return;
-            var r = new ZeroImagePreprocessor();
 
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
-
-            //if (!InputDatas.ContainsKey(currentNode.Name)) return;
-            //InputDatas[currentNode.Name].Preprocessors.Add(r);
-            //listView3.Items.Add(new ListViewItem(new string[] { "zero" }) { Tag = r });
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -1492,38 +1464,20 @@ namespace Dendrite
 
         private void bgr2rgbToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new BGR2RGBPreprocessor();
 
-
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
         }
 
 
         private void yoloDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new YoloDecodePreprocessor();
-            env.Pipeline.Nodes.Add(new Node() { Tag = r });
-            //net.Postprocessors.Add(r);
-            //listView6.Items.Add(new ListViewItem(new string[] { "yolo decode" }) { Tag = r });
+          
         }
 
 
         private void drawBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DrawBoxesPostProcessor() { };
-            /*  net.Postprocessors.Add(r);
-              listView6.Items.Add(new ListViewItem(new string[] { "draw boxes" }) { Tag = r });*/
-
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
+            
         }
-
-
 
         private void templateYoloToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1569,12 +1523,7 @@ namespace Dendrite
 
         private void keypointDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new KeypointsDecodePreprocessor();
-
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
+            
         }
 
         private void drawKeypointsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1647,11 +1596,7 @@ namespace Dendrite
 
         private void nmsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new NmsPostProcessors();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
-            // listView6.Items.Add(new ListViewItem(new string[] { "nms" }) { Tag = r });
+            
         }
 
         private void checkBox5_CheckedChanged(object sender, EventArgs e)
@@ -1699,20 +1644,7 @@ namespace Dendrite
 
         private void depthmapDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new DepthmapDecodePreprocessor();
-
-            /*if (!InputDatas.ContainsKey(currentNode.Name))
-            {
-                Helpers.ShowError($"input '{currentNode.Name}' not found", Text);
-                return;
-            }*/
-
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
-            //net.Postprocessors.Add(r);
-            //listView6.Items.Add(new ListViewItem(new string[] { "depthmap" }) { Tag = r });
+            
         }
 
         private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1781,11 +1713,7 @@ namespace Dendrite
 
         private void rgb2bgrToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new BGR2RGBPreprocessor();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
+            
 
         }
 
@@ -2003,9 +1931,7 @@ namespace Dendrite
             ofd.Filter = "Dendrite inference environment (*.den)|*.den";
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
-            LoadEnvironment(ofd.FileName);
-            //p.Init(ofd.FileName);
-
+            LoadEnvironmentAsync(ofd.FileName);            
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2015,56 +1941,63 @@ namespace Dendrite
             //zip arch
             if (sfd.ShowDialog() != DialogResult.OK) return;
 
+            SaveModelAsync(sfd.FileName);
+        }
 
-            using (var fileStream = new FileStream(sfd.FileName, FileMode.Create))
-            {
-                using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true))
-                {
-                    if (env.Pipeline.Nodes.Any(z => z is NetNode))
-                    {
-                        var netName = new FileInfo(net.NetPath).Name;
-                        if (net.NetPath.EndsWith(".den"))
-                        {
-                            netName = net.GetModelName();
-                        }
-                        var demoFile = archive.CreateEntry(netName);
+        async void SaveModelAsync(string path)
+        {
+            await Task.Run(() =>
+              {
+                  using (var fileStream = new FileStream(path, FileMode.Create))
+                  {
+                      using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true))
+                      {
+                          if (env.Pipeline.Nodes.Any(z => z is NetNode))
+                          {
+                              var netName = new FileInfo(net.NetPath).Name;
+                              if (net.NetPath.EndsWith(".den"))
+                              {
+                                  netName = net.GetModelName();
+                              }
+                              var demoFile = archive.CreateEntry(netName);
 
-                        using (var entryStream = demoFile.Open())
-                        //using (var streamWriter = new StreamWriter(entryStream))
-                        {
-                            if (net.NetPath.EndsWith(".den"))
-                            {
-                                var bytes = net.GetModelBytes();
-                                entryStream.Write(bytes, 0, bytes.Length);
-                            }
-                            else
-                            {
-                                using (var stream1 = File.OpenRead(net.NetPath))
-                                {
-                                    stream1.CopyTo(entryStream);
-                                }
-                            }
-                        }
-                    }
-                    var configFile = archive.CreateEntry("config.xml");
+                              using (var entryStream = demoFile.Open())
+                              //using (var streamWriter = new StreamWriter(entryStream))
+                              {
+                                  if (net.NetPath.EndsWith(".den"))
+                                  {
+                                      var bytes = net.GetModelBytes();
+                                      entryStream.Write(bytes, 0, bytes.Length);
+                                  }
+                                  else
+                                  {
+                                      using (var stream1 = File.OpenRead(net.NetPath))
+                                      {
+                                          stream1.CopyTo(entryStream);
+                                      }
+                                  }
+                              }
+                          }
+                          var configFile = archive.CreateEntry("config.xml");
 
-                    var configXml = env.GetConfigXml();
-                    using (var entryStream = configFile.Open())
-                    using (var streamWriter = new StreamWriter(entryStream))
-                    {
-                        streamWriter.WriteLine(configXml);
-                    }
+                          var configXml = env.GetConfigXml();
+                          using (var entryStream = configFile.Open())
+                          using (var streamWriter = new StreamWriter(entryStream))
+                          {
+                              streamWriter.WriteLine(configXml);
+                          }
 
-                    var uiConfigFile = archive.CreateEntry("ui.xml");
+                          var uiConfigFile = archive.CreateEntry("ui.xml");
 
-                    var uiConfigXml = pipelineUI.GetConfigXml();
-                    using (var entryStream = uiConfigFile.Open())
-                    using (var streamWriter = new StreamWriter(entryStream))
-                    {
-                        streamWriter.WriteLine(uiConfigXml);
-                    }
-                }
-            }
+                          var uiConfigXml = pipelineUI.GetConfigXml();
+                          using (var entryStream = uiConfigFile.Open())
+                          using (var streamWriter = new StreamWriter(entryStream))
+                          {
+                              streamWriter.WriteLine(uiConfigXml);
+                          }
+                      }
+                  }
+              });
         }
 
         private void timer2_Tick(object sender, EventArgs e)
@@ -2075,14 +2008,7 @@ namespace Dendrite
 
         private void boxesDecoderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new BoxesDecodePostProcessor();
-            //net.Postprocessors.Add(r);
-            //listView6.Items.Add(new ListViewItem(new string[] { "boxes decoder" }) { Tag = r });
-
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
+            
         }
 
         private void showImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2093,12 +2019,12 @@ namespace Dendrite
 
         private void postprocessorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            contextMenuStrip4.Show(Cursor.Position);
+            //contextMenuStrip4.Show(Cursor.Position);
         }
 
         private void preprocessorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            contextMenuStrip2.Show(Cursor.Position);
+            //contextMenuStrip2.Show(Cursor.Position);
         }
         DiskFilesystem DiskFilesystem = new DiskFilesystem();
         private void netToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2183,28 +2109,12 @@ namespace Dendrite
 
         private void priorBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new PriorBoxesProcessor();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
-        }
-
-        private void templateCRAFTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void templateMaskRCNNToolStripMenuItem_Click(object sender, EventArgs e)
-        {
 
         }
 
         private void concatToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var r = new ImgConcatPostProcessor();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
+
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2214,17 +2124,26 @@ namespace Dendrite
 
         private void toolStripMenuItem21_Click(object sender, EventArgs e)
         {
-
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(new YoloDecodePreprocessor());
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
         private void toolStripMenuItem22_Click(object sender, EventArgs e)
         {
-
+            var r = new BoxesDecodePostProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
         private void toolStripMenuItem30_Click(object sender, EventArgs e)
         {
+            var r = new BGR2RGBPreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
         }
 
         private void oneHotVectorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2319,6 +2238,132 @@ namespace Dendrite
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);
+        }
+
+        private void Processing_DragDrop(object sender, DragEventArgs e)
+        {
+            var ar = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (ar == null || ar.Length < 1) return;
+
+
+            net.Init(DiskFilesystem, ar[0]);
+            var nn = InferenceEnvironment.GenerateNodeFromNet(env.Net);
+            env.Pipeline.Nodes.Add(nn);
+            pipelineUI.AddItem(nn);
+        }
+
+        private void Processing_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void toolStripMenuItem5_Click(object sender, EventArgs e)
+        {
+            var r = new GrayscalePreprocessor();
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem13_Click(object sender, EventArgs e)
+        {
+            var r = new NormalizePreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem12_Click(object sender, EventArgs e)
+        {
+            var r = new ImgConcatPostProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem11_Click(object sender, EventArgs e)
+        {
+            var r = new PriorBoxesProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem8_Click(object sender, EventArgs e)
+        {
+            var r = new BGR2RGBPreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem7_Click(object sender, EventArgs e)
+        {
+            var r = new ZeroImagePreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem26_Click(object sender, EventArgs e)
+        {
+            var r = new InstanceSegmentationDecodePreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem27_Click(object sender, EventArgs e)
+        {
+            var r = new DrawInstanceSegmentationPostProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem23_Click(object sender, EventArgs e)
+        {
+            var r = new DrawBoxesPostProcessor() { };
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem28_Click(object sender, EventArgs e)
+        {
+            var r = new NmsPostProcessors();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);            
+        }
+
+        private void toolStripMenuItem24_Click(object sender, EventArgs e)
+        {
+            var r = new KeypointsDecodePreprocessor();
+
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void toolStripMenuItem25_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem29_Click(object sender, EventArgs e)
+        {
+            var r = new DepthmapDecodePreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);            
         }
     }
 }
