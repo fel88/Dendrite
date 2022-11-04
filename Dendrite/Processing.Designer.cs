@@ -630,28 +630,28 @@
             // all1ToolStripMenuItem
             // 
             this.all1ToolStripMenuItem.Name = "all1ToolStripMenuItem";
-            this.all1ToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.all1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.all1ToolStripMenuItem.Text = "all 1";
             this.all1ToolStripMenuItem.Click += new System.EventHandler(this.all1ToolStripMenuItem_Click);
             // 
             // all0ToolStripMenuItem
             // 
             this.all0ToolStripMenuItem.Name = "all0ToolStripMenuItem";
-            this.all0ToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.all0ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.all0ToolStripMenuItem.Text = "all 0";
             this.all0ToolStripMenuItem.Click += new System.EventHandler(this.all0ToolStripMenuItem_Click);
             // 
             // randomToolStripMenuItem
             // 
             this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
-            this.randomToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.randomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.randomToolStripMenuItem.Text = "random";
             this.randomToolStripMenuItem.Click += new System.EventHandler(this.randomToolStripMenuItem_Click);
             // 
             // setShapeToolStripMenuItem
             // 
             this.setShapeToolStripMenuItem.Name = "setShapeToolStripMenuItem";
-            this.setShapeToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.setShapeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.setShapeToolStripMenuItem.Text = "set shape";
             this.setShapeToolStripMenuItem.Click += new System.EventHandler(this.setShapeToolStripMenuItem_Click);
             // 
@@ -1421,6 +1421,7 @@
             this.toolStripMenuItem15.Name = "toolStripMenuItem15";
             this.toolStripMenuItem15.Size = new System.Drawing.Size(283, 22);
             this.toolStripMenuItem15.Text = "template: yolo";
+            this.toolStripMenuItem15.Click += new System.EventHandler(this.toolStripMenuItem15_Click);
             // 
             // toolStripMenuItem16
             // 
@@ -1817,7 +1818,7 @@
             this.contextMenuStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addToolStripMenuItem1});
             this.contextMenuStrip4.Name = "contextMenuStrip4";
-            this.contextMenuStrip4.Size = new System.Drawing.Size(181, 48);
+            this.contextMenuStrip4.Size = new System.Drawing.Size(95, 26);
             // 
             // addToolStripMenuItem1
             // 
@@ -1827,7 +1828,7 @@
             this.instanceSegmentationDecoderToolStripMenuItem,
             this.instanceSegmentationDrawerToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(94, 22);
             this.addToolStripMenuItem1.Text = "add";
             // 
             // yoloDecodeToolStripMenuItem

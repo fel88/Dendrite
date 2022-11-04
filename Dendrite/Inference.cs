@@ -1,12 +1,6 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Dendrite
 {
@@ -136,12 +130,18 @@ namespace Dendrite
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            if (pictureBox1.Image == null) 
+                return;
+
             pictureBox1.Image.Save("temp1.jpg");            
             Process.Start(new ProcessStartInfo("temp1.jpg") { UseShellExecute = true });
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
+            if (pictureBox2.Image == null)
+                return;
+
             pictureBox2.Image.Save("temp2.jpg");                        
             Process.Start(new ProcessStartInfo("temp2.jpg") { UseShellExecute = true });            
         }

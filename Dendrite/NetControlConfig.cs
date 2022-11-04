@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dendrite.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -149,6 +150,75 @@ namespace Dendrite
                 }
             }
 
+        }
+
+        private void binaryMaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void binaryAsisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (OutputDatas[cc.Name] is float[] dd)
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                if (sfd.ShowDialog() != DialogResult.OK) return;
+                byte[] arrr = new byte[dd.Length * 4];
+                for (int i = 0; i < dd.Length; i++)
+                {
+                    Array.Copy(BitConverter.GetBytes(dd[i]), 0, arrr, i * 4, 4);
+                }
+                File.WriteAllBytes(sfd.FileName, arrr);
+            }
+        }
+
+        private void binaryshapeInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (OutputDatas[cc.Name] is float[] dd)
+            {
+                //raw binary + shape xml
+                SaveFileDialog sfd = new SaveFileDialog();
+                if (sfd.ShowDialog() != DialogResult.OK) return;
+                byte[] arrr = new byte[dd.Length * 4];
+                for (int i = 0; i < dd.Length; i++)
+                {
+                    Array.Copy(BitConverter.GetBytes(dd[i]), 0, arrr, i * 4, 4);
+                }
+                File.WriteAllBytes(sfd.FileName, arrr);
+            }
+        }
+
+        private void infoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var cc = (NodeInfo)listView1.SelectedItems[0].Tag;
+            if (!(OutputDatas[cc.Name] is float[] dd)) return;
+
+            MessageBox.Show($"size: {dd.Length}", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void shapebinaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void setShapeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) return;
+            currentNode = (NodeInfo)(listView2.SelectedItems[0].Tag);
+
+            ShapeSizeDialog ss = new ShapeSizeDialog();
+            ss.Init(currentNode, false);
+            ss.ShowDialog();
         }
     }
 }

@@ -1451,7 +1451,7 @@ namespace Dendrite
                 w = cap.FrameWidth;
                 h = cap.FrameHeight;
             }
-            var ret = YoloDecodePreprocessor.yoloBoxesDecode(net, w, h, 0.8f, 0.4f);
+            /*var ret = YoloDecodePreprocessor.yoloBoxesDecode(net, w, h, 0.8f, 0.4f);
             sw2.Stop();
             toolStripStatusLabel1.Text = $"decode time: {sw2.ElapsedMilliseconds}ms";
 
@@ -1459,7 +1459,7 @@ namespace Dendrite
             {
                 var mm = Helpers.DrawBoxes(mat1, ret, visTresh);
                 pictureBox1.Image = BitmapConverter.ToBitmap(mm);
-            }
+            }*/
         }
 
         private void bgr2rgbToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1998,6 +1998,7 @@ namespace Dendrite
                       }
                   }
               });
+            toolStripStatusLabel1.Text = "model saved";
         }
 
         private void timer2_Tick(object sender, EventArgs e)
@@ -2364,6 +2365,32 @@ namespace Dendrite
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
             pipelineUI.AddItem(node);            
+        }
+
+        private void toolStripMenuItem15_Click(object sender, EventArgs e)
+        {
+            List<Node> nodes = new List<Node>();
+            nodes.Add(new ImageSourceNode());
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new ResizePreprocessor()));
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new BGR2RGBPreprocessor()));
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new NormalizePreprocessor()));
+            nodes.Add(InferenceEnvironment.GenerateNodeFromProcessor(new NCHWPreprocessor()));
+
+            int xx = 0;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                Node? node = nodes[i];
+                env.Pipeline.Nodes.Add(node);
+                var nn = pipelineUI.AddItem(node);
+                nn.Position = new PointF(xx, 0);
+                xx += 200;
+                if (i > 0)
+                {
+                    PinLink link = new PinLink() { Input = nodes[i - 1].Outputs[0], Output = nodes[i].Inputs[0] };
+                    nodes[i - 1].Outputs[0].OutputLinks.Add(link);
+                    nodes[i].Inputs[0].InputLinks.Add(link);
+                }
+            }
         }
     }
 }

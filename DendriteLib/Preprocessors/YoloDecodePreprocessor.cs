@@ -1,8 +1,5 @@
 ﻿using Dendrite.Lib;
 using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Dendrite.Preprocessors
@@ -12,32 +9,35 @@ namespace Dendrite.Preprocessors
     {
         public YoloDecodePreprocessor()
         {
-            InputSlots = new DataSlot[4];
+            InputSlots = new DataSlot[3];
             InputSlots[0] = (new DataSlot() { Name = "conf" });
             InputSlots[1] = (new DataSlot() { Name = "loc" });
             InputSlots[2] = (new DataSlot() { Name = "img_size" });
-            InputSlots[3] = (new DataSlot() { Name = "prior_boxes" });
         }
-        public float NmsThreshold = 0.8f;
-        public double Threshold = 0.4;
-        public List<string> AllowedClasses = new List<string>();
+        public float NmsThreshold { get; set; } = 0.8f;
+        public double Threshold { get; set; } = 0.4;
+        public List<string> AllowedClasses { get; set; } = new List<string>();
         public override void StoreXml(StringBuilder sb)
         {
             sb.AppendLine("<yoloDecoder/>");
         }
-        public static ObjectDetectionInfo[] yoloBoxesDecode(Nnet net, int w, int h, float nms_tresh, double threshold, string[] allowedClasses = null)
+        public static ObjectDetectionInfo[] yoloBoxesDecode(int w, int h, InternalArray input, float[] loc, float nms_tresh, double threshold, string[] allowedClasses = null)
         {
             List<ObjectDetectionInfo> ret = new List<ObjectDetectionInfo>();
-            var f1 = net.Nodes.FirstOrDefault(z => z.Dims.Last() == 4);
+            /*var f1 = net.Nodes.FirstOrDefault(z => z.Dims.Last() == 4);
             var f2 = net.Nodes.FirstOrDefault(z => z.Dims.Last() > 4);
             if (f1 == null || f2 == null)
             {
                 return null;
             }
-            var nms = Helpers.ReadResource("coco.names").Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            
             var rets1 = net.OutputDatas[f2.Name] as float[];
             var rets3 = net.OutputDatas[f1.Name] as float[];
-            var dims = net.Nodes.First(z => z.IsInput).Dims;
+            var dims = net.Nodes.First(z => z.IsInput).Dims;*/
+            var rets1 = input.ToFloatArray();
+            var rets3 = loc;
+
+            var nms = Helpers.ReadResource("coco.names").Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 
             List<int> indexes = new List<int>();
             List<double> confs = new List<double>();
@@ -45,7 +45,7 @@ namespace Dendrite.Preprocessors
             Dictionary<int, List<int>> perClassIndexes = new Dictionary<int, List<int>>();
             Dictionary<int, List<float>> perClassConfs = new Dictionary<int, List<float>>();
             int pos = 0;
-            var cnt = f2.Dims.Last();
+            var cnt = input.Shape.Last();
 
             for (int i = 0; i < rets1.Length; i += cnt, pos++)
             {
@@ -96,7 +96,6 @@ namespace Dendrite.Preprocessors
             }
 
 
-
             for (int i = 0; i < indexes.Count; i++)
             {
                 if (!res.Contains(indexes[i])) continue;
@@ -118,15 +117,20 @@ namespace Dendrite.Preprocessors
 
         }
 
-        //public override Type ConfigControl => typeof(YoloDecoderConfigControl);
         public override object Process(object inp)
         {
-            var list = inp as object[];
-            var net = list.First(z => z is Nnet) as Nnet;
-
-            var ret = yoloBoxesDecode(net, net.lastReadedMat.Width, net.lastReadedMat.Height, NmsThreshold, Threshold, AllowedClasses.Count() == 0 ? null : AllowedClasses.ToArray());
-
-            return ret;
+            var r1 = InputSlots[0].Data as InternalArray;
+            var r2 = InputSlots[1].Data as InternalArray;
+            var r3 = InputSlots[2].Data as int[];
+            var rr2 = r2.ToFloatArray();
+            var ret = yoloBoxesDecode(r3[3], r3[2], r1, rr2, NmsThreshold, Threshold, AllowedClasses.Count == 0 ? null : AllowedClasses.ToArray());
+            ObjectDetectionContext ctx = new ObjectDetectionContext()
+            {
+                Infos = ret,
+                Size = new OpenCvSharp.Size(r3[3], r3[2])
+            };
+            OutputSlots[0].Data = ctx;
+            return ctx;
         }
     }
 }

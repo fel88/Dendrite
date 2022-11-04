@@ -29,6 +29,7 @@ namespace Dendrite
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.textBox9 = new System.Windows.Forms.TextBox();
@@ -58,18 +59,66 @@ namespace Dendrite
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+            this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.setToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.all1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.all0ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setShapeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.postprocessDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compareWithNpyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateAnDShowRawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader9 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader9 = new System.Windows.Forms.ColumnHeader();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.convertToIamgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.binaryMaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.byteArrayasisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rgbMaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveImageToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveArrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.binaryAsisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.binaryshapeInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.boxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.confToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.locationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.heatmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.yToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.depthmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decodeAllAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.boxesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.yoloToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decodeAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.greedyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.руфеьфзToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.depthmsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compareWithNumpyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.numpyFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.binaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.shapebinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel5.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.contextMenuStrip3.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel2
@@ -218,7 +267,7 @@ namespace Dendrite
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage2.Size = new System.Drawing.Size(315, 187);
+            this.tabPage2.Size = new System.Drawing.Size(314, 187);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -279,7 +328,7 @@ namespace Dendrite
             this.tabPage3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage3.Size = new System.Drawing.Size(315, 187);
+            this.tabPage3.Size = new System.Drawing.Size(314, 187);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Video settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -354,6 +403,7 @@ namespace Dendrite
             this.columnHeader3,
             this.columnHeader4,
             this.columnHeader5});
+            this.listView2.ContextMenuStrip = this.contextMenuStrip3;
             this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView2.FullRowSelect = true;
             this.listView2.GridLines = true;
@@ -378,6 +428,109 @@ namespace Dendrite
             // 
             this.columnHeader5.Text = "Type";
             // 
+            // contextMenuStrip3
+            // 
+            this.contextMenuStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setToolStripMenuItem,
+            this.postprocessDataToolStripMenuItem,
+            this.loadToolStripMenuItem});
+            this.contextMenuStrip3.Name = "contextMenuStrip3";
+            this.contextMenuStrip3.Size = new System.Drawing.Size(181, 92);
+            // 
+            // setToolStripMenuItem
+            // 
+            this.setToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.all1ToolStripMenuItem,
+            this.all0ToolStripMenuItem,
+            this.randomToolStripMenuItem,
+            this.setShapeToolStripMenuItem});
+            this.setToolStripMenuItem.Name = "setToolStripMenuItem";
+            this.setToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setToolStripMenuItem.Text = "set";
+            // 
+            // all1ToolStripMenuItem
+            // 
+            this.all1ToolStripMenuItem.Name = "all1ToolStripMenuItem";
+            this.all1ToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.all1ToolStripMenuItem.Text = "all 1";
+            // 
+            // all0ToolStripMenuItem
+            // 
+            this.all0ToolStripMenuItem.Name = "all0ToolStripMenuItem";
+            this.all0ToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.all0ToolStripMenuItem.Text = "all 0";
+            // 
+            // randomToolStripMenuItem
+            // 
+            this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
+            this.randomToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.randomToolStripMenuItem.Text = "random";
+            // 
+            // setShapeToolStripMenuItem
+            // 
+            this.setShapeToolStripMenuItem.Name = "setShapeToolStripMenuItem";
+            this.setShapeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setShapeToolStripMenuItem.Text = "set shape";
+            this.setShapeToolStripMenuItem.Click += new System.EventHandler(this.setShapeToolStripMenuItem_Click);
+            // 
+            // postprocessDataToolStripMenuItem
+            // 
+            this.postprocessDataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.updateToolStripMenuItem,
+            this.showToolStripMenuItem,
+            this.compareWithNpyToolStripMenuItem,
+            this.updateAnDShowRawToolStripMenuItem});
+            this.postprocessDataToolStripMenuItem.Name = "postprocessDataToolStripMenuItem";
+            this.postprocessDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.postprocessDataToolStripMenuItem.Text = "postprocess data";
+            // 
+            // updateToolStripMenuItem
+            // 
+            this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.updateToolStripMenuItem.Text = "update";
+            // 
+            // showToolStripMenuItem
+            // 
+            this.showToolStripMenuItem.Name = "showToolStripMenuItem";
+            this.showToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.showToolStripMenuItem.Text = "show";
+            // 
+            // compareWithNpyToolStripMenuItem
+            // 
+            this.compareWithNpyToolStripMenuItem.Name = "compareWithNpyToolStripMenuItem";
+            this.compareWithNpyToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.compareWithNpyToolStripMenuItem.Text = "compare with npy";
+            // 
+            // updateAnDShowRawToolStripMenuItem
+            // 
+            this.updateAnDShowRawToolStripMenuItem.Name = "updateAnDShowRawToolStripMenuItem";
+            this.updateAnDShowRawToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.updateAnDShowRawToolStripMenuItem.Text = "update and show raw";
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.imageToolStripMenuItem,
+            this.nyToolStripMenuItem,
+            this.shapebinaryToolStripMenuItem});
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadToolStripMenuItem.Text = "load";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            // 
+            // imageToolStripMenuItem
+            // 
+            this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
+            this.imageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.imageToolStripMenuItem.Text = "image";
+            // 
+            // nyToolStripMenuItem
+            // 
+            this.nyToolStripMenuItem.Name = "nyToolStripMenuItem";
+            this.nyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.nyToolStripMenuItem.Text = "npy";
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -395,6 +548,7 @@ namespace Dendrite
             this.columnHeader2,
             this.columnHeader6,
             this.columnHeader9});
+            this.listView1.ContextMenuStrip = this.contextMenuStrip1;
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
@@ -415,13 +569,253 @@ namespace Dendrite
             // 
             this.columnHeader2.Text = "Dims";
             // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Type";
+            // 
             // columnHeader9
             // 
             this.columnHeader9.Text = "Tags";
             // 
-            // columnHeader6
+            // contextMenuStrip1
             // 
-            this.columnHeader6.Text = "Type";
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.convertToIamgeToolStripMenuItem,
+            this.saveImageToFileToolStripMenuItem,
+            this.saveArrayToolStripMenuItem,
+            this.setAsToolStripMenuItem,
+            this.decodeAllAsToolStripMenuItem,
+            this.decodeAsToolStripMenuItem,
+            this.compareWithNumpyToolStripMenuItem,
+            this.infoToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 180);
+            // 
+            // convertToIamgeToolStripMenuItem
+            // 
+            this.convertToIamgeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.binaryMaskToolStripMenuItem,
+            this.rGBToolStripMenuItem,
+            this.rgbMaskToolStripMenuItem});
+            this.convertToIamgeToolStripMenuItem.Name = "convertToIamgeToolStripMenuItem";
+            this.convertToIamgeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.convertToIamgeToolStripMenuItem.Text = "convert to image";
+            // 
+            // binaryMaskToolStripMenuItem
+            // 
+            this.binaryMaskToolStripMenuItem.Name = "binaryMaskToolStripMenuItem";
+            this.binaryMaskToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.binaryMaskToolStripMenuItem.Text = "binary mask";
+            this.binaryMaskToolStripMenuItem.Click += new System.EventHandler(this.binaryMaskToolStripMenuItem_Click);
+            // 
+            // rGBToolStripMenuItem
+            // 
+            this.rGBToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.byteArrayasisToolStripMenuItem});
+            this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.rGBToolStripMenuItem.Text = "RGB";
+            // 
+            // byteArrayasisToolStripMenuItem
+            // 
+            this.byteArrayasisToolStripMenuItem.Name = "byteArrayasisToolStripMenuItem";
+            this.byteArrayasisToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.byteArrayasisToolStripMenuItem.Text = "byte array (as-is)";
+            // 
+            // rgbMaskToolStripMenuItem
+            // 
+            this.rgbMaskToolStripMenuItem.Name = "rgbMaskToolStripMenuItem";
+            this.rgbMaskToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.rgbMaskToolStripMenuItem.Text = "rgb mask";
+            // 
+            // saveImageToFileToolStripMenuItem
+            // 
+            this.saveImageToFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toFileToolStripMenuItem,
+            this.toClipboardToolStripMenuItem});
+            this.saveImageToFileToolStripMenuItem.Name = "saveImageToFileToolStripMenuItem";
+            this.saveImageToFileToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.saveImageToFileToolStripMenuItem.Text = "save image";
+            // 
+            // toFileToolStripMenuItem
+            // 
+            this.toFileToolStripMenuItem.Name = "toFileToolStripMenuItem";
+            this.toFileToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.toFileToolStripMenuItem.Text = "to file";
+            // 
+            // toClipboardToolStripMenuItem
+            // 
+            this.toClipboardToolStripMenuItem.Name = "toClipboardToolStripMenuItem";
+            this.toClipboardToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.toClipboardToolStripMenuItem.Text = "to clipboard";
+            // 
+            // saveArrayToolStripMenuItem
+            // 
+            this.saveArrayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.binaryAsisToolStripMenuItem,
+            this.binaryshapeInfoToolStripMenuItem});
+            this.saveArrayToolStripMenuItem.Name = "saveArrayToolStripMenuItem";
+            this.saveArrayToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.saveArrayToolStripMenuItem.Text = "save array";
+            // 
+            // binaryAsisToolStripMenuItem
+            // 
+            this.binaryAsisToolStripMenuItem.Name = "binaryAsisToolStripMenuItem";
+            this.binaryAsisToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.binaryAsisToolStripMenuItem.Text = "binary as-is";
+            this.binaryAsisToolStripMenuItem.Click += new System.EventHandler(this.binaryAsisToolStripMenuItem_Click);
+            // 
+            // binaryshapeInfoToolStripMenuItem
+            // 
+            this.binaryshapeInfoToolStripMenuItem.Name = "binaryshapeInfoToolStripMenuItem";
+            this.binaryshapeInfoToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.binaryshapeInfoToolStripMenuItem.Text = "binary+shape info";
+            this.binaryshapeInfoToolStripMenuItem.Click += new System.EventHandler(this.binaryshapeInfoToolStripMenuItem_Click);
+            // 
+            // setAsToolStripMenuItem
+            // 
+            this.setAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.boxesToolStripMenuItem,
+            this.heatmapToolStripMenuItem,
+            this.depthmapToolStripMenuItem});
+            this.setAsToolStripMenuItem.Name = "setAsToolStripMenuItem";
+            this.setAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.setAsToolStripMenuItem.Text = "set as";
+            // 
+            // boxesToolStripMenuItem
+            // 
+            this.boxesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.confToolStripMenuItem,
+            this.locationToolStripMenuItem});
+            this.boxesToolStripMenuItem.Name = "boxesToolStripMenuItem";
+            this.boxesToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.boxesToolStripMenuItem.Text = "boxes";
+            // 
+            // confToolStripMenuItem
+            // 
+            this.confToolStripMenuItem.CheckOnClick = true;
+            this.confToolStripMenuItem.Name = "confToolStripMenuItem";
+            this.confToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.confToolStripMenuItem.Text = "conf";
+            // 
+            // locationToolStripMenuItem
+            // 
+            this.locationToolStripMenuItem.CheckOnClick = true;
+            this.locationToolStripMenuItem.Name = "locationToolStripMenuItem";
+            this.locationToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.locationToolStripMenuItem.Text = "location";
+            // 
+            // heatmapToolStripMenuItem
+            // 
+            this.heatmapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.yToolStripMenuItem});
+            this.heatmapToolStripMenuItem.Name = "heatmapToolStripMenuItem";
+            this.heatmapToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.heatmapToolStripMenuItem.Text = "heatmap";
+            // 
+            // yToolStripMenuItem
+            // 
+            this.yToolStripMenuItem.Name = "yToolStripMenuItem";
+            this.yToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
+            this.yToolStripMenuItem.Text = "y";
+            // 
+            // depthmapToolStripMenuItem
+            // 
+            this.depthmapToolStripMenuItem.Name = "depthmapToolStripMenuItem";
+            this.depthmapToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.depthmapToolStripMenuItem.Text = "depthmap";
+            // 
+            // decodeAllAsToolStripMenuItem
+            // 
+            this.decodeAllAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.boxesToolStripMenuItem1,
+            this.yoloToolStripMenuItem});
+            this.decodeAllAsToolStripMenuItem.Name = "decodeAllAsToolStripMenuItem";
+            this.decodeAllAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.decodeAllAsToolStripMenuItem.Text = "decode all as";
+            // 
+            // boxesToolStripMenuItem1
+            // 
+            this.boxesToolStripMenuItem1.Name = "boxesToolStripMenuItem1";
+            this.boxesToolStripMenuItem1.Size = new System.Drawing.Size(104, 22);
+            this.boxesToolStripMenuItem1.Text = "boxes";
+            // 
+            // yoloToolStripMenuItem
+            // 
+            this.yoloToolStripMenuItem.Name = "yoloToolStripMenuItem";
+            this.yoloToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.yoloToolStripMenuItem.Text = "yolo";
+            // 
+            // decodeAsToolStripMenuItem
+            // 
+            this.decodeAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.textToolStripMenuItem,
+            this.руфеьфзToolStripMenuItem,
+            this.depthmsToolStripMenuItem});
+            this.decodeAsToolStripMenuItem.Name = "decodeAsToolStripMenuItem";
+            this.decodeAsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.decodeAsToolStripMenuItem.Text = "decode as";
+            // 
+            // textToolStripMenuItem
+            // 
+            this.textToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.greedyToolStripMenuItem});
+            this.textToolStripMenuItem.Name = "textToolStripMenuItem";
+            this.textToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.textToolStripMenuItem.Text = "text";
+            // 
+            // greedyToolStripMenuItem
+            // 
+            this.greedyToolStripMenuItem.Name = "greedyToolStripMenuItem";
+            this.greedyToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.greedyToolStripMenuItem.Text = "greedy";
+            // 
+            // руфеьфзToolStripMenuItem
+            // 
+            this.руфеьфзToolStripMenuItem.Name = "руфеьфзToolStripMenuItem";
+            this.руфеьфзToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.руфеьфзToolStripMenuItem.Text = "heatmap";
+            // 
+            // depthmsToolStripMenuItem
+            // 
+            this.depthmsToolStripMenuItem.Name = "depthmsToolStripMenuItem";
+            this.depthmsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.depthmsToolStripMenuItem.Text = "depthmap";
+            // 
+            // compareWithNumpyToolStripMenuItem
+            // 
+            this.compareWithNumpyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.numpyFileToolStripMenuItem,
+            this.binaryToolStripMenuItem});
+            this.compareWithNumpyToolStripMenuItem.Name = "compareWithNumpyToolStripMenuItem";
+            this.compareWithNumpyToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.compareWithNumpyToolStripMenuItem.Text = "compare with";
+            // 
+            // numpyFileToolStripMenuItem
+            // 
+            this.numpyFileToolStripMenuItem.Name = "numpyFileToolStripMenuItem";
+            this.numpyFileToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.numpyFileToolStripMenuItem.Text = "numpy file";
+            // 
+            // binaryToolStripMenuItem
+            // 
+            this.binaryToolStripMenuItem.Name = "binaryToolStripMenuItem";
+            this.binaryToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.binaryToolStripMenuItem.Text = "binary float array file";
+            // 
+            // infoToolStripMenuItem
+            // 
+            this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
+            this.infoToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.infoToolStripMenuItem.Text = "info";
+            this.infoToolStripMenuItem.Click += new System.EventHandler(this.infoToolStripMenuItem_Click);
+            // 
+            // shapebinaryToolStripMenuItem
+            // 
+            this.shapebinaryToolStripMenuItem.Name = "shapebinaryToolStripMenuItem";
+            this.shapebinaryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.shapebinaryToolStripMenuItem.Text = "shape+binary";
+            this.shapebinaryToolStripMenuItem.Click += new System.EventHandler(this.shapebinaryToolStripMenuItem_Click);
             // 
             // NetControlConfig
             // 
@@ -440,6 +834,8 @@ namespace Dendrite
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.contextMenuStrip3.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -481,5 +877,51 @@ namespace Dendrite
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private ColumnHeader columnHeader6;
+        private ContextMenuStrip contextMenuStrip3;
+        private ToolStripMenuItem setToolStripMenuItem;
+        private ToolStripMenuItem all1ToolStripMenuItem;
+        private ToolStripMenuItem all0ToolStripMenuItem;
+        private ToolStripMenuItem randomToolStripMenuItem;
+        private ToolStripMenuItem setShapeToolStripMenuItem;
+        private ToolStripMenuItem postprocessDataToolStripMenuItem;
+        private ToolStripMenuItem updateToolStripMenuItem;
+        private ToolStripMenuItem showToolStripMenuItem;
+        private ToolStripMenuItem compareWithNpyToolStripMenuItem;
+        private ToolStripMenuItem updateAnDShowRawToolStripMenuItem;
+        private ToolStripMenuItem loadToolStripMenuItem;
+        private ToolStripMenuItem imageToolStripMenuItem;
+        private ToolStripMenuItem nyToolStripMenuItem;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem convertToIamgeToolStripMenuItem;
+        private ToolStripMenuItem binaryMaskToolStripMenuItem;
+        private ToolStripMenuItem rGBToolStripMenuItem;
+        private ToolStripMenuItem byteArrayasisToolStripMenuItem;
+        private ToolStripMenuItem rgbMaskToolStripMenuItem;
+        private ToolStripMenuItem saveImageToFileToolStripMenuItem;
+        private ToolStripMenuItem toFileToolStripMenuItem;
+        private ToolStripMenuItem toClipboardToolStripMenuItem;
+        private ToolStripMenuItem saveArrayToolStripMenuItem;
+        private ToolStripMenuItem binaryAsisToolStripMenuItem;
+        private ToolStripMenuItem setAsToolStripMenuItem;
+        private ToolStripMenuItem boxesToolStripMenuItem;
+        private ToolStripMenuItem confToolStripMenuItem;
+        private ToolStripMenuItem locationToolStripMenuItem;
+        private ToolStripMenuItem heatmapToolStripMenuItem;
+        private ToolStripMenuItem yToolStripMenuItem;
+        private ToolStripMenuItem depthmapToolStripMenuItem;
+        private ToolStripMenuItem decodeAllAsToolStripMenuItem;
+        private ToolStripMenuItem boxesToolStripMenuItem1;
+        private ToolStripMenuItem yoloToolStripMenuItem;
+        private ToolStripMenuItem decodeAsToolStripMenuItem;
+        private ToolStripMenuItem textToolStripMenuItem;
+        private ToolStripMenuItem greedyToolStripMenuItem;
+        private ToolStripMenuItem руфеьфзToolStripMenuItem;
+        private ToolStripMenuItem depthmsToolStripMenuItem;
+        private ToolStripMenuItem compareWithNumpyToolStripMenuItem;
+        private ToolStripMenuItem numpyFileToolStripMenuItem;
+        private ToolStripMenuItem binaryToolStripMenuItem;
+        private ToolStripMenuItem infoToolStripMenuItem;
+        private ToolStripMenuItem binaryshapeInfoToolStripMenuItem;
+        private ToolStripMenuItem shapebinaryToolStripMenuItem;
     }
 }

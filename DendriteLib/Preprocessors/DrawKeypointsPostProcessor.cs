@@ -1,8 +1,10 @@
 ﻿using Dendrite.Lib;
 using OpenCvSharp;
+using System.Text;
 
 namespace Dendrite.Preprocessors
 {
+    [XmlName(XmlKey = "keypointsDrawer")]
     public class DrawKeypointsPostProcessor : AbstractPreprocessor, IImageContainer
     {
 
@@ -17,7 +19,10 @@ namespace Dendrite.Preprocessors
         public static int[] Edges = new int[] {
             0,1,0,2,2,4,1,3,6,8,8,10,5,7,7,9,5,11,11,13,13,15,6,12,12,14,14,16,5,6
         };
-
+        public override void StoreXml(StringBuilder sb)
+        {
+            sb.AppendLine("<keypointsDrawer/>");
+        }
         public Mat Image => OutputSlots[0].Data as Mat;
 
         public override object Process(object input)
