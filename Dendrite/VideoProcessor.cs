@@ -1,5 +1,4 @@
-﻿using Dendrite.Lib;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 using System.Diagnostics;
 
 namespace Dendrite
@@ -25,16 +24,20 @@ namespace Dendrite
             }
             outputPath = sfd.FileName;
 
-            th.Start();
+            Process();            
         }
 
         InferenceEnvironment env;
-
-        Thread th;
-        internal void Init(InferenceEnvironment _env, string fileName)
+        string fileName;
+        
+        internal void Init(InferenceEnvironment _env, string _fileName)
         {
             env = _env;
+            fileName = _fileName;
+        }
 
+        async void Process()
+        {
             //var node = env.Net.Nodes.First(z => z.IsInput);
             VideoCapture cap = new VideoCapture(fileName);
             Mat mat = new Mat();
@@ -58,53 +61,58 @@ namespace Dendrite
                 env.Net.InputDatas[node.Name] = new InputInfo() { Data = mat };
             }*/
 
+            await Task.Run(() =>
+            {
+                try
+                {
+                    using (var vid = new VideoWriter(outputPath, FourCC.XVID, OutputVideoFps, new OpenCvSharp.Size(last1.Width, last1.Height)))
+                    {
+                        var nFrames = cap.Get(VideoCaptureProperties.FrameCount);
 
-            th = new Thread(() =>
-           {
-               try
-               {
-                   using (var vid = new VideoWriter(outputPath, FourCC.XVID, OutputVideoFps, new OpenCvSharp.Size(last1.Width, last1.Height)))
-                   {
-                       var nFrames = cap.Get(VideoCaptureProperties.FrameCount);
+                        Mat img = new Mat();
+                        while (cap.Read(img))
+                        {
+                            if (cancel)
+                                break;
 
+                            sn.SourceMat = img.Clone();
+                            env.Process();
+                            var outp = env.Pipeline.GetOutputs();
+                            var last = outp.First(z => z is Mat) as Mat;
 
-                       Mat img = new Mat();
-                       while (cap.Read(img))
-                       {
-                           if (cancel)
-                               break;
+                            if (last.Type() != MatType.CV_8UC3)
+                                last.ConvertTo(last, MatType.CV_8UC3);
 
-                           sn.SourceMat = img.Clone();
-                           env.Process();
-                           var outp = env.Pipeline.GetOutputs();
-                           var last = outp.First(z => z is Mat) as Mat;
-                           vid.Write(last);
-                           var pf = cap.Get(VideoCaptureProperties.PosFrames);
-                           int perc = (int)Math.Round((pf / (float)nFrames) * 100);
-                           progressBar1.Invoke(((Action)(() =>
-                           {
-                               Text = $"Processing: {fileName}  {mat.Width}x{mat.Height}  {pf} / {nFrames}  {perc}%";
-                               progressBar1.Value = perc;
-                           })));
-                       }
-                       progressBar1.Invoke(((Action)(() =>
-                       {
-                           if (Extensions.ShowQuestion("Open video?", Text) == DialogResult.Yes)
-                           {
-                               Process.Start(new ProcessStartInfo(outputPath) { UseShellExecute = true });
-                           }
-                       })));
+                            vid.Write(last);
+                            last.Dispose();
+                            sn.SourceMat.Dispose();
+                            GC.Collect();
 
-                   }
-               }
-               finally
-               {
-                   Close();
-               }
-           });
-            th.IsBackground = true;
+                            var pf = cap.Get(VideoCaptureProperties.PosFrames);
+                            int perc = (int)Math.Round((pf / (float)nFrames) * 100);
+                            progressBar1.Invoke(((Action)(() =>
+                            {
+                                Text = $"Processing: {fileName}  {mat.Width}x{mat.Height}  {pf} / {nFrames}  {perc}%";
+                                progressBar1.Value = perc;
+                            })));
+                        }
+                        progressBar1.Invoke(((Action)(() =>
+                        {
+                            if (Extensions.ShowQuestion("Open video?", Text) == DialogResult.Yes)
+                            {
+                                System.Diagnostics.Process.Start(new ProcessStartInfo(outputPath) { UseShellExecute = true });
+                            }
+                        })));
 
+                    }
+                }
+                finally
+                {
+                    Close();
+                }
+            });
         }
+
         bool cancel = false;
         private void button1_Click(object sender, EventArgs e)
         {

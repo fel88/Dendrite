@@ -217,6 +217,7 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.cropToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -630,28 +631,28 @@
             // all1ToolStripMenuItem
             // 
             this.all1ToolStripMenuItem.Name = "all1ToolStripMenuItem";
-            this.all1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.all1ToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.all1ToolStripMenuItem.Text = "all 1";
             this.all1ToolStripMenuItem.Click += new System.EventHandler(this.all1ToolStripMenuItem_Click);
             // 
             // all0ToolStripMenuItem
             // 
             this.all0ToolStripMenuItem.Name = "all0ToolStripMenuItem";
-            this.all0ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.all0ToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.all0ToolStripMenuItem.Text = "all 0";
             this.all0ToolStripMenuItem.Click += new System.EventHandler(this.all0ToolStripMenuItem_Click);
             // 
             // randomToolStripMenuItem
             // 
             this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
-            this.randomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.randomToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.randomToolStripMenuItem.Text = "random";
             this.randomToolStripMenuItem.Click += new System.EventHandler(this.randomToolStripMenuItem_Click);
             // 
             // setShapeToolStripMenuItem
             // 
             this.setShapeToolStripMenuItem.Name = "setShapeToolStripMenuItem";
-            this.setShapeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setShapeToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.setShapeToolStripMenuItem.Text = "set shape";
             this.setShapeToolStripMenuItem.Click += new System.EventHandler(this.setShapeToolStripMenuItem_Click);
             // 
@@ -1311,6 +1312,7 @@
             this.toolStripMenuItem10,
             this.toolStripMenuItem11,
             this.toolStripMenuItem12,
+            this.cropToolStripMenuItem,
             this.toolStripMenuItem13,
             this.toolStripSeparator2,
             this.toolStripMenuItem14,
@@ -1949,6 +1951,13 @@
             this.timer2.Interval = 25;
             this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
+            // cropToolStripMenuItem
+            // 
+            this.cropToolStripMenuItem.Name = "cropToolStripMenuItem";
+            this.cropToolStripMenuItem.Size = new System.Drawing.Size(283, 22);
+            this.cropToolStripMenuItem.Text = "crop";
+            this.cropToolStripMenuItem.Click += new System.EventHandler(this.cropToolStripMenuItem_Click);
+            // 
             // Processing
             // 
             this.AllowDrop = true;
@@ -2198,5 +2207,6 @@
         private System.Windows.Forms.ToolStripMenuItem blendToolStripMenuItem;
         private ToolStripMenuItem imgToolStripMenuItem;
         private ToolStripMenuItem putTextToolStripMenuItem;
+        private ToolStripMenuItem cropToolStripMenuItem;
     }
 }

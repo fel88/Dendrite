@@ -2392,5 +2392,14 @@ namespace Dendrite
                 }
             }
         }
+
+        private void cropToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new CropPreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
     }
 }
