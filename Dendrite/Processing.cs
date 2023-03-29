@@ -93,7 +93,7 @@ namespace Dendrite
                 }
             }
         }
-        
+
         private void UpdateSelectedNodeControl()
         {
             if (!(dragged is NodeUI n)) return;
@@ -109,7 +109,7 @@ namespace Dendrite
                 return;
             }
             if (!(n.Node.Tag is IInputPreprocessor prep)) return;
-                        
+
             groupBox1.Controls.Clear();
 
             var cands = Assembly.GetCallingAssembly().GetTypes().Where(z => z.GetInterfaces().Contains(typeof(IProcessorConfigControl))).ToArray();
@@ -126,6 +126,15 @@ namespace Dendrite
                 cc2.Dock = DockStyle.Fill;
                 groupBox1.Controls.Add(cc2);
             }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Delete)
+            {
+                DeleteNodes();
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void Processing_Load(object sender, EventArgs e)
@@ -398,7 +407,7 @@ namespace Dendrite
         {
 
         }
-        
+
 
         private void convertToIamgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1037,7 +1046,7 @@ namespace Dendrite
             {
                 toolStripButton1.Enabled = true;
             }
-            
+
         }
 
         private void loadImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1470,13 +1479,13 @@ namespace Dendrite
 
         private void yoloDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-          
+
         }
 
 
         private void drawBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void templateYoloToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1523,7 +1532,7 @@ namespace Dendrite
 
         private void keypointDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void drawKeypointsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1596,7 +1605,7 @@ namespace Dendrite
 
         private void nmsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void checkBox5_CheckedChanged(object sender, EventArgs e)
@@ -1644,7 +1653,7 @@ namespace Dendrite
 
         private void depthmapDecodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1713,7 +1722,7 @@ namespace Dendrite
 
         private void rgb2bgrToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
 
         }
 
@@ -1931,7 +1940,7 @@ namespace Dendrite
             ofd.Filter = "Dendrite inference environment (*.den)|*.den";
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
-            LoadEnvironmentAsync(ofd.FileName);            
+            LoadEnvironmentAsync(ofd.FileName);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2009,7 +2018,7 @@ namespace Dendrite
 
         private void boxesDecoderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void showImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2040,32 +2049,48 @@ namespace Dendrite
             env.Pipeline.Nodes.Add(nn);
             pipelineUI.AddItem(nn);
         }
+        void DeleteNodes()
+        {
+            if (selected == null)
+                return;
+
+            if (Extensions.ShowQuestion("Are you sure to delete selected nodes?", Text) == DialogResult.Yes)
+            {
+                var n = (selected as NodeUI);
+                env.Pipeline.Nodes.Remove(n.Node);
+                n.Node.Detach();
+                pipelineUI.Elements.Remove(n);
+            }
+        }
 
         private void deleteToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (selected != null)
-            {
-                if (Extensions.ShowQuestion("Are you sure to delete selected nodes?", Text) == DialogResult.Yes)
-                {
-                    var n = (selected as NodeUI);
-                    env.Pipeline.Nodes.Remove(n.Node);
-                    n.Node.Detach();
-                    pipelineUI.Elements.Remove(n);
-                }
-            }
+            DeleteNodes();
         }
 
         private void loadImgToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (selected != null)
+            if (selected == null)
+                return;
+
+            if (selected.Node is ImageSourceNode isn)
             {
                 OpenFileDialog ofd = new OpenFileDialog();
-                if (ofd.ShowDialog() != DialogResult.OK) return;
+                if (ofd.ShowDialog() != DialogResult.OK)
+                    return;
+
                 var mat = Cv2.ImRead(ofd.FileName);
-                if ((selected.Node is ImageSourceNode isn))
-                {
-                    isn.SourceMat = mat;
-                }
+                isn.SourceMat = mat;
+            }
+            else if (selected.Node is NpySourceNode npy)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "npy files (*.npy)|*.npy";
+                if (ofd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                var data = NpyLoader.Load(ofd.FileName);
+                npy.Data = data;
             }
         }
 
@@ -2182,11 +2207,7 @@ namespace Dendrite
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            var r = new ResizePreprocessor();
-            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
-
-            env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);
+            
         }
 
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
@@ -2341,7 +2362,7 @@ namespace Dendrite
             var r = new NmsPostProcessors();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);            
+            pipelineUI.AddItem(node);
         }
 
         private void toolStripMenuItem24_Click(object sender, EventArgs e)
@@ -2364,7 +2385,7 @@ namespace Dendrite
             var r = new DepthmapDecodePreprocessor();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
             env.Pipeline.Nodes.Add(node);
-            pipelineUI.AddItem(node);            
+            pipelineUI.AddItem(node);
         }
 
         private void toolStripMenuItem15_Click(object sender, EventArgs e)
@@ -2396,6 +2417,30 @@ namespace Dendrite
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var r = new CropPreprocessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void argMaxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var r = new ArgMaxProcessor();
+            var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
+            env.Pipeline.Nodes.Add(node);
+            pipelineUI.AddItem(node);
+        }
+
+        private void npySourceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var nn = new NpySourceNode();
+            env.Pipeline.Nodes.Add(nn);
+            pipelineUI.AddItem(nn);
+        }
+
+        private void resizeToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            var r = new ResizePreprocessor();
             var node = InferenceEnvironment.GenerateNodeFromProcessor(r);
 
             env.Pipeline.Nodes.Add(node);

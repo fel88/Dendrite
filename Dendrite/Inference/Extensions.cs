@@ -94,5 +94,23 @@
             }
             return res;
         }
+        public static void SetStyle(this TextBox textBox,TextBoxStyle style)
+        {
+            switch (style)
+            {
+                case TextBoxStyle.Error:
+                    textBox.BackColor = Color.Red;
+                    textBox.ForeColor= Color.White;
+                    break;
+                case TextBoxStyle.Default:
+                    textBox.BackColor = Color.White;
+                    textBox.ForeColor = Color.Black;
+                    break;
+                case TextBoxStyle.Warning:
+                    textBox.BackColor = Color.Yellow;
+                    textBox.ForeColor = Color.Blue;
+                    break;
+            }
+        }
     }
 }

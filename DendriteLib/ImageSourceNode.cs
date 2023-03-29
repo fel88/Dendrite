@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace Dendrite
 {
-    public class ImageSourceNode : Node,IImageContainer
+    public class ImageSourceNode : Node, IImageContainer
     {
         public ImageSourceNode()
         {
@@ -51,7 +51,7 @@ namespace Dendrite
             StoreBody(sb);
             sb.AppendLine("</imgSourceNode>");
         }
-    }  
+    }
 }
 
 

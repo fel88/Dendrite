@@ -18,7 +18,7 @@ namespace Dendrite
             //var netEl = item.Element("net");
             ModelPath = item.Element("modelPath").Value;
             Tag = new Nnet();
-            Net.Init(fs,ModelPath);
+            Net.Init(fs, ModelPath);
         }
         public override void Process()
         {
@@ -34,7 +34,10 @@ namespace Dendrite
             {
                 if (!Inputs[i].Name.EndsWith("dims"))
                 {
-                    Net.SetInputArray(Inputs[i].Name, Inputs[i].Data.Data as float[]);
+                    if (Inputs[i].Data.Data is float[] ff)
+                        Net.SetInputArray(Inputs[i].Name, ff);
+                    else if(Inputs[i].Data.Data is InternalArray ar)
+                        Net.SetInputArray(Inputs[i].Name, ar.ToFloatArray());
                 }
             }
             Net.Run();
@@ -42,7 +45,7 @@ namespace Dendrite
             {
                 Outputs[i].Data.Data = Net.OutputDatas[Net.OutputDatas.Keys.ToArray()[i]];
             }
-            
+
             base.Process();
         }
 
@@ -55,7 +58,7 @@ namespace Dendrite
             sb.AppendLine($"<modelPath>{fi}</modelPath>");
 
             StoreBody(sb);
-        
+
             sb.AppendLine("</netNode>");
         }
     }

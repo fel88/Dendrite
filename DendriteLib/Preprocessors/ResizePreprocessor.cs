@@ -2,8 +2,11 @@
 using OpenCvSharp;
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Linq;
+using static Dendrite.ImageSourceNode;
+using static Onnx.TypeProto.Types;
 
 namespace Dendrite.Preprocessors
 {
@@ -25,6 +28,18 @@ namespace Dendrite.Preprocessors
         public int[] Dims = new[] { 1, 3, 256, 256 };
         public override void ParseXml(XElement sb)
         {
+            if (sb.Attribute("useFactor") != null)
+            {
+                UseFactor = bool.Parse(sb.Attribute("useFactor").Value);
+            }
+            if (sb.Attribute("nearest") != null)
+            {
+                NearestInterpolation = bool.Parse(sb.Attribute("nearest").Value);
+            }
+            if (sb.Attribute("factor") != null)
+            {
+                Factor = Helpers.ParseDouble(sb.Attribute("factor").Value);
+            }
             Dims = sb.Attribute("dims").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(Helpers.ParseInt).ToArray();
             if (sb.Attribute("externalSizeInput") != null)
             {
@@ -42,14 +57,17 @@ namespace Dendrite.Preprocessors
 
         public override void StoreXml(StringBuilder sb)
         {
-            sb.AppendLine($"<resize dims=\"{string.Join(";", Dims)}\" externalSizeInput=\"{InputSlots.Length == 2}\"/>");
+            sb.AppendLine($"<resize dims=\"{string.Join(";", Dims)}\" nearest=\"{NearestInterpolation}\" useFactor=\"{UseFactor}\" factor=\"{Factor}\" externalSizeInput=\"{InputSlots.Length == 2}\"/>");
         }
 
         public void Invalidate()
         {
             OnPinsChanged();
         }
-
+        public ImageSizeFormatTypeEnum SizeFormat { get; set; } = ImageSizeFormatTypeEnum.NCHW;
+        public bool UseFactor { get; set; } = false;
+        public double Factor { get; set; } = 1.0;
+        public bool NearestInterpolation { get; set; }
         public override object Process(object inp)
         {
             var input = InputSlots[0].Data as Mat;
@@ -58,9 +76,19 @@ namespace Dendrite.Preprocessors
                 Dims = InputSlots[1].Data as int[];
             }
             //var input = inp as Mat;
-            var ret = input.Resize(new OpenCvSharp.Size(Dims[3], Dims[2]));
+            Mat ret = null;
+            var interpolationMode = NearestInterpolation ? InterpolationFlags.Nearest : InterpolationFlags.Linear;
+            if (UseFactor)
+                ret = input.Resize(new OpenCvSharp.Size((int)(input.Width * Factor), (int)(input.Height * Factor)), interpolation: interpolationMode);
+            else
+                ret = input.Resize(new OpenCvSharp.Size(Dims[3], Dims[2]), interpolation: interpolationMode);
+
             OutputSlots[0].Data = ret;
             OutputSlots[1].Data = new[] { ret.Width, ret.Height };
+            if (SizeFormat == ImageSizeFormatTypeEnum.NCHW)
+            {
+                OutputSlots[1].Data = new int[] { 1, ret.Channels(), ret.Height, ret.Width };
+            }
             return ret;
         }
     }

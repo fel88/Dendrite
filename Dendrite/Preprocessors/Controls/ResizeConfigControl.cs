@@ -1,4 +1,6 @@
-﻿namespace Dendrite.Preprocessors.Controls
+﻿using Dendrite.Lib;
+
+namespace Dendrite.Preprocessors.Controls
 {
     [PreprocessorBind(typeof(ResizePreprocessor))]
     public partial class ResizeConfigControl : UserControl, IProcessorConfigControl
@@ -15,6 +17,8 @@
             textBox1.Text = proc.Dims[3].ToString();
             textBox2.Text = proc.Dims[2].ToString();
             checkBox1.Checked = proc.InputSlots.Length == 2;
+            checkBox2.Checked = proc.UseFactor;
+            textBox3.Text = proc.Factor.ToString();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -51,6 +55,24 @@
                 }
             }
 
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                proc.Factor = Helpers.ParseDouble(textBox3.Text);
+                textBox3.SetStyle(TextBoxStyle.Default);
+            }
+            catch (Exception ex)
+            {
+                textBox3.SetStyle(TextBoxStyle.Error);
+            }
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            proc.UseFactor = checkBox2.Checked;
         }
     }
 
