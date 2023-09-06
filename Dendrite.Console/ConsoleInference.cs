@@ -10,17 +10,21 @@ namespace Dendrite.Console
         }
 
         InferenceEnvironment env = new InferenceEnvironment();
-
-        public Mat Inference(string path)
+        public Mat Inference(Mat mat)
         {
             var topo = env.Pipeline.Toposort();
             if (topo.Length > 0 && topo.Any(z => z is ImageSourceNode))
             {
                 var sn = topo.First(z => z is ImageSourceNode) as ImageSourceNode;
-                sn.SourceMat = Cv2.ImRead(path);
+                sn.SourceMat = mat;
                 return Run();
             }
             return null;
+        }
+
+        public Mat Inference(string path)
+        {
+            return Inference(Cv2.ImRead(path));            
         }
 
         public void InferenceVideo(string path, string outputPath)

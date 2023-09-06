@@ -31,7 +31,7 @@
   <ItemGroup>
     <PackageReference Include="Dagre.NET" Version="1.0.0.6" />
     <PackageReference Include="Google.Protobuf" Version="3.21.9" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.13.1" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.15.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.6.0.20220608" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.6.0.20220608" />
