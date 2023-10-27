@@ -26,6 +26,8 @@ namespace Dendrite
         {
             InitializeComponent();
 
+
+
             if (File.Exists("settings.xml"))
             {
                 var doc = XDocument.Load("settings.xml");
@@ -41,7 +43,14 @@ namespace Dendrite
                 }
             }
 
-            ctx.Init(pictureBox1);
+            pictureBox1.Visible = false;
+            var rc = ctx.GenerateRenderControl() as Control;
+            pictureBox1.Parent.Controls.Add(rc);
+            rc.Dock = DockStyle.Fill;
+            tableLayoutPanel1.SetRowSpan(rc, 2);
+            RenderControl = rc;
+
+            ctx.Init(rc);
             pictureBox1.SetDoubleBuffered(true);
             //SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             ctx.Redraw = Redraw;
@@ -77,6 +86,7 @@ namespace Dendrite
             pictureBox1.Focus();
             pictureBox1.MouseMove += PictureBox1_MouseMove;
             pictureBox1.MouseDown += PictureBox1_MouseDown;
+            rc.MouseDown += Rc_MouseDown;
             HideInfoTab();
 
             var args = Environment.GetCommandLineArgs();
@@ -84,9 +94,21 @@ namespace Dendrite
             {
                 LoadModel(args[1]);
             }
+            EdgeNode.DrawingContext = ctx;
             Load += Form1_Load;
         }
 
+        private void Rc_MouseDown(object? sender, MouseEventArgs e)
+        {
+            if (hovered == null)
+                return;
+
+            selected = hovered;
+            ShowInfoTab();
+            UpdateInfo();
+        }
+
+        Control RenderControl = null;
         public static Type DefaultLayout = typeof(TableGraphLayout);
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -165,7 +187,7 @@ namespace Dendrite
         internal void StopDrawThread()
         {
             exitRequired = true;
-            reset.Set();            
+            reset.Set();
         }
 
         public static void Rec(StringBuilder sb, long[] dims, int level, float[] array, long offset, int? lenLimit = null)
@@ -302,7 +324,9 @@ namespace Dendrite
         }
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (hovered == null) return;
+            if (hovered == null)
+                return;
+
             selected = hovered;
             ShowInfoTab();
             UpdateInfo();
@@ -312,31 +336,19 @@ namespace Dendrite
         {
             //pictureBox1.Focus();
         }
-        public void DrawRoundedRectangle(Graphics g,
+        /*public void DrawRoundedRectangle(Graphics g,
                                  RectangleF r, int d, Pen pen)
         {
-            g.DrawPath(pen, GetRoundedRectangle(r, d));
+            g.DrawPath(pen, ctx.GetRoundedRectangle(r, d));
         }
-        public GraphicsPath GetRoundedRectangle(RectangleF r, int d)
+      */
+
+        public void FillRoundedRectangle(IDrawingContext g,
+                                RectangleF r, float d, Brush myBrush)
         {
-            if (d == 0) { d = 1; }
-            GraphicsPath gp = new GraphicsPath();
-
-            gp.AddArc(r.X, r.Y, d, d, 180, 90);
-            gp.AddArc(r.X + r.Width - d, r.Y, d, d, 270, 90);
-            gp.AddArc(r.X + r.Width - d, r.Y + r.Height - d, d, d,
-                                                             0, 90);
-            gp.AddArc(r.X, r.Y + r.Height - d, d, d, 90, 90);
-            gp.AddLine(r.X, r.Y + r.Height - d, r.X, r.Y + d / 2);
-
-            return gp;
+            g.FillPath(myBrush, ctx.GetRoundedRectangle(r, d));
         }
 
-        public void FillRoundedRectangle(Graphics g,
-                                RectangleF r, int d, Brush myBrush)
-        {
-            g.FillPath(myBrush, GetRoundedRectangle(r, d));
-        }
         GraphNode hovered = null;
         Font f = new Font("Arial", 18);
         Font f2 = new Font("Arial", 14);
@@ -358,12 +370,12 @@ namespace Dendrite
                     {
                         var dtag2 = citem.DrawTag as GraphNodeDrawInfo;
                         if (dtag2 == null) continue;
-                        var size = 6 * ctx.Zoom;
+                        var size = 6 * ctx.zoom;
                         AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);
                         Pen pen1 = new Pen(Color.Black);
                         pen1.CustomEndCap = bigArrow;
 
-                        ctx.Graphics.DrawLine(pen1,
+                        ctx.DrawLine(pen1,
                             ctx.Transform(dtag.Rect.Location.X + dtag.Rect.Size.Width / 2, dtag.Rect.Location.Y + dtag.Rect.Height / 2),
                             ctx.Transform(dtag2.Rect.Location.X + dtag2.Rect.Size.Width / 2, dtag2.Rect.Location.Y + dtag2.Rect.Height / 2)
                             );
@@ -389,10 +401,12 @@ namespace Dendrite
             {
                 ctx.Update();
 
-                ctx.Graphics.Clear(Color.White);
-                ctx.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                ctx.Clear(Color.White);
+                ctx.AntiAlias(true);
 
-                ctx.Graphics.ResetTransform();
+                ctx.ResetTransform();
+
+                //ctx.DrawLine(Pens.Black, ctx.Transform(new PointF(0, 0)), ctx.Transform( new PointF(100, 100)));
 
                 ///axis
                 //ctx.Graphics.DrawLine(Pens.Red, ctx.Transform(new PointF(0, 0)), ctx.Transform(new PointF(1000, 0)));
@@ -407,11 +421,13 @@ namespace Dendrite
                 }
 
             }
-            ctx.Box.Invoke((Action)(() =>
-                {
-                    ctx.Swap();
-                    //ctx.Box.Refresh();
-                }));
+
+
+            pictureBox1.Invoke((Action)(() =>
+            {
+                ctx.Swap();
+                //ctx.Box.Refresh();
+            }));
         }
 
         private void drawNodes(IDrawingContext ctx)
@@ -433,7 +449,7 @@ namespace Dendrite
 
                 textBrush = Brushes.Black;
 
-                int cornerRadius = (int)(15 * ctx.Zoom);
+                int cornerRadius = (int)(15 * ctx.zoom);
                 Brush brush = Brushes.LightGray;
                 textBrush = Brushes.White;
                 switch (item.LayerType)
@@ -486,25 +502,25 @@ namespace Dendrite
                     textBrush = Brushes.Black;
                     if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
                     {
-                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
-                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
-                        ctx.Graphics.FillPath(Brushes.White, Helpers.HalfRoundedRect(headerRect, cornerRadius));
-                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        ctx.FillPath(Brushes.White, ctx.RoundedRect(rr2, cornerRadius));
+                        ctx.FillPath(Brushes.White, ctx.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.DrawPath(Pens.Black, ctx.HalfRoundedRect(headerRect, cornerRadius));
 
                     }
                     else
                     {
-                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightYellow);
+                        FillRoundedRectangle(ctx, rr2, (40 * ctx.zoom), Brushes.LightYellow);
 
                     }
                 }
                 else if (CurrentLayout.FlashHoveredRelatives && item.Parents.Contains(hovered))
                 {
-                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightPink);
+                    FillRoundedRectangle(ctx, rr2, (40 * ctx.zoom), Brushes.LightPink);
                 }
                 else if (CurrentLayout.FlashHoveredRelatives && item.Childs.Contains(hovered))
                 {
-                    FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightBlue);
+                    FillRoundedRectangle(ctx, rr2, (40 * ctx.zoom), Brushes.LightBlue);
                 }
                 else
                 if (item == selected)
@@ -513,59 +529,59 @@ namespace Dendrite
 
                     if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
                     {
-                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
-                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
-                        ctx.Graphics.FillPath(Brushes.LightGreen, Helpers.HalfRoundedRect(headerRect, cornerRadius));
-                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        ctx.FillPath(Brushes.White, ctx.RoundedRect(rr2, cornerRadius));
+                        ctx.FillPath(Brushes.LightGreen, ctx.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.DrawPath(Pens.Black, ctx.HalfRoundedRect(headerRect, cornerRadius));
                     }
                     else
                     {
-                        FillRoundedRectangle(ctx.Graphics, rr2, (int)(40 * ctx.Zoom), Brushes.LightGreen);
+                        FillRoundedRectangle(ctx, rr2, (40 * ctx.zoom), Brushes.LightGreen);
                     }
                 }
                 else
                 {
                     if (CurrentLayout.DrawHeadersAllowed && item.DrawHeader)
                     {
-                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.Zoom);
-                        ctx.Graphics.FillPath(Brushes.White, Helpers.RoundedRect(rr2, cornerRadius));
+                        RectangleF headerRect = new RectangleF(rr2.Left, rr2.Top, rr2.Width, item.HeaderHeight * ctx.zoom);
+                        ctx.FillPath(Brushes.White, ctx.RoundedRect(rr2, cornerRadius));
 
-                        ctx.Graphics.FillPath(brush, Helpers.HalfRoundedRect(headerRect, cornerRadius));
-                        ctx.Graphics.DrawPath(Pens.Black, Helpers.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.FillPath(brush, ctx.HalfRoundedRect(headerRect, cornerRadius));
+                        ctx.DrawPath(Pens.Black, ctx.HalfRoundedRect(headerRect, cornerRadius));
 
                     }
                     else
                     {
-                        ctx.Graphics.FillPath(brush, Helpers.RoundedRect(rr2, cornerRadius));
+                        ctx.FillPath(brush, ctx.RoundedRect(rr2, cornerRadius));
 
                         //FillRoundedRectangle(ctx.Graphics, rr2, cornerRadius, brush);
                     }
                 }
-                ctx.Graphics.DrawPath(borderPen, Helpers.RoundedRect(rr2, cornerRadius));
+                ctx.DrawPath(borderPen, ctx.RoundedRect(rr2, cornerRadius));
 
                 //DrawRoundedRectangle(ctx.Graphics, rr, (int)(40 * ctx.zoom), Pens.Black);
 
 
-                ctx.Graphics.ResetTransform();
+                ctx.ResetTransform();
                 var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Top + 10);
-                ctx.Graphics.TranslateTransform(sh.X, sh.Y);
-                ctx.Graphics.ScaleTransform(ctx.Zoom, ctx.Zoom);
+                ctx.TranslateTransform(sh.X, sh.Y);
+                ctx.ScaleTransform(ctx.zoom, ctx.zoom);
                 //ctx.Graphics.DrawString($"{item.Name}: ({item.OpType})", f, Brushes.Black, 0, 0);
                 if (ShowFullNames || item.LayerType == LayerType.Input || item.LayerType == LayerType.Output)
                 {
-                    var ms = ctx.Graphics.MeasureString($"{item.Name}:{item.OpType}", f);
-                    ctx.Graphics.DrawString($"{item.Name}:{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    var ms = ctx.MeasureString($"{item.Name}:{item.OpType}", f);
+                    ctx.DrawString($"{item.Name}:{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
                 }
                 else
                 {
-                    var ms = ctx.Graphics.MeasureString($"{item.OpType}", f);
-                    ctx.Graphics.DrawString($"{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    var ms = ctx.MeasureString($"{item.OpType}", f);
+                    ctx.DrawString($"{item.OpType}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
                 }
 
                 if (item is GroupNode gn)
                 {
-                    var ms = ctx.Graphics.MeasureString($"Group: {gn.Prefix}", f);
-                    ctx.Graphics.DrawString($"Group: {gn.Prefix}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
+                    var ms = ctx.MeasureString($"Group: {gn.Prefix}", f);
+                    ctx.DrawString($"Group: {gn.Prefix}", f, textBrush, +dtag.Rect.Width / 2 - ms.Width / 2, 0);
                     /*ctx.Graphics.DrawPath(new Pen(Color.Blue, 5), Helpers.RoundedRect(new RectangleF(10, 0, 60, 60), (int)(cornerRadius / ctx.Zoom)));
                     ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 50, 10, 50, 50);
                     ctx.Graphics.DrawLine(new Pen(Color.Blue, 5), 20, 50, 50, 50);*/
@@ -576,13 +592,13 @@ namespace Dendrite
                     if (item.Data.Count > 0)
                     {
 
-                        ctx.Graphics.DrawString("W:", fb, Brushes.Black, 5, 35);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                        ctx.DrawString("W:", fb, Brushes.Black, 5, 35);
+                        ctx.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
                     }
                     if (item.Data.Count > 1)
                     {
-                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 65);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                        ctx.DrawString("B:", fb, Brushes.Black, 5, 65);
+                        ctx.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
                     }
                 }
                 if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Gather)
@@ -590,8 +606,8 @@ namespace Dendrite
                     var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
                     if (item.Attributes.Count > 0)
                     {
-                        ctx.Graphics.DrawString("Indicies = ", f, Brushes.Black, 5, 35);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Attributes[0].IntData)})", f, Brushes.Black, 120, 35);
+                        ctx.DrawString("Indicies = ", f, Brushes.Black, 5, 35);
+                        ctx.DrawString($"({string.Join("x", item.Attributes[0].IntData)})", f, Brushes.Black, 120, 35);
                     }
 
                 }
@@ -601,13 +617,13 @@ namespace Dendrite
                     if (item.Data.Count > 0)
                     {
 
-                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 35);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                        ctx.DrawString("B:", fb, Brushes.Black, 5, 35);
+                        ctx.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
                     }
                     if (item.Data.Count > 1)
                     {
-                        ctx.Graphics.DrawString("C:", fb, Brushes.Black, 5, 65);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                        ctx.DrawString("C:", fb, Brushes.Black, 5, 65);
+                        ctx.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
                     }
                 }
                 if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Lstm)
@@ -616,18 +632,18 @@ namespace Dendrite
                     if (item.Data.Count > 0)
                     {
 
-                        ctx.Graphics.DrawString("W:", fb, Brushes.Black, 5, 35);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                        ctx.DrawString("W:", fb, Brushes.Black, 5, 35);
+                        ctx.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
                     }
                     if (item.Data.Count > 1)
                     {
-                        ctx.Graphics.DrawString("R:", fb, Brushes.Black, 5, 65);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
+                        ctx.DrawString("R:", fb, Brushes.Black, 5, 65);
+                        ctx.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 45, 65);
                     }
                     if (item.Data.Count > 2)
                     {
-                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 95);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 45, 95);
+                        ctx.DrawString("B:", fb, Brushes.Black, 5, 95);
+                        ctx.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 45, 95);
                     }
                 }
                 if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.Batch)
@@ -635,24 +651,23 @@ namespace Dendrite
                     var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
                     if (item.Data.Count > 0)
                     {
-
-                        ctx.Graphics.DrawString("scale:", fb, Brushes.Black, 5, 35);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 85, 35);
+                        ctx.DrawString("scale:", fb, Brushes.Black, 5, 35);
+                        ctx.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 85, 35);
                     }
                     if (item.Data.Count > 1)
                     {
-                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 65);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 85, 65);
+                        ctx.DrawString("B:", fb, Brushes.Black, 5, 65);
+                        ctx.DrawString($"({string.Join("x", item.Data[1].Dims)})", f, Brushes.Black, 85, 65);
                     }
                     if (item.Data.Count > 2)
                     {
-                        ctx.Graphics.DrawString("mean:", fb, Brushes.Black, 5, 95);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 85, 95);
+                        ctx.DrawString("mean:", fb, Brushes.Black, 5, 95);
+                        ctx.DrawString($"({string.Join("x", item.Data[2].Dims)})", f, Brushes.Black, 85, 95);
                     }
                     if (item.Data.Count > 3)
                     {
-                        ctx.Graphics.DrawString("var:", fb, Brushes.Black, 5, 125);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[3].Dims)})", f, Brushes.Black, 85, 125);
+                        ctx.DrawString("var:", fb, Brushes.Black, 5, 125);
+                        ctx.DrawString($"({string.Join("x", item.Data[3].Dims)})", f, Brushes.Black, 85, 125);
                     }
                 }
                 if (CurrentLayout.DrawHeadersAllowed && item.LayerType == LayerType.MathOperation)
@@ -660,50 +675,48 @@ namespace Dendrite
                     var fb = new Font(f.FontFamily, f.Size, FontStyle.Bold);
                     if (item.Data.Count > 0)
                     {
-                        ctx.Graphics.DrawString("B:", fb, Brushes.Black, 5, 35);
-                        ctx.Graphics.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
+                        ctx.DrawString("B:", fb, Brushes.Black, 5, 35);
+                        ctx.DrawString($"({string.Join("x", item.Data[0].Dims)})", f, Brushes.Black, 45, 35);
                     }
 
                 }
-                var ms2 = ctx.Graphics.MeasureString(item.OpType, f);
+                var ms2 = ctx.MeasureString(item.OpType, f);
                 //ctx.Graphics.DrawString(item.OpType, f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 30);
                 if (CurrentLayout.FlashHoveredRelatives)
                 {
                     if (item.Parents.Contains(hovered))
                     {
-                        ctx.Graphics.DrawString("child", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                        ctx.DrawString("child", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
                     }
                     if (item.Childs.Contains(hovered))
                     {
-                        ctx.Graphics.DrawString("parent", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
+                        ctx.DrawString("parent", f, textBrush, +dtag.Rect.Width / 2 - ms2.Width / 2, 60);
                     }
                 }
 
 
-                ctx.Graphics.ResetTransform();
+                ctx.ResetTransform();
             }
         }
         private void drawLabels(IDrawingContext ctx)
         {
             foreach (var item in Model.Nodes)
             {
-
                 var dtag = item.DrawTag as GraphNodeDrawInfo;
-                if (dtag == null) continue;
-
+                if (dtag == null)
+                    continue;
 
                 if (item.Shape != null)
                 {
-                    ctx.Graphics.ResetTransform();
+                    ctx.ResetTransform();
                     var sh = ctx.Transform(dtag.Rect.Left, dtag.Rect.Bottom + 10);
-                    ctx.Graphics.TranslateTransform(sh.X, sh.Y);
-                    ctx.Graphics.ScaleTransform(ctx.Zoom, ctx.Zoom);
+                    ctx.TranslateTransform(sh.X, sh.Y);
+                    ctx.ScaleTransform(ctx.zoom, ctx.zoom);
 
                     var s1 = string.Join("x", item.Shape);
 
-
-                    ctx.Graphics.DrawString(s1, f2, textBrush, +dtag.Rect.Width / 2 + 10, 0);
-                    ctx.Graphics.ResetTransform();
+                    ctx.DrawString(s1, f2, textBrush, +dtag.Rect.Width / 2 + 10, 0);
+                    ctx.ResetTransform();
                 }
             }
         }
@@ -714,7 +727,10 @@ namespace Dendrite
         bool exitRequired = false;
         public void StartDrawThread()
         {
-            if (drawThread != null) return;
+            return;
+            if (drawThread != null)
+                return;
+
             drawThread = new Thread(() =>
             {
                 while (true)
@@ -741,7 +757,8 @@ namespace Dendrite
         }
 
 
-        DoubleBufferedDrawingContext ctx = new DoubleBufferedDrawingContext();
+        IDrawingContext ctx = new DoubleBufferedDrawingContext();
+        //IDrawingContext ctx = new SkiaGLDrawingContext();
 
         public List<ModelProvider> Providers = new List<ModelProvider>();
 
@@ -854,9 +871,11 @@ namespace Dendrite
             foreach (var item in Model.Nodes.Union(Model.Groups))
             {
                 var dtag = item.DrawTag as GraphNodeDrawInfo;
-                if (dtag == null) continue;
+                if (dtag == null)
+                    continue;
+
                 var rr = ctx.Transform(dtag.Rect);
-                var rr1 = GetRoundedRectangle(rr, (int)(40 * ctx.zoom));
+                var rr1 = ctx.GetRoundedRectangle(rr, (int)(40 * ctx.zoom));
                 if (rr1.IsVisible(pos))
                 {
                     hovered2 = item;
@@ -865,6 +884,8 @@ namespace Dendrite
             }
             hovered = hovered2;
             //Redraw();
+
+            RenderControl.Invalidate();
         }
 
         public void UpdateSearch()
@@ -1297,7 +1318,7 @@ namespace Dendrite
 
         private void collapseGroupsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string[] names = new[] { "enc1.", "enc2.", "enc3.", "dec1.", "dec2.", "dec3.", "bert/encoder/layer_1"};
+            string[] names = new[] { "enc1.", "enc2.", "enc3.", "dec1.", "dec2.", "dec3.", "bert/encoder/layer_1" };
             var ww = Model.Nodes.Where(z => names.Any(u => z.Name.StartsWith(u))).ToArray();
             if (ww.Any())
             {

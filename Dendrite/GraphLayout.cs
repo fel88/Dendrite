@@ -16,4 +16,5 @@ namespace Dendrite
         public List<GroupNode> RequestedGroups = new List<GroupNode>();
 
     }
+
 }

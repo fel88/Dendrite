@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
 using System.Linq;
 
 namespace Dendrite
@@ -10,8 +12,57 @@ namespace Dendrite
         public Graphics Graphics { get; set; }
 
         public float Zoom { get; set; }
-
+        public float zoom { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public PointF Shift { get; set; }
+        public float sx { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public float sy { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Action Redraw { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Action SwapAction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public void AntiAlias(bool v)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear(Color white)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLine(Pen pen1, PointF pointF1, PointF pointF2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawPath(Pen borderPen, GraphicsPath graphicsPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawPath(Pen borderPen, PathObject graphicsPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawString(string s1, Font f2, Brush textBrush, float v1, int v2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawString(string s1, Font f2, Brush textBrush, float v1, float v2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillPath(Brush brush, GraphicsPath graphicsPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillPath(Brush brush, PathObject graphicsPath)
+        {
+            throw new NotImplementedException();
+        }
 
         public void FitToPoints(PointF[] points, int gap = 0)
         {
@@ -41,6 +92,71 @@ namespace Dendrite
 
         }
 
+        public object GenerateRenderControl()
+        {
+            return new PictureBox() { BorderStyle = BorderStyle.FixedSingle };
+        }
+
+        public PathObject GetRoundedRectangle(RectangleF r, float d)
+        {
+            throw new NotImplementedException();
+        }
+
+        public PathObject HalfRoundedRect(RectangleF headerRect, float cornerRadius)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Init(object pictureBox1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MeasureInfo MeasureString(string v, Font f)
+        {
+            throw new NotImplementedException();
+        }
+
+        public PathObject NewPathObject()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PopMatrix()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PushMatrix()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetTransform()
+        {
+            throw new NotImplementedException();
+        }
+
+        public PathObject RoundedRect(RectangleF rr2, float cornerRadius)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ScaleTransform(float zoom1, float zoom2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopDrag()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Swap()
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual PointF Transform(PointF p1)
         {
             return new PointF((p1.X + Shift.X) * Zoom, ( 1) * (p1.Y + Shift.Y) * Zoom);
@@ -60,5 +176,14 @@ namespace Dendrite
             return new RectangleF(t1.X, t1.Y, (rect.Width * Zoom), (rect.Height * Zoom));
         }
 
+        public void TranslateTransform(float x, float y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

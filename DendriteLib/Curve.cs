@@ -5,8 +5,9 @@ namespace Dendrite
 {
     public class Curve
     {
-        public Curve(PointF[] pnts)
+        public Curve(PointF[] pnts,PathObject po)
         {
+            Path = po;
             for (var i = 0; i < pnts.Length; i++)
             {
                 if (i == 0) lineStart();
@@ -16,7 +17,7 @@ namespace Dendrite
         }
 
         MoveContext context = new MoveContext();
-        public GraphicsPath Path = new GraphicsPath();
+        public PathObject Path = null;
         float _x0;
         float _x1;
         float _y0;
@@ -109,7 +110,7 @@ namespace Dendrite
             float _x1;
             float _y0;
             float _y1;
-            public GraphicsPath Path;
+            public PathObject Path;
 
             public void bezierCurveTo(PointF cp1, PointF cp2, PointF cp3)
             {

@@ -84,7 +84,7 @@ namespace Dendrite
                 {
                     if (item is Form1 f)
                     {
-                        f.StartDrawThread();
+                       f.StartDrawThread();
                     }
                 }
 

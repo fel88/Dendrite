@@ -5,6 +5,7 @@ namespace Dendrite
 {
     public class EdgeNode
     {
+        public static IDrawingContext DrawingContext;
         public EdgeNode() { }
         public EdgeNode(PointF[] p)
         {
@@ -13,25 +14,26 @@ namespace Dendrite
         public void Init(PointF[] p)
         {
             Points = p;
-            curve = new Curve(p);
+            curve = new Curve(p, DrawingContext.NewPathObject());
         }
         public PointF[] Points;
         Curve curve;
 
         public void Draw(IDrawingContext ctx)
         {
-            var size = 4 * ctx.Zoom;
+            var size = 4 * ctx.zoom;
             AdjustableArrowCap bigArrow = new AdjustableArrowCap(size, size, true);
             Pen pen1 = new Pen(Color.Black);
             pen1.CustomEndCap = bigArrow;
+            ctx.PushMatrix();
+            //var temp = ctx.Transform;
 
-            var temp = ctx.Graphics.Transform;
+            ctx.ScaleTransform(ctx.zoom, ctx.zoom);
+            ctx.TranslateTransform(ctx.sx, ctx.sy);
 
-            ctx.Graphics.ScaleTransform(ctx.Zoom, ctx.Zoom);
-            ctx.Graphics.TranslateTransform(ctx.Shift.X, ctx.Shift.Y);
-
-            ctx.Graphics.DrawPath(pen1, curve.Path);
-            ctx.Graphics.Transform = temp;
+            ctx.DrawPath(pen1, curve.Path);
+            //ctx.Transform = temp;
+            ctx.PopMatrix();
 
 
         }

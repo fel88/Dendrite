@@ -1,6 +1,7 @@
 ﻿using Dendrite.Lib;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Dendrite
@@ -89,8 +90,10 @@ namespace Dendrite
             var hovered = ContainsPoint(pos2);
 
             var pos = ctx.Transform(Position);
-            var rr = Helpers.RoundedRect(new RectangleF(pos.X, pos.Y, Width * ctx.zoom, Height * ctx.zoom), (int)(10 * ctx.zoom));
-            ctx.Graphics.FillPath(Node.LastException != null ? Brushes.Red : Brushes.Gray, rr);
+            var rr = ctx.RoundedRect(new RectangleF(pos.X, pos.Y, Width * ctx.zoom, Height * ctx.zoom), (int)(10 * ctx.zoom));
+            ctx.FillPath(Node.LastException != null ? Brushes.Red : Brushes.Gray, rr);
+            
+            
             var outline = rr.GetBounds();
             outline.Inflate(10, 10);
             if (IsSelected)
@@ -100,19 +103,19 @@ namespace Dendrite
                 pen.DashPattern = new float[] { 10 * ctx.zoom, 10 * ctx.zoom };
                 ctx.Graphics.DrawRectangle(pen, outline.X, outline.Y, outline.Width, outline.Height);
             }
-            var header = Helpers.HalfRoundedRect(new RectangleF(pos.X, pos.Y, Width * ctx.zoom, 20), (int)(10 * ctx.zoom));
+            var header = ctx.HalfRoundedRect(new RectangleF(pos.X, pos.Y, Width * ctx.zoom, 20), (int)(10 * ctx.zoom));
 
-            ctx.Graphics.FillPath(hovered ? Brushes.LightPink : Brushes.LightGray, header);
+            ctx.FillPath(hovered ? Brushes.LightPink : Brushes.LightGray, header);
             //ctx.Graphics.FillRectangle(Brushes.Gray, pos.X, pos.Y, Width * ctx.zoom, Height * ctx.zoom);
             var ms = ctx.Graphics.MeasureString(Node.Name, SystemFonts.DefaultFont);
             /*      ctx.Graphics.DrawString(Node.Name, SystemFonts.DefaultFont, Brushes.White, pos.X + rr.GetBounds().Width / 2 - ms.Width / 2,
 
                       pos.Y + rr.GetBounds().Height / 2 - ms.Height / 2);*/
-            ctx.Graphics.DrawString(Node.Name, SystemFonts.DefaultFont, Brushes.Black, pos.X + rr.GetBounds().Width / 2 - ms.Width / 2,
+            ctx.DrawString(Node.Name, SystemFonts.DefaultFont, Brushes.Black, pos.X + rr.GetBounds().Width / 2 - ms.Width / 2,
 
                pos.Y + ms.Height / 2);
             //ctx.Graphics.DrawRectangle(Pens.Black, pos.X, pos.Y, Width * ctx.zoom, Height * ctx.zoom);
-            ctx.Graphics.DrawPath(Pens.Black, rr);
+            ctx.DrawPath(Pens.Black, rr);
 
             DrawPins(ctx);
         }

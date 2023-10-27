@@ -32,22 +32,28 @@ namespace Dendrite
 
         int CurrentIndex;        
 
-        public void Swap()
+        public override void Swap()
         {
-            Box.Image = blist[CurrentIndex];
+            /*Box.Image = blist[CurrentIndex];
             CurrentIndex++;
-            CurrentIndex %= blist.Count;
+            CurrentIndex %= blist.Count;*/
         }
 
         public override void Init(PictureBox pictureBox1)
         {
-            for (int i = 0; i < 2; i++)
+            pictureBox1.Paint += PictureBox1_Paint;
+            for (int i = 0; i < 1; i++)
             {
                 blist.Add(new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height));
                 glist.Add(Graphics.FromImage(blist.Last()));
             }
             base.Init(pictureBox1);
 
+        }
+
+        private void PictureBox1_Paint(object? sender, PaintEventArgs e)
+        {
+            Redraw?.Invoke();
         }
     }
 }
