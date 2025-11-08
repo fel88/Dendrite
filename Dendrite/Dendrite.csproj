@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <RootNamespace>Dendrite</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
@@ -35,7 +35,9 @@
     <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.6.0.20220608" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.6.0.20220608" />
-    <PackageReference Include="SkiaSharp.Views" Version="2.88.6" />
+    <PackageReference Include="SkiaSharp" Version="3.119.1" />
+    <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="3.119.1" />
+    <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.1" />
   </ItemGroup>
 
   <ItemGroup>

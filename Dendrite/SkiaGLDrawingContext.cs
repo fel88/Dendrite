@@ -1,13 +1,6 @@
-﻿using SkiaSharp.Views.Desktop;
-using SkiaSharp;
+﻿using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using System.Drawing.Drawing2D;
-using OpenTK;
-using static System.Windows.Forms.AxHost;
-using System.Drawing;
-using System.IO;
-using Microsoft.VisualBasic.Devices;
-using OpenTK.Graphics.OpenGL;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Dendrite
 {
@@ -16,8 +9,7 @@ namespace Dendrite
         public PathObject GetRoundedRectangle(RectangleF r, float d)
         {
             if (d == 0) { d = 1; }
-            SKPath gp = new SKPath();
-
+            SKPath gp = new SKPath();            
             gp.AddRoundRect(new SKRoundRect(r.ToSKRect(), d));
 
             return new SkiaPathObject() { Path = gp };

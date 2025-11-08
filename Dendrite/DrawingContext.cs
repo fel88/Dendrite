@@ -1,6 +1,4 @@
-﻿using OpenTK.Graphics.ES20;
-using SkiaSharp.Views.Desktop;
-using SkiaSharp;
+﻿using SkiaSharp;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
